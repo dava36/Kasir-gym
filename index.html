@@ -58,7 +58,8 @@
     <header class="sticky top-0 z-40 glass-panel border-b border-gray-800 px-4 py-3 shadow-2xl">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center space-x-3">
-                <i class="fa-solid fa-dumbbell text-3xl text-brand-neon animate-pulse"></i>
+                <!-- LOGO MAUREN SPORT -->
+                <img src="https://i.ibb.co/1yQc8nW/IMG-20260731-080803.jpg" id="brand-logo" alt="MAUREN SPORT Logo" class="h-10 w-auto rounded object-contain border border-brand-neon/30 p-0.5">
                 <h1 class="text-2xl font-black tracking-wider uppercase">
                     <span class="text-[#FFE866]">MAUREN</span> <span class="text-white">SPORT</span>
                 </h1>
@@ -117,10 +118,9 @@
             <div class="glass-panel p-6 rounded-2xl">
                 <div class="border-b border-gray-800 pb-4 mb-6">
                     <h2 class="text-2xl font-black text-white uppercase"><i class="fa-solid fa-address-card text-brand-neon mr-2"></i> Direktori Member Gym</h2>
-                    <p class="text-sm text-gray-400">Daftar nama anggota terdaftar aktif di MAUREN SPORT Gym.</p>
+                    <p class="text-sm text-gray-400">Daftar nama anggota terdaftar di MAUREN SPORT Gym.</p>
                 </div>
 
-                <!-- Tabel Member Ringkas (Nama & Gender Only) -->
                 <div class="overflow-x-auto rounded-xl border border-gray-800">
                     <table class="w-full text-left text-sm text-gray-300">
                         <thead class="bg-gray-900 text-brand-neon uppercase text-xs font-bold tracking-wider">
@@ -150,7 +150,7 @@
             </div>
         </section>
 
-        <!-- BERANDA 4: PRIVATE STAFF ONLY (LENGKAP DENGAN KONTROL MEMBER) -->
+        <!-- BERANDA 4: PRIVATE STAFF ONLY -->
         <section id="tab4" class="tab-content hidden space-y-6">
             <div class="glass-panel p-6 rounded-2xl border-amber-500/20">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b border-gray-800 pb-4">
@@ -159,7 +159,7 @@
                             <span class="px-2.5 py-1 bg-amber-500/20 text-amber-400 font-bold text-xs rounded border border-amber-500/40">STAFF ONLY</span>
                             <h2 class="text-2xl font-black text-white uppercase">Pengaturan Keuangan & Manajemen Member</h2>
                         </div>
-                        <p class="text-sm text-gray-400 mt-1">Laporan finansial dan manajemen penuh langganan anggota.</p>
+                        <p class="text-sm text-gray-400 mt-1">Laporan finansial dan kontrol penuh langganan anggota.</p>
                     </div>
                     <div class="flex gap-2">
                         <button onclick="exportToCSV()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold text-sm transition flex items-center shadow-lg">
@@ -171,7 +171,6 @@
                     </div>
                 </div>
 
-                <!-- Control Panel Maintenance & Audio Test -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                     <div class="bg-gray-900/90 p-4 rounded-xl border border-gray-800">
                         <label class="text-xs text-gray-400 font-bold uppercase block mb-2">Simulasi Suara Uang Masuk</label>
@@ -193,12 +192,12 @@
                     </div>
                 </div>
 
-                <!-- SEKSI MANAJEMEN MEMBER KHUSUS STAF -->
+                <!-- MANAJEMEN MEMBER KHUSUS STAF -->
                 <div class="bg-gray-900/90 p-6 rounded-xl border border-gray-800 mb-6 space-y-4">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div>
                             <h3 class="text-lg font-bold text-white uppercase"><i class="fa-solid fa-users-gear text-brand-neon mr-2"></i> Kelola Langganan Member</h3>
-                            <p class="text-xs text-gray-400">Tambah durasi baru atau hapus member kedaluwarsa secara mandiri.</p>
+                            <p class="text-xs text-gray-400">Tambah member baru atau bersihkan member kadaluarsa.</p>
                         </div>
                         <div class="flex flex-wrap items-center gap-3">
                             <div class="bg-gray-800 px-4 py-2 rounded-xl border border-gray-700 text-right">
@@ -214,7 +213,6 @@
                         </div>
                     </div>
 
-                    <!-- Tabel Member Staf Full rincian -->
                     <div class="overflow-x-auto rounded-xl border border-gray-800">
                         <table class="w-full text-left text-sm text-gray-300">
                             <thead class="bg-gray-900 text-brand-neon uppercase text-xs font-bold tracking-wider">
@@ -235,7 +233,7 @@
                     </div>
                 </div>
 
-                <!-- Grafik Penjualan Harian -->
+                <!-- Grafik Omset -->
                 <div class="bg-gray-900/90 p-6 rounded-xl border border-gray-800 mb-6">
                     <h3 class="text-lg font-bold text-white mb-4"><i class="fa-solid fa-chart-line text-brand-neon mr-2"></i> Grafik Omset Penjualan Harian</h3>
                     <div class="h-64">
@@ -243,7 +241,7 @@
                     </div>
                 </div>
 
-                <!-- Tabel Gabungan Transaksi -->
+                <!-- Log Transaksi -->
                 <div class="space-y-3">
                     <h3 class="text-lg font-bold text-white"><i class="fa-solid fa-table mr-2 text-brand-neon"></i> Data Gabungan Semua Transaksi</h3>
                     <div class="overflow-x-auto rounded-xl border border-gray-800">
@@ -382,7 +380,6 @@
 
     <!-- SCRIPT APPLICATION LOGIC -->
     <script>
-        // SYSTEM STATE
         let isStaffLoggedIn = false;
         let isMaintenance = false;
         let selectedProduct = null;
@@ -424,7 +421,6 @@
         let dailySalesData = [1200000, 1500000, 950000, 1800000, 2100000, 1400000, 1725000];
         let salesChartInstance = null;
 
-        // INITIALIZATION
         document.addEventListener("DOMContentLoaded", () => {
             renderProducts();
             renderMembers();
@@ -432,14 +428,12 @@
             renderCombinedTransactions();
             initChart();
             
-            // Set tanggal default untuk modal tambah member
             const today = new Date().toISOString().split('T')[0];
             const nextMonth = new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0];
             document.getElementById('m-start').value = today;
             document.getElementById('m-end').value = nextMonth;
         });
 
-        // TAB NAVIGATION LOGIC
         function switchTab(tabId) {
             if (tabId === 'tab4' && !isStaffLoggedIn) {
                 openStaffModal();
@@ -460,7 +454,6 @@
             }
         }
 
-        // RENDER PRODUCTS (TAB 1)
         function renderProducts() {
             const grid = document.getElementById('product-grid');
             grid.innerHTML = products.map(p => `
@@ -483,7 +476,6 @@
             `).join('');
         }
 
-        // OPEN BUY MODAL
         function openBuyModal(id) {
             if (isMaintenance) {
                 alert("Sistem sedang dalam Pemeliharaan.");
@@ -527,7 +519,6 @@
             document.getElementById('modal-total-price').innerText = "Rp " + total.toLocaleString('id-ID');
         }
 
-        // CONFIRM PURCHASE
         function confirmPurchase() {
             if (!selectedProduct) return;
 
@@ -551,7 +542,6 @@
             }
         }
 
-        // EFEK SUARA CHIME UANG MASUK
         function playMoneySound() {
             try {
                 const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -581,12 +571,10 @@
             }
         }
 
-        // RENDER MEMBERS (TAB 2 RINGKAS & TAB 4 LENGKAP)
         function renderMembers() {
             const today = new Date().toISOString().split('T')[0];
             let totalIncome = 0;
 
-            // 1. Render Tampilan Publik (Hanya Nama & Gender)
             const publicTbody = document.getElementById('public-member-tbody');
             if (members.length === 0) {
                 publicTbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-gray-500">Belum ada member terdaftar.</td></tr>`;
@@ -602,7 +590,6 @@
                 `).join('');
             }
 
-            // 2. Render Tampilan Staf (Rincian Finansial & Opsi Kontrol)
             const staffTbody = document.getElementById('staff-member-tbody');
             if (members.length === 0) {
                 staffTbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-gray-500">Belum ada member terdaftar.</td></tr>`;
@@ -637,7 +624,6 @@
             document.getElementById('staff-total-member-income').innerText = "Rp " + totalIncome.toLocaleString('id-ID');
         }
 
-        // KONTROL TAMBAH & HAPUS MEMBER (STAFF ONLY)
         function openAddMemberModal() {
             document.getElementById('add-member-modal').classList.remove('hidden');
         }
@@ -665,7 +651,6 @@
 
             members.unshift(newMember);
 
-            // Tambahkan rekaman transaksi pemasukan
             const txId = "TX-" + Math.floor(1000 + Math.random() * 9000);
             combinedTransactions.unshift({
                 id: txId,
@@ -705,7 +690,6 @@
             }
         }
 
-        // RENDER EVENTS (TAB 3)
         function renderEvents() {
             const grid = document.getElementById('event-grid');
             const events = [
@@ -731,7 +715,6 @@
             `).join('');
         }
 
-        // RENDER TRANSACTIONS (TAB 4)
         function renderCombinedTransactions() {
             const tbody = document.getElementById('combined-transaction-tbody');
             tbody.innerHTML = combinedTransactions.map(t => `
@@ -745,7 +728,6 @@
             `).join('');
         }
 
-        // STAFF MODAL & AUTH
         function openStaffModal() {
             if (isStaffLoggedIn) {
                 switchTab('tab4');
@@ -780,7 +762,6 @@
             switchTab('tab1');
         }
 
-        // MAINTENANCE TOGGLE
         function toggleMaintenance() {
             isMaintenance = !isMaintenance;
             const btn = document.getElementById('btn-maintenance');
@@ -793,12 +774,10 @@
             }
         }
 
-        // RESET SHORTFALL
         function resetShortfall() {
             alert("Penyesuaian selisih kas telah berhasil diperbarui dan disinkronkan.");
         }
 
-        // CSV EXPORT FOR DRIVE / EXCEL
         function exportToCSV() {
             let csvContent = "data:text/csv;charset=utf-8,ID Transaksi,Kategori,Keterangan,Tanggal,Jumlah (Rp)\n";
             combinedTransactions.forEach(t => {
@@ -814,7 +793,6 @@
             document.body.removeChild(link);
         }
 
-        // CHART.JS INITIALIZATION
         function initChart() {
             const ctx = document.getElementById('salesChart').getContext('2d');
             salesChartInstance = new Chart(ctx, {
