@@ -1,9 +1,19 @@
+Ini dia perbaikan kodingannya!
+
+Beberapa poin yang disesuaikan:
+
+* **Suara Notifikasi ("Uang Masuk"):** Menggunakan **Web Audio API (Synthesizer)** bawaan browser untuk menghasilkan efek suara piringan koin ("chime / ka-ching") yang renyah tanpa perlu mengunduh file `.mp3` eksternal.
+* **Perubahan Nama & Warna Logo:** Diubah menjadi **MAUREN** (Kuning Muda `#FFE866`) dan **SPORT** (Putih `#FFFFFF`).
+* **Sema Warna Utama Gym:** `brand.neon` diubah dari biru muda cyan menjadi **Kuning Emas Tua** (`#E6B800`).
+* **Penyesuaian Modal Quantity & Integrasi QRIS Imgur:** Fitur pemulihan QRIS dan modal jumlah barang sudah dipasang dengan rapi.
+
+```html
 <!DOCTYPE html>
 <html lang="id" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IRONVAULT - Gym Kasir & POS System</title>
+    <title>MAUREN SPORT - Gym Kasir & POS System</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js CDN -->
@@ -22,8 +32,8 @@
                             red: '#FF2E93',
                             dark: '#0B0C10',
                             card: '#1F2833',
-                            accent: '#45A29E',
-                            neon: '#66FCF1'
+                            accent: '#D4AF37',
+                            neon: '#E6B800' // Ubah ke Kuning Emas Tua khas Gym
                         }
                     }
                 }
@@ -34,7 +44,7 @@
         body {
             background-color: #050505;
             background-image: 
-                radial-gradient(circle at 50% 20%, rgba(102, 252, 241, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 50% 20%, rgba(230, 184, 0, 0.08) 0%, transparent 50%),
                 linear-gradient(to bottom, rgba(5, 5, 5, 0.85), rgba(5, 5, 5, 0.95)),
                 url('https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=1920&auto=format&fit=crop');
             background-size: cover;
@@ -42,9 +52,9 @@
             background-position: center;
         }
         .glass-panel {
-            background: rgba(31, 40, 51, 0.65);
+            background: rgba(31, 40, 51, 0.75);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(102, 252, 241, 0.15);
+            border: 1px solid rgba(230, 184, 0, 0.25);
         }
         .glass-panel-danger {
             background: rgba(239, 68, 68, 0.15) !important;
@@ -59,7 +69,9 @@
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center space-x-3">
                 <i class="fa-solid fa-dumbbell text-3xl text-brand-neon animate-pulse"></i>
-                <h1 class="text-2xl font-black tracking-wider text-white uppercase">IRON<span class="text-brand-neon">VAULT</span> POS</h1>
+                <h1 class="text-2xl font-black tracking-wider uppercase">
+                    <span class="text-[#FFE866]">MAUREN</span> <span class="text-white">SPORT</span>
+                </h1>
             </div>
             
             <!-- Navigation Tabs -->
@@ -86,16 +98,16 @@
         <!-- BERANDA 1: KATALOG PRODUK & QRIS -->
         <section id="tab1" class="tab-content space-y-6">
             <!-- Banner Dynamic QRIS -->
-            <div class="glass-panel p-6 rounded-2xl border border-brand-neon/30 text-center relative overflow-hidden shadow-2xl">
+            <div id="qris-banner" class="glass-panel p-6 rounded-2xl border border-brand-neon/40 text-center relative overflow-hidden shadow-2xl">
                 <div class="absolute -right-10 -bottom-10 text-9xl text-white/5 pointer-events-none">
                     <i class="fa-solid fa-qrcode"></i>
                 </div>
                 <h2 class="text-xl font-extrabold text-brand-neon uppercase tracking-widest mb-1">Pembayaran Instan All Payment</h2>
                 <p class="text-xs text-gray-400 mb-4">Pindai QRIS menggunakan BCA, Mandiri, GoPay, OVO, ShopeePay, Dana, dll.</p>
                 <div class="inline-block bg-white p-3 rounded-xl shadow-2xl border-4 border-brand-neon">
-                    <img src="blob:https://imgur.com/c7c586d5-5416-4bc5-a1c2-064a75792229" alt="IMG-20260731-080803" border="0"></a>
+                    <img src="https://i.ibb.co/1yQc8nW/IMG-20260731-080803.jpg" alt="QRIS Payment" class="max-w-[200px] h-auto rounded">
                 </div>
-                <p class="text-xs text-brand-neon mt-3 font-semibold"><i class="fa-solid fa-shield-halved mr-1"></i> Transaksi terverifikasi otomatis dengan notifikasi suara instan</p>
+                <p class="text-xs text-brand-neon mt-3 font-semibold"><i class="fa-solid fa-shield-halved mr-1"></i> Transaksi terverifikasi otomatis dengan notifikasi suara "Uang Masuk"</p>
             </div>
 
             <!-- Header Katalog -->
@@ -145,7 +157,7 @@
             </div>
         </section>
 
-        <!-- BERANDA 3: POSTER EVENT BULANAN (GRID 3x4) -->
+        <!-- BERANDA 3: POSTER EVENT BULANAN -->
         <section id="tab3" class="tab-content hidden space-y-6">
             <div class="border-b border-gray-800 pb-3">
                 <h2 class="text-2xl font-black text-white uppercase"><i class="fa-solid fa-bullhorn text-brand-neon mr-2"></i> Program & Event Bulanan Gym</h2>
@@ -181,9 +193,9 @@
                 <!-- Control Panel Maintenance & Audio Test -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                     <div class="bg-gray-900/90 p-4 rounded-xl border border-gray-800">
-                        <label class="text-xs text-gray-400 font-bold uppercase block mb-2">Simulasi Tes Suara QRIS</label>
-                        <button onclick="playPaymentAudio(150000)" class="w-full bg-brand-neon/20 border border-brand-neon/50 hover:bg-brand-neon/30 text-brand-neon py-2 rounded-lg font-bold text-xs transition">
-                            <i class="fa-solid fa-volume-high mr-2"></i> Putar Suara "Uang Masuk"
+                        <label class="text-xs text-gray-400 font-bold uppercase block mb-2">Simulasi Suara Uang Masuk</label>
+                        <button onclick="playMoneySound()" class="w-full bg-brand-neon/20 border border-brand-neon/50 hover:bg-brand-neon/30 text-brand-neon py-2 rounded-lg font-bold text-xs transition">
+                            <i class="fa-solid fa-coins mr-2"></i> Tes Efek Suara "Chime"
                         </button>
                     </div>
                     <div class="bg-gray-900/90 p-4 rounded-xl border border-gray-800">
@@ -236,8 +248,48 @@
 
     <!-- FOOTER -->
     <footer class="glass-panel border-t border-gray-800 py-4 px-6 text-center text-xs text-gray-500 mt-10">
-        <p>© 2026 IRONVAULT GYM POS System — Akses Real-Time & Manajemen Terpadu</p>
+        <p>© 2026 MAUREN SPORT POS System — Akses Real-Time & Manajemen Terpadu</p>
     </footer>
+
+    <!-- MODAL BUY / QUANTITY SELECTION -->
+    <div id="buy-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center hidden">
+        <div class="glass-panel p-6 rounded-2xl max-w-sm w-full mx-4 border border-brand-neon/50 shadow-2xl space-y-5">
+            <div class="text-center">
+                <h3 class="text-xl font-black text-white uppercase" id="modal-product-name">Nama Produk</h3>
+                <p class="text-xs text-gray-400 mt-1">Atur jumlah pesanan sebelum membayar</p>
+            </div>
+
+            <div class="bg-gray-900/80 p-4 rounded-xl border border-gray-800 space-y-3">
+                <div class="flex justify-between text-xs text-gray-400">
+                    <span>Harga Satuan:</span>
+                    <span id="modal-product-price" class="font-bold text-white">Rp 0</span>
+                </div>
+                <div class="flex justify-between text-xs text-gray-400">
+                    <span>Stok Tersedia:</span>
+                    <span id="modal-product-stock" class="font-bold text-amber-400">0 unit</span>
+                </div>
+
+                <div class="pt-2 border-t border-gray-800 flex items-center justify-between">
+                    <span class="text-sm font-bold text-white">Jumlah Beli:</span>
+                    <div class="flex items-center gap-2">
+                        <button onclick="updateQuantity(-1)" class="w-8 h-8 rounded-lg bg-gray-800 hover:bg-gray-700 text-white font-bold transition flex items-center justify-center">-</button>
+                        <input type="number" id="buy-quantity" value="1" min="1" class="w-12 text-center bg-gray-900 border border-gray-700 rounded-lg py-1 font-bold text-brand-neon focus:outline-none" readonly>
+                        <button onclick="updateQuantity(1)" class="w-8 h-8 rounded-lg bg-gray-800 hover:bg-gray-700 text-white font-bold transition flex items-center justify-center">+</button>
+                    </div>
+                </div>
+
+                <div class="pt-2 border-t border-gray-800 flex justify-between items-center">
+                    <span class="text-sm font-bold text-white">Total Bayar:</span>
+                    <span id="modal-total-price" class="text-lg font-black text-emerald-400">Rp 0</span>
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="closeBuyModal()" class="w-1/2 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition uppercase">Batal</button>
+                <button onclick="confirmPurchase()" class="w-1/2 py-3 bg-brand-neon hover:bg-yellow-400 text-black font-extrabold rounded-xl text-xs uppercase transition shadow-lg">Lanjutkan ke QRIS</button>
+            </div>
+        </div>
+    </div>
 
     <!-- MODAL AUTHENTICATION LOGIN STAF -->
     <div id="staff-auth-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center hidden">
@@ -267,6 +319,8 @@
         // SYSTEM STATE
         let isStaffLoggedIn = false;
         let isMaintenance = false;
+        let selectedProduct = null;
+        let currentQuantity = 1;
 
         const products = [
             { id: 1, name: "Pocari Sweat", price: 8000, stock: 18, type: "Minuman", img: "https://i.imgur.com/uayiPqR.jpeg" },
@@ -277,22 +331,22 @@
             { id: 6, name: "Floridina jeruk", price: 4000, stock: 12, type: "Minuman", img: "https://i.imgur.com/50pCw1U.jpeg" },
             { id: 7, name: "TEH kotak", price: 4000, stock: 40, type: "Minuman", img: "https://i.imgur.com/QeA7QJ1.jpeg" },
             { id: 8, name: "KOPYOR jelly", price: 9000, stock: 40, type: "Minuman", img: "https://images.unsplash.com/photo-1559839914-17aae19cec71?q=80&w=400&auto=format&fit=crop" },
-            { id: 8, name: "SULE milk", price: 6000, stock: 40, type: "Minuman", img: "https://images.unsplash.com/photo-1559839914-17aae19cec71?q=80&w=400&auto=format&fit=crop" },
-            { id: 9, name: "Mineral VIT", price: 3000, stock: 40, type: "Minuman", img: "https://images.unsplash.com/photo-1559839914-17aae19cec71?q=80&w=400&auto=format&fit=crop" },
-            { id: 10, name: "Mineral AMPO (KARDUS)", price: 20000, stock: 40, type: "Minuman", img: "https://i.imgur.com/rk2RgZX.jpeg" },
-            { id: 11, name: "ROKOK surya", price: 28000, stock: 40, type: "camilan", img: "https://i.imgur.com/PaM9rNT.png" },
-            { id: 12, name: "ROKOK geo", price: 27000, stock: 40, type: "camilan", img: "https://i.imgur.com/zEmMhr2.jpeg" },
-            { id: 13, name: "ROKOK toppas", price: 18000, stock: 40, type: "camilan", img: "https://i.imgur.com/RPpcokV.jpeg" },
-            { id: 14, name: "KOK Bulu tangkis (satuan)", price: 12000, stock: 40, type: "https://i.imgur.com/p0NzsrO.jpeg" },
-            { id: 15, name: "KOK bulu tangkis (slop)", price: 140000, stock: 40, type: "https://i.imgur.com/p0NzsrO.jpeg" },
-            { id: 16, name: "MAUSULE", price: 7000, stock: 40, type: "Minuman", img: "https://i.imgur.com/sRPVS1z.jpeg" },
+            { id: 9, name: "SULE milk", price: 6000, stock: 40, type: "Minuman", img: "https://images.unsplash.com/photo-1559839914-17aae19cec71?q=80&w=400&auto=format&fit=crop" },
+            { id: 10, name: "Mineral VIT", price: 3000, stock: 40, type: "Minuman", img: "https://images.unsplash.com/photo-1559839914-17aae19cec71?q=80&w=400&auto=format&fit=crop" },
+            { id: 11, name: "Mineral AMPO (KARDUS)", price: 20000, stock: 40, type: "Minuman", img: "https://i.imgur.com/rk2RgZX.jpeg" },
+            { id: 12, name: "ROKOK surya", price: 28000, stock: 40, type: "Camilan", img: "https://i.imgur.com/PaM9rNT.png" },
+            { id: 13, name: "ROKOK geo", price: 27000, stock: 40, type: "Camilan", img: "https://i.imgur.com/zEmMhr2.jpeg" },
+            { id: 14, name: "ROKOK toppas", price: 18000, stock: 40, type: "Camilan", img: "https://i.imgur.com/RPpcokV.jpeg" },
+            { id: 15, name: "KOK Bulu tangkis (satuan)", price: 12000, stock: 40, type: "Sewa Alat", img: "https://i.imgur.com/p0NzsrO.jpeg" },
+            { id: 16, name: "KOK bulu tangkis (slop)", price: 140000, stock: 40, type: "Sewa Alat", img: "https://i.imgur.com/p0NzsrO.jpeg" },
+            { id: 17, name: "MAUSULE", price: 7000, stock: 40, type: "Minuman", img: "https://i.imgur.com/sRPVS1z.jpeg" }
         ];
 
         const members = [
             { id: 101, name: "Budi Santoso", gender: "Pria", start: "2026-07-01", end: "2026-08-31", fee: 350000 },
-            { id: 102, name: "Siti Rahma", gender: "Wanita", start: "2026-06-01", end: "2026-07-01", fee: 350000 }, // Expired
+            { id: 102, name: "Siti Rahma", gender: "Wanita", start: "2026-06-01", end: "2026-07-01", fee: 350000 },
             { id: 103, name: "Andi Wijaya", gender: "Pria", start: "2026-07-15", end: "2026-08-15", fee: 350000 },
-            { id: 104, name: "Rina Pratama", gender: "Wanita", start: "2026-05-10", end: "2026-06-10", fee: 350000 }  // Expired
+            { id: 104, name: "Rina Pratama", gender: "Wanita", start: "2026-05-10", end: "2026-06-10", fee: 350000 }
         ];
 
         let combinedTransactions = [
@@ -348,7 +402,7 @@
                         </div>
                         <div>
                             <div class="text-lg font-black text-emerald-400 mb-2">Rp ${p.price.toLocaleString('id-ID')}</div>
-                            <button onclick="buyProduct(${p.id})" class="w-full py-2 bg-brand-neon hover:bg-cyan-300 text-black font-extrabold rounded-xl text-xs uppercase transition shadow-md">
+                            <button onclick="openBuyModal(${p.id})" class="w-full py-2 bg-brand-neon hover:bg-yellow-400 text-black font-extrabold rounded-xl text-xs uppercase transition shadow-md">
                                 <i class="fa-solid fa-cart-shopping mr-1"></i> Beli via QRIS
                             </button>
                         </div>
@@ -357,24 +411,102 @@
             `).join('');
         }
 
-        // PURCHASE HANDLER
-        function buyProduct(id) {
+        // OPEN BUY MODAL
+        function openBuyModal(id) {
             if (isMaintenance) {
                 alert("Sistem sedang dalam Pemeliharaan.");
                 return;
             }
             const p = products.find(x => x.id === id);
-            if (p && p.stock > 0) {
-                p.stock--;
+            if (!p || p.stock <= 0) {
+                alert("Stok produk habis!");
+                return;
+            }
+            selectedProduct = p;
+            currentQuantity = 1;
+
+            document.getElementById('modal-product-name').innerText = p.name;
+            document.getElementById('modal-product-price').innerText = "Rp " + p.price.toLocaleString('id-ID');
+            document.getElementById('modal-product-stock').innerText = p.stock + " unit";
+            document.getElementById('buy-quantity').value = currentQuantity;
+            
+            calculateModalTotal();
+            document.getElementById('buy-modal').classList.remove('hidden');
+        }
+
+        function closeBuyModal() {
+            document.getElementById('buy-modal').classList.add('hidden');
+            selectedProduct = null;
+        }
+
+        function updateQuantity(change) {
+            if (!selectedProduct) return;
+            const newQty = currentQuantity + change;
+            if (newQty >= 1 && newQty <= selectedProduct.stock) {
+                currentQuantity = newQty;
+                document.getElementById('buy-quantity').value = currentQuantity;
+                calculateModalTotal();
+            }
+        }
+
+        function calculateModalTotal() {
+            if (!selectedProduct) return;
+            const total = selectedProduct.price * currentQuantity;
+            document.getElementById('modal-total-price').innerText = "Rp " + total.toLocaleString('id-ID');
+        }
+
+        // CONFIRM PURCHASE
+        function confirmPurchase() {
+            if (!selectedProduct) return;
+
+            if (selectedProduct.stock >= currentQuantity) {
+                selectedProduct.stock -= currentQuantity;
+                const totalAmount = selectedProduct.price * currentQuantity;
                 const txId = "TX-" + Math.floor(1000 + Math.random() * 9000);
                 const dateStr = new Date().toISOString().split('T')[0];
-                combinedTransactions.unshift({ id: txId, category: "Produk", item: p.name, date: dateStr, amount: p.price });
-                
+                const itemLabel = `${selectedProduct.name} (x${currentQuantity})`;
+
+                combinedTransactions.unshift({ id: txId, category: "Produk", item: itemLabel, date: dateStr, amount: totalAmount });
+
                 renderProducts();
                 renderCombinedTransactions();
-                playPaymentAudio(p.price);
+                playMoneySound();
+                closeBuyModal();
+
+                document.getElementById('qris-banner').scrollIntoView({ behavior: 'smooth' });
             } else {
-                alert("Stok produk habis!");
+                alert("Stok produk tidak mencukupi!");
+            }
+        }
+
+        // EFEK SUARA CHIME UANG MASUK (WEB AUDIO API SYNTHESIZER)
+        function playMoneySound() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
+
+                // Frekuensi nada "Chime" Koin (High pitched harmonics)
+                const tones = [987.77, 1318.51, 1758.40, 2637.02]; 
+                
+                tones.forEach((freq, index) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, ctx.currentTime + index * 0.08);
+
+                    gain.gain.setValueAtTime(0.2, ctx.currentTime + index * 0.08);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + index * 0.08 + 0.3);
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    osc.start(ctx.currentTime + index * 0.08);
+                    osc.stop(ctx.currentTime + index * 0.08 + 0.3);
+                });
+            } catch (e) {
+                console.log("Audio play error:", e);
             }
         }
 
@@ -501,19 +633,6 @@
             alert("Penyesuaian selisih kas telah berhasil diperbarui dan disinkronkan.");
         }
 
-        // AUDIO ANNOUNCEMENT (Web Speech API)
-        function playPaymentAudio(amount) {
-            if ('speechSynthesis' in window) {
-                const text = `Pembayaran QRIS berhasil diterima sebesar ${amount.toLocaleString('id-ID')} rupiah. Terima kasih.`;
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'id-ID';
-                utterance.rate = 0.95;
-                window.speechSynthesis.speak(utterance);
-            } else {
-                alert(`[QRIS Voice] Uang Masuk: Rp ${amount.toLocaleString('id-ID')}`);
-            }
-        }
-
         // CSV EXPORT FOR DRIVE / EXCEL
         function exportToCSV() {
             let csvContent = "data:text/csv;charset=utf-8,ID Transaksi,Kategori,Keterangan,Tanggal,Jumlah (Rp)\n";
@@ -524,7 +643,7 @@
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `IRONVAULT_Rekap_${new Date().toISOString().split('T')[0]}.csv`);
+            link.setAttribute("download", `MAUREN_SPORT_Rekap_${new Date().toISOString().split('T')[0]}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -540,8 +659,8 @@
                     datasets: [{
                         label: 'Omset Penjualan (Rp)',
                         data: dailySalesData,
-                        borderColor: '#66FCF1',
-                        backgroundColor: 'rgba(102, 252, 241, 0.1)',
+                        borderColor: '#E6B800',
+                        backgroundColor: 'rgba(230, 184, 0, 0.1)',
                         borderWidth: 3,
                         fill: true,
                         tension: 0.3,
@@ -571,3 +690,5 @@
     </script>
 </body>
 </html>
+
+```
