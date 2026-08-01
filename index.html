@@ -180,7 +180,7 @@
                     <div class="bg-gray-900/90 p-4 rounded-xl border border-gray-800">
                         <label class="text-xs text-gray-400 font-bold uppercase block mb-2">Penyesuaian Selisih Kas (Reset)</label>
                         <button onclick="resetShortfall()" class="w-full bg-amber-500/20 border border-amber-500/50 hover:bg-amber-500/30 text-amber-300 py-2 rounded-lg font-bold text-xs transition">
-                            <i class="fa-solid fa-rotate mr-2"></i> Reset Kas
+                            <i class="fa-solid fa-rotate mr-2"></i> Reset Data ke Default
                         </button>
                     </div>
                     <div class="bg-gray-900/90 p-4 rounded-xl border border-gray-800">
@@ -199,7 +199,7 @@
                             <p class="text-xs text-gray-400">Tambah durasi baru atau hapus member kedaluwarsa secara mandiri.</p>
                         </div>
                         <div class="flex flex-wrap items-center gap-3">
-                            <!-- TOMBOL SAVE WARNA BIRU DI SEBELAH KIRI TOTAL PEMASUKAN MEMBER -->
+                            <!-- TOMBOL SAVE WARNA BIRU -->
                             <button onclick="saveDataToStorage()" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white font-extrabold rounded-xl text-xs uppercase transition shadow-lg flex items-center">
                                 <i class="fa-solid fa-floppy-disk mr-1.5"></i> Simpan Perubahan
                             </button>
@@ -391,7 +391,7 @@
         let currentQuantity = 1;
         let salesChartInstance = null;
 
-        let products = [
+        const defaultProducts = [
             { id: 1, name: "Pocari Sweat", price: 8000, stock: 18, type: "Minuman", img: "https://i.imgur.com/uayiPqR.jpeg" },
             { id: 2, name: "SUSU Indomilk", price: 5000, stock: 25, type: "Minuman", img: "https://i.imgur.com/WIQDy8z.jpeg" },
             { id: 3, name: "mizone (isotonik)", price: 5000, stock: 40, type: "Minuman", img: "https://i.imgur.com/YYc0b90.jpeg" },
@@ -411,18 +411,22 @@
             { id: 17, name: "MAUSULE", price: 7000, stock: 40, type: "Minuman", img: "https://i.imgur.com/sRPVS1z.jpeg" }
         ];
 
-        let members = [
+        const defaultMembers = [
             { id: 101, name: "Budi Santoso", gender: "Pria", start: "2026-07-01", end: "2026-08-31", fee: 350000 },
             { id: 102, name: "Siti Rahma", gender: "Wanita", start: "2026-06-01", end: "2026-07-01", fee: 350000 },
             { id: 103, name: "Andi Wijaya", gender: "Pria", start: "2026-07-15", end: "2026-08-15", fee: 350000 },
             { id: 104, name: "Rina Pratama", gender: "Wanita", start: "2026-05-10", end: "2026-06-10", fee: 350000 }
         ];
 
-        let combinedTransactions = [
+        const defaultTransactions = [
             { id: "TX-901", category: "Member", item: "Pendaftaran Member Budi Santoso", date: "2026-07-27", amount: 350000 },
             { id: "TX-902", category: "Produk", item: "Whey Protein Shake", date: "2026-07-30", amount: 45000 },
             { id: "TX-903", category: "Produk", item: "Pre-Workout Energy Drink", date: "2026-07-31", amount: 30000 }
         ];
+
+        let products = [];
+        let members = [];
+        let combinedTransactions = [];
 
         // INITIALIZATION
         document.addEventListener("DOMContentLoaded", () => {
@@ -460,9 +464,23 @@
             const savedMembers = localStorage.getItem('mauren_members');
             const savedTx = localStorage.getItem('mauren_transactions');
 
-            if (savedProducts) products = JSON.parse(savedProducts);
-            if (savedMembers) members = JSON.parse(savedMembers);
-            if (savedTx) combinedTransactions = JSON.parse(savedTx);
+            products = savedProducts ? JSON.parse(savedProducts) : JSON.parse(JSON.stringify(defaultProducts));
+            members = savedMembers ? JSON.parse(savedMembers) : JSON.parse(JSON.stringify(defaultMembers));
+            combinedTransactions = savedTx ? JSON.parse(savedTx) : JSON.parse(JSON.stringify(defaultTransactions));
+        }
+
+        function resetShortfall() {
+            if (confirm("Apakah Anda yakin ingin mengembalikan seluruh data produk, stok, dan member ke keadaan awal (default)?")) {
+                localStorage.removeItem('mauren_products');
+                localStorage.removeItem('mauren_members');
+                localStorage.removeItem('mauren_transactions');
+                loadDataFromStorage();
+                renderProducts();
+                renderMembers();
+                renderCombinedTransactions();
+                updateChartData();
+                alert("Sistem berhasil di-reset ke data default!");
+            }
         }
 
         // TAB NAVIGATION LOGIC
@@ -565,6 +583,9 @@
                 const itemLabel = `${selectedProduct.name} (x${currentQuantity})`;
 
                 combinedTransactions.unshift({ id: txId, category: "Produk", item: itemLabel, date: dateStr, amount: totalAmount });
+
+                // Otomatis simpan setiap kali ada transaksi pembeli
+                saveDataToStorage();
 
                 renderProducts();
                 renderCombinedTransactions();
@@ -706,6 +727,7 @@
                 amount: fee
             });
 
+            saveDataToStorage();
             renderMembers();
             renderCombinedTransactions();
             updateChartData();
@@ -717,6 +739,7 @@
         function deleteMember(id) {
             if (confirm("Apakah Anda yakin ingin menghapus member ini?")) {
                 members = members.filter(m => m.id !== id);
+                saveDataToStorage();
                 renderMembers();
             }
         }
@@ -732,6 +755,7 @@
 
             if (confirm(`Ditemukan ${expiredCount} member kedaluwarsa. Hapus semuanya sekarang?`)) {
                 members = members.filter(m => m.end >= today);
+                saveDataToStorage();
                 renderMembers();
                 alert("Member kedaluwarsa berhasil dibersihkan.");
             }
@@ -823,11 +847,6 @@
                 btn.innerText = "Mode Operasional Normal";
                 btn.className = "w-full bg-emerald-900/40 border border-emerald-500/50 text-emerald-300 py-2 rounded-lg font-bold text-xs transition";
             }
-        }
-
-        // RESET SHORTFALL
-        function resetShortfall() {
-            alert("Penyesuaian selisih kas telah berhasil diperbarui dan disinkronkan.");
         }
 
         // EXPORT CSV
