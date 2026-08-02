@@ -169,7 +169,7 @@
                     </div>
                 </div>
 
-                <!-- Control Panel Maintenance & Audio Test -->
+                <!-- Control Panel Maintenance, Reset & Audio Test -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                     <div class="bg-gray-900/90 p-4 rounded-xl border border-gray-800">
                         <label class="text-xs text-gray-400 font-bold uppercase block mb-2">Simulasi Suara Uang Masuk</label>
@@ -178,9 +178,9 @@
                         </button>
                     </div>
                     <div class="bg-gray-900/90 p-4 rounded-xl border border-gray-800">
-                        <label class="text-xs text-gray-400 font-bold uppercase block mb-2">Penyesuaian Selisih Kas (Reset)</label>
-                        <button onclick="resetShortfall()" class="w-full bg-amber-500/20 border border-amber-500/50 hover:bg-amber-500/30 text-amber-300 py-2 rounded-lg font-bold text-xs transition">
-                            <i class="fa-solid fa-rotate mr-2"></i> Reset Data ke Default
+                        <label class="text-xs text-gray-400 font-bold uppercase block mb-2">Reset Sistem ke Awal</label>
+                        <button onclick="resetAllData()" class="w-full bg-amber-500/20 border border-amber-500/50 hover:bg-amber-500/30 text-amber-300 py-2 rounded-lg font-bold text-xs transition">
+                            <i class="fa-solid fa-rotate mr-2"></i> Reset Seluruh Data (Manual)
                         </button>
                     </div>
                     <div class="bg-gray-900/90 p-4 rounded-xl border border-gray-800">
@@ -199,7 +199,7 @@
                             <p class="text-xs text-gray-400">Tambah durasi baru atau hapus member kedaluwarsa secara mandiri.</p>
                         </div>
                         <div class="flex flex-wrap items-center gap-3">
-                            <!-- TOMBOL SAVE WARNA BIRU -->
+                            <!-- TOMBOL SAVE WARNA BIRU DI SEBELAH KIRI TOTAL PEMASUKAN MEMBER -->
                             <button onclick="saveDataToStorage()" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white font-extrabold rounded-xl text-xs uppercase transition shadow-lg flex items-center">
                                 <i class="fa-solid fa-floppy-disk mr-1.5"></i> Simpan Perubahan
                             </button>
@@ -453,7 +453,7 @@
                 localStorage.setItem('mauren_products', JSON.stringify(products));
                 localStorage.setItem('mauren_members', JSON.stringify(members));
                 localStorage.setItem('mauren_transactions', JSON.stringify(combinedTransactions));
-                alert("Semua perubahan data berhasil disimpan secara permanen!");
+                alert("Semua perubahan data (stok, member, transaksi) berhasil disimpan permanen!");
             } catch (e) {
                 alert("Gagal menyimpan data: " + e.message);
             }
@@ -469,8 +469,8 @@
             combinedTransactions = savedTx ? JSON.parse(savedTx) : JSON.parse(JSON.stringify(defaultTransactions));
         }
 
-        function resetShortfall() {
-            if (confirm("Apakah Anda yakin ingin mengembalikan seluruh data produk, stok, dan member ke keadaan awal (default)?")) {
+        function resetAllData() {
+            if (confirm("Apakah Anda yakin ingin MERESET SELURUH DATA kembali ke pengaturan awal (stok awal & daftar member awal)?")) {
                 localStorage.removeItem('mauren_products');
                 localStorage.removeItem('mauren_members');
                 localStorage.removeItem('mauren_transactions');
@@ -479,7 +479,7 @@
                 renderMembers();
                 renderCombinedTransactions();
                 updateChartData();
-                alert("Sistem berhasil di-reset ke data default!");
+                alert("Seluruh data berhasil di-reset ke data default!");
             }
         }
 
@@ -584,7 +584,6 @@
 
                 combinedTransactions.unshift({ id: txId, category: "Produk", item: itemLabel, date: dateStr, amount: totalAmount });
 
-                // Otomatis simpan setiap kali ada transaksi pembeli
                 saveDataToStorage();
 
                 renderProducts();
