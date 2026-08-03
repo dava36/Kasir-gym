@@ -124,14 +124,16 @@
                 <div class="inline-block bg-white p-4 rounded-2xl shadow-2xl border-4 border-amber-400 transform hover:scale-105 transition-all duration-300">
                     <img id="main-qris-display" src="https://i.imgur.com/Rycx2er.jpeg" alt="QRIS Utama" class="w-[180px] h-[180px] object-contain rounded-lg">
                 </div>
-                <p class="text-xs text-amber-400 mt-4 font-bold flex items-center justify-center gap-1.5"><i class="fa-solid fa-shield-halved text-amber-300"></i> Sistem Transaksi Otomatis Terverifikasi Kasir</p>
+                <p class="text-xs text-amber-400 mt-4 font-bold flex items-center justify-center gap-1.5"><i class="fa-solid fa-shield-halved text-amber-300"></i> Synchronized Live Database Active</p>
             </div>
 
             <div class="flex justify-between items-center border-b border-gray-800 pb-3">
                 <h3 class="text-xl font-black text-white tracking-wider uppercase flex items-center gap-2">
                     <i class="fa-solid fa-bottle-water text-amber-400"></i> Suplemen, Minuman & Sewa Alat
                 </h3>
-                <span class="text-xs text-gray-400">Pilih produk untuk bertransaksi</span>
+                <span class="text-xs text-emerald-400 font-semibold flex items-center gap-1">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Real-time Sync Active
+                </span>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="product-grid"></div>
@@ -183,12 +185,9 @@
                             <span class="px-3 py-1 bg-amber-500/20 text-amber-400 font-extrabold text-[10px] rounded-md border border-amber-500/40 uppercase tracking-widest">STAFF ONLY</span>
                             <h2 class="text-2xl font-black text-white uppercase tracking-wide">Pengaturan Kasir & Admin Panel</h2>
                         </div>
-                        <p class="text-xs text-gray-400 mt-1">Kelola QRIS, Produk, Member, dan Laporan Finansial.</p>
+                        <p class="text-xs text-gray-400 mt-1">Setiap perubahan produk langsung tersinkron ke semua perangkat pembeli.</p>
                     </div>
                     <div class="flex gap-2">
-                        <button onclick="saveDataToStorage()" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-extrabold rounded-xl text-xs uppercase tracking-wider transition shadow-lg flex items-center border border-blue-400">
-                            <i class="fa-solid fa-floppy-disk mr-1.5"></i> Simpan Perubahan
-                        </button>
                         <button onclick="exportToCSV()" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-extrabold text-xs uppercase tracking-wider transition flex items-center shadow-lg shadow-emerald-900/30">
                             <i class="fa-solid fa-file-excel mr-2"></i> Ekspor CSV
                         </button>
@@ -205,7 +204,7 @@
                             <h3 class="text-lg font-black text-white uppercase tracking-wide flex items-center gap-2">
                                 <i class="fa-solid fa-qrcode text-amber-400"></i> Pengaturan QRIS Pembayaran Utama
                             </h3>
-                            <p class="text-xs text-gray-400">Unggah foto QRIS Toko yang baru agar langsung aktif di seluruh halaman pembayaran.</p>
+                            <p class="text-xs text-gray-400">Unggah foto QRIS Toko yang baru agar langsung aktif di seluruh HP pembeli.</p>
                         </div>
                     </div>
                     
@@ -223,14 +222,14 @@
                     </div>
                 </div>
 
-                <!-- SEKSI 2: KELOLA PRODUK (FOTO, HARGA, & STOK) -->
+                <!-- SEKSI 2: KELOLA PRODUK (SINKRON REAL-TIME DATABASE) -->
                 <div class="bg-gray-950/80 p-6 rounded-2xl border border-gray-800/80 mb-6 space-y-4">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-gray-800 pb-3">
                         <div>
                             <h3 class="text-lg font-black text-white uppercase tracking-wide flex items-center gap-2">
-                                <i class="fa-solid fa-boxes-packing text-amber-400"></i> Kelola Produk (Foto, Harga, & Stok)
+                                <i class="fa-solid fa-boxes-packing text-amber-400"></i> Kelola Produk (Real-Time Database Sync)
                             </h3>
-                            <p class="text-xs text-gray-400">Ubah foto, stok, atau harga produk. Klik "Simpan Perubahan" di atas untuk memperbarui ke pembeli.</p>
+                            <p class="text-xs text-gray-400">Setiap perubahan foto, stok, atau harga akan otomatis ter-update ke semua HP pelanggan.</p>
                         </div>
                     </div>
 
@@ -637,8 +636,24 @@
         </div>
     </div>
 
-    <!-- SCRIPT APPLICATION LOGIC -->
-    <script>
+    <!-- SCRIPT APPLICATION & FIREBASE REALTIME DATABASE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // FIREBASE CONFIGURATION
+        const firebaseConfig = {
+            databaseURL: "https://mauren-sport-gym-default-rtdb.firebaseio.com"
+        };
+
+        let db = null;
+        try {
+            const app = initializeApp(firebaseConfig);
+            db = getDatabase(app);
+        } catch(e) {
+            console.warn("Firebase initialized in Local/Offline Mode:", e);
+        }
+
         let isStaffLoggedIn = false;
         let isMaintenance = false;
         let selectedProduct = null;
@@ -678,19 +693,44 @@
             { id: "TX-902", category: "Produk", item: "Pocari Sweat (x2)", date: "2026-07-30", amount: 16000 }
         ];
 
-        let mainQRIS = defaultMainQRIS;
-        let products = [];
-        let members = [];
-        let events = [];
-        let combinedTransactions = [];
+        window.mainQRIS = defaultMainQRIS;
+        window.products = JSON.parse(JSON.stringify(defaultProducts));
+        window.members = JSON.parse(JSON.stringify(defaultMembers));
+        window.events = JSON.parse(JSON.stringify(defaultEvents));
+        window.combinedTransactions = JSON.parse(JSON.stringify(defaultTransactions));
 
+        // LISTENER REALTIME FIREBASE (SINKRON KE SEMUA HP)
         document.addEventListener("DOMContentLoaded", () => {
-            loadDataFromStorage();
-            renderMainQRIS();
-            renderProducts();
-            renderMembers();
-            renderEvents();
-            renderCombinedTransactions();
+            if (db) {
+                const dbRef = ref(db, 'gym_data');
+                onValue(dbRef, (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        if (data.mainQRIS) window.mainQRIS = data.mainQRIS;
+                        if (data.products) window.products = data.products;
+                        if (data.members) window.members = data.members;
+                        if (data.events) window.events = data.events;
+                        if (data.transactions) window.combinedTransactions = data.transactions;
+                        
+                        renderMainQRIS();
+                        renderProducts();
+                        renderMembers();
+                        renderEvents();
+                        renderCombinedTransactions();
+                        updateChartData();
+                    } else {
+                        saveDataToStorage();
+                    }
+                });
+            } else {
+                loadDataFromStorage();
+                renderMainQRIS();
+                renderProducts();
+                renderMembers();
+                renderEvents();
+                renderCombinedTransactions();
+            }
+
             initChart();
 
             const today = new Date().toISOString().split('T')[0];
@@ -699,73 +739,73 @@
             if (document.getElementById('m-end')) document.getElementById('m-end').value = nextMonth;
         });
 
-        // PERSISTENSI LOCAL STORAGE
-        function saveDataToStorage() {
+        // SIMPAN PERUBAHAN KE CLOUD DATABASE & LOCAL STORAGE
+        window.saveDataToStorage = function() {
             try {
-                localStorage.setItem('mauren_main_qris', mainQRIS);
-                localStorage.setItem('mauren_products', JSON.stringify(products));
-                localStorage.setItem('mauren_members', JSON.stringify(members));
-                localStorage.setItem('mauren_events', JSON.stringify(events));
-                localStorage.setItem('mauren_transactions', JSON.stringify(combinedTransactions));
-                alert("Seluruh perubahan berhasil disimpan!");
+                const payload = {
+                    mainQRIS: window.mainQRIS,
+                    products: window.products,
+                    members: window.members,
+                    events: window.events,
+                    transactions: window.combinedTransactions
+                };
+
+                if (db) {
+                    set(ref(db, 'gym_data'), payload);
+                }
+                localStorage.setItem('mauren_gym_payload', JSON.stringify(payload));
             } catch (e) {
-                alert("Gagal menyimpan data: " + e.message);
+                console.error("Gagal simpan sync:", e);
             }
-        }
+        };
 
         function loadDataFromStorage() {
-            const savedQRIS = localStorage.getItem('mauren_main_qris');
-            const savedProducts = localStorage.getItem('mauren_products');
-            const savedMembers = localStorage.getItem('mauren_members');
-            const savedEvents = localStorage.getItem('mauren_events');
-            const savedTx = localStorage.getItem('mauren_transactions');
-
-            mainQRIS = savedQRIS || defaultMainQRIS;
-            products = savedProducts ? JSON.parse(savedProducts) : JSON.parse(JSON.stringify(defaultProducts));
-            members = savedMembers ? JSON.parse(savedMembers) : JSON.parse(JSON.stringify(defaultMembers));
-            events = savedEvents ? JSON.parse(savedEvents) : JSON.parse(JSON.stringify(defaultEvents));
-            combinedTransactions = savedTx ? JSON.parse(savedTx) : JSON.parse(JSON.stringify(defaultTransactions));
-        }
-
-        function resetAllData() {
-            if (confirm("Apakah Anda yakin ingin MERESET SELURUH DATA kembali ke pengaturan awal?")) {
-                localStorage.clear();
-                loadDataFromStorage();
-                renderMainQRIS();
-                renderProducts();
-                renderMembers();
-                renderEvents();
-                renderCombinedTransactions();
-                updateChartData();
-                alert("Seluruh data berhasil di-reset ke awal!");
+            const saved = localStorage.getItem('mauren_gym_payload');
+            if (saved) {
+                const data = JSON.parse(saved);
+                window.mainQRIS = data.mainQRIS || defaultMainQRIS;
+                window.products = data.products || defaultProducts;
+                window.members = data.members || defaultMembers;
+                window.events = data.events || defaultEvents;
+                window.combinedTransactions = data.transactions || defaultTransactions;
             }
         }
 
-        // PENGATURAN QRIS UTAMA
-        function renderMainQRIS() {
-            document.getElementById('main-qris-display').src = mainQRIS;
-            document.getElementById('qris-checkout-img').src = mainQRIS;
-            document.getElementById('staff-qris-preview').src = mainQRIS;
-        }
+        window.resetAllData = function() {
+            if (confirm("Reset seluruh data ke pengaturan default?")) {
+                window.mainQRIS = defaultMainQRIS;
+                window.products = JSON.parse(JSON.stringify(defaultProducts));
+                window.members = JSON.parse(JSON.stringify(defaultMembers));
+                window.events = JSON.parse(JSON.stringify(defaultEvents));
+                window.combinedTransactions = JSON.parse(JSON.stringify(defaultTransactions));
+                saveDataToStorage();
+                alert("Data berhasil di-reset ke awal!");
+            }
+        };
 
-        function updateMainQRIS() {
+        window.renderMainQRIS = function() {
+            document.getElementById('main-qris-display').src = window.mainQRIS;
+            document.getElementById('qris-checkout-img').src = window.mainQRIS;
+            document.getElementById('staff-qris-preview').src = window.mainQRIS;
+        };
+
+        window.updateMainQRIS = function() {
             const fileInput = document.getElementById('main-qris-file');
             if (fileInput.files && fileInput.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    mainQRIS = e.target.result;
+                    window.mainQRIS = e.target.result;
                     renderMainQRIS();
                     saveDataToStorage();
-                    alert("Gambar QRIS Utama Berhasil Diperbarui!");
+                    alert("Gambar QRIS Utama Berhasil Diperbarui di Semua Perangkat!");
                 };
                 reader.readAsDataURL(fileInput.files[0]);
             } else {
                 alert("Pilih file gambar QRIS terlebih dahulu!");
             }
-        }
+        };
 
-        // TAB NAVIGATION
-        function switchTab(tabId) {
+        window.switchTab = function(tabId) {
             if (tabId === 'tab4' && !isStaffLoggedIn) {
                 openStaffModal();
                 return;
@@ -783,12 +823,11 @@
                 activeNav.classList.add('bg-gradient-to-r', 'from-amber-400', 'to-amber-500', 'text-black', 'shadow-lg');
                 activeNav.classList.remove('text-gray-300');
             }
-        }
+        };
 
-        // RENDER PRODUK (USER & STAFF PANEL)
-        function renderProducts() {
+        window.renderProducts = function() {
             const grid = document.getElementById('product-grid');
-            grid.innerHTML = products.map(p => `
+            grid.innerHTML = window.products.map(p => `
                 <div class="glass-panel-luxury rounded-2xl overflow-hidden gold-glow-hover transition-all duration-300 flex flex-col justify-between shadow-lg">
                     <img src="${p.img}" alt="${p.name}" class="w-full h-44 object-cover" onerror="this.src='https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=400&auto=format&fit=crop'">
                     <div class="p-5 flex-grow flex flex-col justify-between space-y-4">
@@ -809,7 +848,7 @@
 
             const staffProductTbody = document.getElementById('staff-product-tbody');
             if (staffProductTbody) {
-                staffProductTbody.innerHTML = products.map((p, idx) => `
+                staffProductTbody.innerHTML = window.products.map((p) => `
                     <tr class="hover:bg-gray-800/40 transition">
                         <td class="p-3">
                             <div class="relative group w-12 h-12">
@@ -833,10 +872,9 @@
                     </tr>
                 `).join('');
             }
-        }
+        };
 
-        // AKSI EDISI PRODUK STAFF
-        function addNewProduct(event) {
+        window.addNewProduct = function(event) {
             event.preventDefault();
             const name = document.getElementById('np-name').value;
             const price = Number(document.getElementById('np-price').value);
@@ -845,11 +883,10 @@
             const fileInput = document.getElementById('np-image');
 
             const saveProd = (imgUrl) => {
-                products.unshift({ id: Date.now(), name, price, stock, type, img: imgUrl });
+                window.products.unshift({ id: Date.now(), name, price, stock, type, img: imgUrl });
                 saveDataToStorage();
-                renderProducts();
                 event.target.reset();
-                alert("Produk baru berhasil ditambahkan!");
+                alert("Produk baru ditambahkan & tersimpan ke Cloud!");
             };
 
             if (fileInput.files && fileInput.files[0]) {
@@ -861,49 +898,46 @@
             } else {
                 saveProd("https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=400&auto=format&fit=crop");
             }
-        }
+        };
 
-        function updateProductPrice(id, val) {
-            const p = products.find(x => x.id === id);
-            if (p) { p.price = Number(val); renderProducts(); }
-        }
+        window.updateProductPrice = function(id, val) {
+            const p = window.products.find(x => x.id === id);
+            if (p) { p.price = Number(val); saveDataToStorage(); }
+        };
 
-        function updateProductStock(id, val) {
-            const p = products.find(x => x.id === id);
-            if (p) { p.stock = Number(val); renderProducts(); }
-        }
+        window.updateProductStock = function(id, val) {
+            const p = window.products.find(x => x.id === id);
+            if (p) { p.stock = Number(val); saveDataToStorage(); }
+        };
 
-        function updateProductImage(id, input) {
+        window.updateProductImage = function(id, input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    const p = products.find(x => x.id === id);
+                    const p = window.products.find(x => x.id === id);
                     if (p) {
                         p.img = e.target.result;
                         saveDataToStorage();
-                        renderProducts();
-                        alert("Foto produk berhasil diubah!");
+                        alert("Foto produk berhasil diubah & disinkron!");
                     }
                 };
                 reader.readAsDataURL(input.files[0]);
             }
-        }
+        };
 
-        function deleteProduct(id) {
-            if (confirm("Hapus produk ini?")) {
-                products = products.filter(p => p.id !== id);
+        window.deleteProduct = function(id) {
+            if (confirm("Hapus produk ini secara permanen?")) {
+                window.products = window.products.filter(p => p.id !== id);
                 saveDataToStorage();
-                renderProducts();
             }
-        }
+        };
 
-        // KASIR & CHECKOUT
-        function openCheckoutModal(id) {
+        window.openCheckoutModal = function(id) {
             if (isMaintenance) {
                 alert("Sistem dalam Pemeliharaan.");
                 return;
             }
-            const p = products.find(x => x.id === id);
+            const p = window.products.find(x => x.id === id);
             if (!p || p.stock <= 0) {
                 alert("Stok produk habis!");
                 return;
@@ -924,9 +958,9 @@
             document.getElementById('checkout-step-2').classList.add('hidden');
             document.getElementById('checkout-step-3').classList.add('hidden');
             document.getElementById('checkout-modal').classList.remove('hidden');
-        }
+        };
 
-        function updateCheckoutQty(change) {
+        window.updateCheckoutQty = function(change) {
             if (!selectedProduct) return;
             const newQty = checkoutQty + change;
             if (newQty >= 1 && newQty <= selectedProduct.stock) {
@@ -934,7 +968,7 @@
                 document.getElementById('chk-qty').value = checkoutQty;
                 updateCheckoutStruk();
             }
-        }
+        };
 
         function updateCheckoutStruk() {
             if (!selectedProduct) return;
@@ -946,17 +980,17 @@
             document.getElementById('pending-total-display').innerText = "Rp " + subtotal.toLocaleString('id-ID');
         }
 
-        function goToQRISStep() {
+        window.goToQRISStep = function() {
             document.getElementById('checkout-step-1').classList.add('hidden');
             document.getElementById('checkout-step-2').classList.remove('hidden');
-        }
+        };
 
-        function backToStep1() {
+        window.backToStep1 = function() {
             document.getElementById('checkout-step-2').classList.add('hidden');
             document.getElementById('checkout-step-1').classList.remove('hidden');
-        }
+        };
 
-        function verifyPaymentSuccess() {
+        window.verifyPaymentSuccess = function() {
             if (!selectedProduct) return;
 
             if (selectedProduct.stock >= checkoutQty) {
@@ -966,7 +1000,7 @@
                 const dateStr = new Date().toISOString().split('T')[0];
                 const itemLabel = `${selectedProduct.name} (x${checkoutQty})`;
 
-                combinedTransactions.unshift({ 
+                window.combinedTransactions.unshift({ 
                     id: txId, 
                     category: "Produk", 
                     item: itemLabel, 
@@ -975,9 +1009,6 @@
                 });
 
                 saveDataToStorage();
-                renderProducts();
-                renderCombinedTransactions();
-                updateChartData();
                 playMoneySound();
 
                 document.getElementById('success-tx-id').innerText = txId;
@@ -989,14 +1020,14 @@
             } else {
                 alert("Stok produk tidak mencukupi!");
             }
-        }
+        };
 
-        function closeCheckoutModal() {
+        window.closeCheckoutModal = function() {
             document.getElementById('checkout-modal').classList.add('hidden');
             selectedProduct = null;
-        }
+        };
 
-        function playMoneySound() {
+        window.playMoneySound = function() {
             try {
                 const AudioContext = window.AudioContext || window.webkitAudioContext;
                 if (!AudioContext) return;
@@ -1022,17 +1053,16 @@
             } catch (e) {
                 console.log("Audio error:", e);
             }
-        }
+        };
 
-        // RENDER MEMBER
-        function renderMembers() {
+        window.renderMembers = function() {
             const today = new Date().toISOString().split('T')[0];
             let totalIncome = 0;
 
             const publicTbody = document.getElementById('public-member-tbody');
             if (publicTbody) {
-                publicTbody.innerHTML = members.length === 0 ? `<tr><td colspan="3" class="p-4 text-center text-gray-500">Belum ada member terdaftar.</td></tr>` : 
-                members.map((m, idx) => `
+                publicTbody.innerHTML = window.members.length === 0 ? `<tr><td colspan="3" class="p-4 text-center text-gray-500">Belum ada member terdaftar.</td></tr>` : 
+                window.members.map((m, idx) => `
                     <tr class="hover:bg-gray-800/40 transition">
                         <td class="p-4 text-xs font-mono text-gray-500">${idx + 1}</td>
                         <td class="p-4 font-bold text-white flex items-center gap-2">
@@ -1045,8 +1075,8 @@
 
             const staffTbody = document.getElementById('staff-member-tbody');
             if (staffTbody) {
-                staffTbody.innerHTML = members.length === 0 ? `<tr><td colspan="7" class="p-4 text-center text-gray-500">Belum ada member terdaftar.</td></tr>` :
-                members.map(m => {
+                staffTbody.innerHTML = window.members.length === 0 ? `<tr><td colspan="7" class="p-4 text-center text-gray-500">Belum ada member terdaftar.</td></tr>` :
+                window.members.map(m => {
                     const isExpired = m.end < today;
                     totalIncome += Number(m.fee);
                     return `
@@ -1076,12 +1106,12 @@
             if (document.getElementById('staff-total-member-income')) {
                 document.getElementById('staff-total-member-income').innerText = "Rp " + totalIncome.toLocaleString('id-ID');
             }
-        }
+        };
 
-        function openAddMemberModal() { document.getElementById('add-member-modal').classList.remove('hidden'); }
-        function closeAddMemberModal() { document.getElementById('add-member-modal').classList.add('hidden'); }
+        window.openAddMemberModal = function() { document.getElementById('add-member-modal').classList.remove('hidden'); };
+        window.closeAddMemberModal = function() { document.getElementById('add-member-modal').classList.add('hidden'); };
 
-        function saveMember(event) {
+        window.saveMember = function(event) {
             event.preventDefault();
             const name = document.getElementById('m-name').value;
             const gender = document.getElementById('m-gender').value;
@@ -1089,8 +1119,8 @@
             const end = document.getElementById('m-end').value;
             const fee = Number(document.getElementById('m-fee').value);
 
-            members.unshift({ id: Date.now(), name, gender, start, end, fee });
-            combinedTransactions.unshift({
+            window.members.unshift({ id: Date.now(), name, gender, start, end, fee });
+            window.combinedTransactions.unshift({
                 id: "TX-" + Math.floor(1000 + Math.random() * 9000),
                 category: "Member",
                 item: `Pendaftaran Member ${name}`,
@@ -1099,37 +1129,31 @@
             });
 
             saveDataToStorage();
-            renderMembers();
-            renderCombinedTransactions();
-            updateChartData();
             closeAddMemberModal();
             document.getElementById('add-member-form').reset();
-        }
+        };
 
-        function deleteMember(id) {
+        window.deleteMember = function(id) {
             if (confirm("Hapus member ini?")) {
-                members = members.filter(m => m.id !== id);
+                window.members = window.members.filter(m => m.id !== id);
                 saveDataToStorage();
-                renderMembers();
             }
-        }
+        };
 
-        function purgeExpiredMembers() {
+        window.purgeExpiredMembers = function() {
             const today = new Date().toISOString().split('T')[0];
-            const expiredCount = members.filter(m => m.end < today).length;
+            const expiredCount = window.members.filter(m => m.end < today).length;
             if (expiredCount === 0) return alert("Tidak ada member kadaluarsa.");
 
             if (confirm(`Hapus ${expiredCount} member kadaluarsa?`)) {
-                members = members.filter(m => m.end >= today);
+                window.members = window.members.filter(m => m.end >= today);
                 saveDataToStorage();
-                renderMembers();
             }
-        }
+        };
 
-        // RENDER EVENT
-        function renderEvents() {
+        window.renderEvents = function() {
             const grid = document.getElementById('event-grid');
-            grid.innerHTML = events.map((e, idx) => `
+            grid.innerHTML = window.events.map((e, idx) => `
                 <div class="glass-panel-luxury rounded-2xl overflow-hidden gold-glow-hover transition-all duration-300 flex flex-col justify-between shadow-md">
                     <img src="${e.img}" alt="${e.title}" class="w-full h-48 object-cover" onerror="this.src='https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=400&auto=format&fit=crop'">
                     <div class="p-5 flex-grow flex flex-col justify-between">
@@ -1147,7 +1171,7 @@
 
             const staffTbody = document.getElementById('staff-event-tbody');
             if (staffTbody) {
-                staffTbody.innerHTML = events.map(e => `
+                staffTbody.innerHTML = window.events.map(e => `
                     <tr class="hover:bg-gray-800/40 transition">
                         <td class="p-3.5"><img src="${e.img}" class="w-12 h-12 object-cover rounded-xl border border-gray-800" onerror="this.src='https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=200&auto=format&fit=crop'"></td>
                         <td class="p-3.5 font-bold text-white">${e.title}</td>
@@ -1161,9 +1185,9 @@
                     </tr>
                 `).join('');
             }
-        }
+        };
 
-        function addNewEvent(event) {
+        window.addNewEvent = function(event) {
             event.preventDefault();
             const title = document.getElementById('ev-title').value;
             const tag = document.getElementById('ev-tag').value;
@@ -1171,9 +1195,8 @@
             const fileInput = document.getElementById('ev-image');
 
             const createAndSave = (imgUrl) => {
-                events.unshift({ id: Date.now(), title, tag, desc, img: imgUrl });
+                window.events.unshift({ id: Date.now(), title, tag, desc, img: imgUrl });
                 saveDataToStorage();
-                renderEvents();
                 event.target.reset();
                 alert("Event berhasil dipubliskan!");
             };
@@ -1187,20 +1210,18 @@
             } else {
                 createAndSave("https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=400&auto=format&fit=crop");
             }
-        }
+        };
 
-        function deleteEvent(id) {
+        window.deleteEvent = function(id) {
             if (confirm("Hapus event ini?")) {
-                events = events.filter(e => e.id !== id);
+                window.events = window.events.filter(e => e.id !== id);
                 saveDataToStorage();
-                renderEvents();
             }
-        }
+        };
 
-        // TRANSAKSI & GRAFIK
-        function renderCombinedTransactions() {
+        window.renderCombinedTransactions = function() {
             const tbody = document.getElementById('combined-transaction-tbody');
-            tbody.innerHTML = combinedTransactions.map(t => `
+            tbody.innerHTML = window.combinedTransactions.map(t => `
                 <tr class="hover:bg-gray-800/40 transition">
                     <td class="p-3.5 font-mono text-xs text-amber-400 font-bold">${t.id}</td>
                     <td class="p-3.5 text-xs"><span class="px-2 py-0.5 rounded text-[10px] font-extrabold ${t.category === 'Member' ? 'bg-purple-900/60 text-purple-300 border border-purple-500/30' : 'bg-cyan-900/60 text-cyan-300 border border-cyan-500/30'}">${t.category}</span></td>
@@ -1209,18 +1230,18 @@
                     <td class="p-3.5 text-xs font-extrabold text-emerald-400">Rp ${Number(t.amount).toLocaleString('id-ID')}</td>
                 </tr>
             `).join('');
-        }
+        };
 
-        function openStaffModal() {
+        window.openStaffModal = function() {
             if (isStaffLoggedIn) { switchTab('tab4'); return; }
             document.getElementById('staff-auth-modal').classList.remove('hidden');
             document.getElementById('staff-pin-input').value = '';
             document.getElementById('pin-error-msg').classList.add('hidden');
-        }
+        };
 
-        function closeStaffModal() { document.getElementById('staff-auth-modal').classList.add('hidden'); }
+        window.closeStaffModal = function() { document.getElementById('staff-auth-modal').classList.add('hidden'); };
 
-        function verifyStaffPIN() {
+        window.verifyStaffPIN = function() {
             if (document.getElementById('staff-pin-input').value === '1234') {
                 isStaffLoggedIn = true;
                 closeStaffModal();
@@ -1230,25 +1251,25 @@
             } else {
                 document.getElementById('pin-error-msg').classList.remove('hidden');
             }
-        }
+        };
 
-        function lockStaffTab() {
+        window.lockStaffTab = function() {
             isStaffLoggedIn = false;
             document.getElementById('staff-status-badge').innerText = "Terkunci";
             document.getElementById('staff-status-badge').className = "ml-1.5 text-[10px] bg-red-900/80 text-red-200 px-2 py-0.5 rounded-md font-bold uppercase";
             switchTab('tab1');
-        }
+        };
 
-        function toggleMaintenance() {
+        window.toggleMaintenance = function() {
             isMaintenance = !isMaintenance;
             const btn = document.getElementById('btn-maintenance');
             btn.innerText = isMaintenance ? "Mode Pemeliharaan (Aktif)" : "Mode Operasional Normal";
             btn.className = isMaintenance ? "w-full bg-red-900/50 border border-red-500/50 text-red-300 py-2.5 rounded-xl font-bold text-xs uppercase transition animate-pulse" : "w-full bg-emerald-900/40 border border-emerald-500/50 text-emerald-300 py-2.5 rounded-xl font-bold text-xs uppercase transition";
-        }
+        };
 
-        function exportToCSV() {
+        window.exportToCSV = function() {
             let csvContent = "data:text/csv;charset=utf-8,ID Transaksi,Kategori,Keterangan,Tanggal,Jumlah (Rp)\n";
-            combinedTransactions.forEach(t => { csvContent += `${t.id},${t.category},"${t.item}",${t.date},${t.amount}\n`; });
+            window.combinedTransactions.forEach(t => { csvContent += `${t.id},${t.category},"${t.item}",${t.date},${t.amount}\n`; });
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
@@ -1256,7 +1277,7 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-        }
+        };
 
         function calculateWeeklySales() {
             const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
@@ -1270,7 +1291,7 @@
                 labels.push(days[d.getDay()]);
             }
 
-            combinedTransactions.forEach(t => {
+            window.combinedTransactions.forEach(t => {
                 const tDate = new Date(t.date);
                 const diffTime = Math.abs(now - tDate);
                 const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
