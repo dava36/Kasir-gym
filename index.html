@@ -3,13 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAUREN SPORT - Elite Gym & POS Realtime System</title>
-    
+    <title>MAUREN SPORT - Elite Gym & POS System</title>
     <!-- Google Fonts: Outfit -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
-    
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js CDN -->
@@ -17,17 +15,14 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- FIREBASE SDKs (v9 Compat untuk Stabilitas & Kecepatan Web) -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
-
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Outfit', 'sans-serif'] },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                    },
                     colors: {
                         brand: {
                             gold: '#FFD700',
@@ -54,23 +49,33 @@
             background-attachment: fixed;
             background-position: center;
         }
+
         .glass-panel-luxury {
-            background: linear-gradient(135deg, rgba(18, 22, 33, 0.85) 0%, rgba(10, 13, 20, 0.92) 100%);
+            background: linear-gradient(135deg, rgba(18, 22, 33, 0.82) 0%, rgba(10, 13, 20, 0.90) 100%);
             backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 215, 0, 0.18);
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.05);
         }
+
         .table-container-luxury {
             background: rgba(14, 18, 27, 0.7);
             backdrop-filter: blur(8px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 1rem;
         }
+
+        .glass-panel-danger {
+            background: rgba(239, 68, 68, 0.12) !important;
+            border: 1px solid rgba(239, 68, 68, 0.35) !important;
+        }
+
         .receipt-paper {
             background: #FAFAFA;
             color: #0F172A;
             font-family: 'Courier New', Courier, monospace;
         }
+
         .gold-glow-hover:hover {
             box-shadow: 0 0 25px rgba(255, 184, 0, 0.35);
             border-color: rgba(255, 184, 0, 0.6);
@@ -79,13 +84,8 @@
 </head>
 <body class="text-gray-100 font-sans antialiased min-h-screen flex flex-col justify-between selection:bg-brand-neonGold selection:text-black">
 
-    <!-- INDIKATOR STATUS KONEKSI REALTIME -->
-    <div id="sync-status" class="bg-amber-500 text-black font-extrabold text-[11px] py-1 px-4 text-center uppercase tracking-widest sticky top-0 z-50 flex items-center justify-center gap-2 transition-all">
-        <i class="fa-solid fa-wifi animate-pulse"></i> Menghubungkan ke Cloud Database Realtime...
-    </div>
-
     <!-- HEADER / NAVIGATION BAR -->
-    <header class="sticky top-6 z-40 glass-panel-luxury border-b border-amber-500/20 px-4 py-3 shadow-2xl mx-4 rounded-2xl">
+    <header class="sticky top-0 z-40 glass-panel-luxury border-b border-amber-500/20 px-4 py-3 shadow-2xl">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('tab1')">
                 <div class="h-12 px-4 bg-gradient-to-r from-gray-950 via-gray-900 to-amber-950/40 rounded-xl border border-amber-500/40 flex items-center justify-center font-black text-brand-neonGold tracking-wider shadow-lg">
@@ -111,7 +111,7 @@
     </header>
 
     <!-- MAIN CONTENT AREA -->
-    <main class="max-w-7xl mx-auto w-full p-4 flex-grow space-y-6 mt-4">
+    <main class="max-w-7xl mx-auto w-full p-4 flex-grow space-y-6">
 
         <!-- TAB 1: PRODUK & QRIS -->
         <section id="tab1" class="tab-content space-y-6">
@@ -122,9 +122,9 @@
                 <h2 class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-500 uppercase tracking-widest mb-1">Pembayaran QRIS All Payment</h2>
                 <p class="text-xs text-gray-400 mb-5 max-w-lg mx-auto">Pindai QRIS menggunakan BCA, Mandiri, GoPay, OVO, ShopeePay, Dana, & Seluruh Bank Transfer.</p>
                 <div class="inline-block bg-white p-4 rounded-2xl shadow-2xl border-4 border-amber-400 transform hover:scale-105 transition-all duration-300">
-                    <img id="main-qris-display" src="https://i.imgur.com/Rycx2er.jpeg" alt="QRIS Utama" class="w-[180px] h-[180px] object-contain rounded-lg">
+                    <img id="main-qris-display" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=MAUREN_SPORT_GYM_QRIS" alt="QRIS Utama" class="w-[180px] h-[180px] object-contain rounded-lg">
                 </div>
-                <p class="text-xs text-amber-400 mt-4 font-bold flex items-center justify-center gap-1.5"><i class="fa-solid fa-bolt text-amber-300"></i> Terhubung Sinkronisasi Cloud Realtime</p>
+                <p class="text-xs text-amber-400 mt-4 font-bold flex items-center justify-center gap-1.5"><i class="fa-solid fa-shield-halved text-amber-300"></i> Sistem Transaksi Otomatis Terverifikasi Kasir</p>
             </div>
 
             <div class="flex justify-between items-center border-b border-gray-800 pb-3">
@@ -174,20 +174,20 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="event-grid"></div>
         </section>
 
-        <!-- TAB 4: STAFF ONLY (PUSAT MANAJEMEN TERPADU) -->
+        <!-- TAB 4: STAFF ONLY -->
         <section id="tab4" class="tab-content hidden space-y-6">
             <div class="glass-panel-luxury p-8 rounded-3xl border-amber-500/20">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b border-gray-800 pb-5">
                     <div>
                         <div class="flex items-center space-x-2">
                             <span class="px-3 py-1 bg-amber-500/20 text-amber-400 font-extrabold text-[10px] rounded-md border border-amber-500/40 uppercase tracking-widest">STAFF ONLY</span>
-                            <h2 class="text-2xl font-black text-white uppercase tracking-wide">Pusat Operasional Realtime</h2>
+                            <h2 class="text-2xl font-black text-white uppercase tracking-wide">Pengaturan Kasir & Admin Panel</h2>
                         </div>
-                        <p class="text-xs text-gray-400 mt-1">Kelola Seluruh QRIS, Produk, Member, & Event dalam Sekali Klik Simpan.</p>
+                        <p class="text-xs text-gray-400 mt-1">Kelola QRIS, Produk, Member, dan Laporan Finansial.</p>
                     </div>
                     <div class="flex gap-2">
-                        <button onclick="saveAllStaffChanges()" class="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold rounded-xl text-xs uppercase tracking-wider transition shadow-lg shadow-blue-900/40 flex items-center border border-blue-400/30">
-                            <i class="fa-solid fa-cloud-arrow-up mr-2 text-base"></i> Simpan Semua Perubahan
+                        <button onclick="saveDataToStorage()" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-extrabold rounded-xl text-xs uppercase tracking-wider transition shadow-lg flex items-center border border-blue-400">
+                            <i class="fa-solid fa-floppy-disk mr-1.5"></i> Simpan Perubahan
                         </button>
                         <button onclick="exportToCSV()" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-extrabold text-xs uppercase tracking-wider transition flex items-center shadow-lg shadow-emerald-900/30">
                             <i class="fa-solid fa-file-excel mr-2"></i> Ekspor CSV
@@ -205,7 +205,7 @@
                             <h3 class="text-lg font-black text-white uppercase tracking-wide flex items-center gap-2">
                                 <i class="fa-solid fa-qrcode text-amber-400"></i> Pengaturan QRIS Pembayaran Utama
                             </h3>
-                            <p class="text-xs text-gray-400">Unggah foto QRIS Toko yang baru agar langsung aktif di seluruh HP konsumen secara instan.</p>
+                            <p class="text-xs text-gray-400">Unggah foto QRIS Toko yang baru agar langsung aktif di seluruh halaman pembayaran.</p>
                         </div>
                     </div>
                     
@@ -216,19 +216,21 @@
                         <div class="space-y-3 flex-grow w-full">
                             <label class="text-xs font-bold text-gray-300 block uppercase">Pilih Gambar QRIS Baru (HP / Laptop):</label>
                             <input type="file" id="main-qris-file" accept="image/*" class="w-full text-xs text-gray-400 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-extrabold file:bg-amber-400 file:text-black hover:file:bg-yellow-300 cursor-pointer">
-                            <p class="text-[10px] text-amber-400/80 font-bold">*Gambar akan ter-upload ke Cloud Storage dan tersimpan saat Anda menekan tombol "Simpan Semua Perubahan".</p>
+                            <button onclick="updateMainQRIS()" class="px-4 py-2 bg-amber-400 hover:bg-amber-300 text-black font-extrabold text-xs uppercase rounded-xl shadow-md">
+                                <i class="fa-solid fa-upload mr-1"></i> Terapkan Gambar QRIS Utama
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- SEKSI 2: KELOLA MANAJEMEN PRODUK TERPADU -->
+                <!-- SEKSI 2: KELOLA PRODUK (FOTO, HARGA, & STOK) -->
                 <div class="bg-gray-950/80 p-6 rounded-2xl border border-gray-800/80 mb-6 space-y-4">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-gray-800 pb-3">
                         <div>
                             <h3 class="text-lg font-black text-white uppercase tracking-wide flex items-center gap-2">
-                                <i class="fa-solid fa-boxes-packing text-amber-400"></i> Kelola Seluruh Data Produk
+                                <i class="fa-solid fa-boxes-packing text-amber-400"></i> Kelola Produk (Foto, Harga, & Stok)
                             </h3>
-                            <p class="text-xs text-gray-400">Ubah Nama, Foto, Tipe, Stok, atau Harga Produk langsung di tabel berikut.</p>
+                            <p class="text-xs text-gray-400">Ubah foto, stok, atau harga produk. Klik "Simpan Perubahan" di atas untuk memperbarui ke pembeli.</p>
                         </div>
                     </div>
 
@@ -284,7 +286,29 @@
                     </div>
                 </div>
 
-                <!-- SEKSI KELOLA MEMBER -->
+                <!-- Panel Kontrol Kas & Suara -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-gray-950/80 p-5 rounded-2xl border border-gray-800/80">
+                        <label class="text-[10px] text-gray-400 font-extrabold uppercase tracking-widest block mb-2">Simulasi Suara Kasir</label>
+                        <button onclick="playMoneySound()" class="w-full bg-amber-500/15 border border-amber-500/40 hover:bg-amber-500/30 text-amber-300 py-2.5 rounded-xl font-bold text-xs uppercase transition tracking-wider flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-coins text-amber-400"></i> Tes Suara "Chime"
+                        </button>
+                    </div>
+                    <div class="bg-gray-950/80 p-5 rounded-2xl border border-gray-800/80">
+                        <label class="text-[10px] text-gray-400 font-extrabold uppercase tracking-widest block mb-2">Reset Data Sistem</label>
+                        <button onclick="resetAllData()" class="w-full bg-red-500/15 border border-red-500/40 hover:bg-red-500/30 text-red-300 py-2.5 rounded-xl font-bold text-xs uppercase transition tracking-wider flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-rotate text-red-400"></i> Reset Data Default
+                        </button>
+                    </div>
+                    <div class="bg-gray-950/80 p-5 rounded-2xl border border-gray-800/80">
+                        <label class="text-[10px] text-gray-400 font-extrabold uppercase tracking-widest block mb-2">Status Operasional</label>
+                        <button id="btn-maintenance" onclick="toggleMaintenance()" class="w-full bg-emerald-900/40 border border-emerald-500/50 text-emerald-300 py-2.5 rounded-xl font-bold text-xs uppercase transition tracking-wider">
+                            Mode Operasional Normal
+                        </button>
+                    </div>
+                </div>
+
+                <!-- KELOLA MEMBER -->
                 <div class="bg-gray-950/80 p-6 rounded-2xl border border-gray-800/80 mb-6 space-y-4">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div>
@@ -417,10 +441,10 @@
     </main>
 
     <footer class="glass-panel-luxury border-t border-amber-500/20 py-5 px-6 text-center text-xs text-gray-500 mt-10">
-        <p class="font-semibold tracking-wider">© 2026 MAUREN SPORT ELITE GYM POS System — Cloud Realtime Sync</p>
+        <p class="font-semibold tracking-wider">© 2026 MAUREN SPORT ELITE GYM POS System — Akses Real-Time & Management System</p>
     </footer>
 
-    <!-- MODAL PEMBELIAN ALUR MARKETPLACE -->
+    <!-- MODAL PEMBELIAN ALUR (HITUNG -> STRUK -> QRIS PENDING -> SUCCESSFUL) -->
     <div id="checkout-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center hidden p-4 overflow-y-auto">
         <div class="glass-panel-luxury p-7 rounded-3xl max-w-md w-full border border-amber-500/50 shadow-2xl space-y-4 my-auto">
             
@@ -613,194 +637,155 @@
         </div>
     </div>
 
-    <!-- SCRIPT APPLICATION LOGIC WITH FIREBASE SYNCHRONIZATION -->
+    <!-- SCRIPT APPLICATION LOGIC -->
     <script>
-        // -------------------------------------------------------------
-        // 1. ISI CONFIG FIREBASE KAMU DI BAWAH INI
-        // -------------------------------------------------------------
-        const firebaseConfig = {
-            apiKey: "AIzaSyDemoKeyReplaceWithYours",
-            authDomain: "kasir-gym-demo.firebaseapp.com",
-            databaseURL: "https://kasir-gym-demo-default-rtdb.firebaseio.com",
-            projectId: "kasir-gym-demo",
-            storageBucket: "kasir-gym-demo.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "1:123456789:web:abcdef"
-        };
-
-        // Inisialisasi Firebase
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        const db = firebase.database();
-        const storage = firebase.storage();
-
-        // Application Global States
         let isStaffLoggedIn = false;
+        let isMaintenance = false;
         let selectedProduct = null;
         let checkoutQty = 1;
         let salesChartInstance = null;
 
-        let mainQRIS = "https://i.imgur.com/Rycx2er.jpeg";
+        const defaultMainQRIS = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=MAUREN_SPORT_GYM_QRIS";
+
+        const defaultProducts = [
+            { id: 1, name: "Pocari Sweat", price: 8000, stock: 18, type: "Minuman", img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=400&auto=format&fit=crop" },
+            { id: 2, name: "SUSU Indomilk", price: 5000, stock: 25, type: "Minuman", img: "https://images.unsplash.com/photo-1563636619-e9143da7973b?q=80&w=400&auto=format&fit=crop" },
+            { id: 3, name: "Mizone Isotonik", price: 5000, stock: 40, type: "Minuman", img: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?q=80&w=400&auto=format&fit=crop" },
+            { id: 4, name: "SUSU Milkku", price: 4000, stock: 15, type: "Minuman", img: "https://images.unsplash.com/photo-1550583724-b2692b85b150?q=80&w=400&auto=format&fit=crop" },
+            { id: 5, name: "Fresh Tea", price: 6000, stock: 18, type: "Minuman", img: "https://images.unsplash.com/photo-1556679343-c7306c1976bc?q=80&w=400&auto=format&fit=crop" },
+            { id: 6, name: "Floridina Jeruk", price: 4000, stock: 20, type: "Minuman", img: "https://images.unsplash.com/photo-1613478223719-2ab802602423?q=80&w=400&auto=format&fit=crop" },
+            { id: 7, name: "Teh Kotak", price: 4000, stock: 40, type: "Minuman", img: "https://images.unsplash.com/photo-1544787219-7f47ccb76574?q=80&w=400&auto=format&fit=crop" },
+            { id: 8, name: "Kopyor Jelly", price: 9000, stock: 15, type: "Minuman", img: "https://images.unsplash.com/photo-1559839914-17aae19cec71?q=80&w=400&auto=format&fit=crop" },
+            { id: 9, name: "Mineral VIT", price: 3000, stock: 50, type: "Minuman", img: "https://images.unsplash.com/photo-1548839140-29a749e1bc4e?q=80&w=400&auto=format&fit=crop" },
+            { id: 10, name: "Mineral Dus (Kardus)", price: 20000, stock: 10, type: "Minuman", img: "https://images.unsplash.com/photo-1523362628745-0c100150b504?q=80&w=400&auto=format&fit=crop" },
+            { id: 11, name: "KOK Bulu Tangkis (Satuan)", price: 12000, stock: 30, type: "Sewa Alat", img: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=400&auto=format&fit=crop" },
+            { id: 12, name: "KOK Bulu Tangkis (Slop)", price: 140000, stock: 12, type: "Sewa Alat", img: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=400&auto=format&fit=crop" }
+        ];
+
+        const defaultMembers = [
+            { id: 101, name: "Budi Santoso", gender: "Pria", start: "2026-07-01", end: "2026-08-31", fee: 350000 },
+            { id: 102, name: "Siti Rahma", gender: "Wanita", start: "2026-06-01", end: "2026-07-01", fee: 350000 },
+            { id: 103, name: "Andi Wijaya", gender: "Pria", start: "2026-07-15", end: "2026-08-15", fee: 350000 }
+        ];
+
+        const defaultEvents = [
+            { id: 1, title: "Push Pull Legs Challenge", tag: "Kompetisi", desc: "Tantangan angkatan beban terbesar bulan ini berhadiah Suplemen Gratis 1 Tahun.", img: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=400&auto=format&fit=crop" },
+            { id: 2, title: "MEMBER BULANAN", tag: "Promo", desc: "Potongan harga tarif sampai 67% LEBIH MURAH dari harga harian.", img: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=400&auto=format&fit=crop" }
+        ];
+
+        const defaultTransactions = [
+            { id: "TX-901", category: "Member", item: "Pendaftaran Member Budi Santoso", date: "2026-07-27", amount: 350000 },
+            { id: "TX-902", category: "Produk", item: "Pocari Sweat (x2)", date: "2026-07-30", amount: 16000 }
+        ];
+
+        let mainQRIS = defaultMainQRIS;
         let products = [];
         let members = [];
         let events = [];
         let combinedTransactions = [];
 
-        // Temporary Files Buffer (Pending Uploads)
-        let pendingMainQRISFile = null;
-        let pendingProductImageFiles = {};
-
-        // Data Default Bawaan Sistem jika DB Kosong
-        const defaultProducts = [
-            { id: 101, name: "Pocari Sweat", price: 8000, stock: 18, type: "Minuman", img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=400&auto=format&fit=crop" },
-            { id: 102, name: "SUSU Indomilk", price: 5000, stock: 25, type: "Minuman", img: "https://images.unsplash.com/photo-1563636619-e9143da7973b?q=80&w=400&auto=format&fit=crop" },
-            { id: 103, name: "Mizone Isotonik", price: 5000, stock: 40, type: "Minuman", img: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?q=80&w=400&auto=format&fit=crop" },
-            { id: 104, name: "SUSU Milkku", price: 4000, stock: 15, type: "Minuman", img: "https://images.unsplash.com/photo-1550583724-b2692b85b150?q=80&w=400&auto=format&fit=crop" }
-        ];
-
-        // -------------------------------------------------------------
-        // 2. REALTIME CLOUD DATABASE LISTENERS
-        // -------------------------------------------------------------
         document.addEventListener("DOMContentLoaded", () => {
-            initRealtimeSync();
+            loadDataFromStorage();
+            renderMainQRIS();
+            renderProducts();
+            renderMembers();
+            renderEvents();
+            renderCombinedTransactions();
             initChart();
 
             const today = new Date().toISOString().split('T')[0];
             const nextMonth = new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0];
             if (document.getElementById('m-start')) document.getElementById('m-start').value = today;
             if (document.getElementById('m-end')) document.getElementById('m-end').value = nextMonth;
-
-            // Handle Input QRIS Utama
-            document.getElementById('main-qris-file').addEventListener('change', (e) => {
-                if (e.target.files && e.target.files[0]) {
-                    pendingMainQRISFile = e.target.files[0];
-                    const reader = new FileReader();
-                    reader.onload = (evt) => {
-                        document.getElementById('staff-qris-preview').src = evt.target.result;
-                    };
-                    reader.readAsDataURL(pendingMainQRISFile);
-                }
-            });
         });
 
-        function initRealtimeSync() {
-            const statusBanner = document.getElementById('sync-status');
+        // PERSISTENSI LOCAL STORAGE
+        function saveDataToStorage() {
+            try {
+                localStorage.setItem('mauren_main_qris', mainQRIS);
+                localStorage.setItem('mauren_products', JSON.stringify(products));
+                localStorage.setItem('mauren_members', JSON.stringify(members));
+                localStorage.setItem('mauren_events', JSON.stringify(events));
+                localStorage.setItem('mauren_transactions', JSON.stringify(combinedTransactions));
+                alert("Seluruh perubahan berhasil disimpan!");
+            } catch (e) {
+                alert("Gagal menyimpan data: " + e.message);
+            }
+        }
 
-            // Deteksi Koneksi Firebase
-            db.ref('.info/connected').on('value', (snap) => {
-                if (snap.val() === true) {
-                    statusBanner.className = "bg-emerald-500 text-black font-extrabold text-[11px] py-1 px-4 text-center uppercase tracking-widest sticky top-0 z-50 flex items-center justify-center gap-2";
-                    statusBanner.innerHTML = `<i class="fa-solid fa-cloud"></i> Terhubung ke Cloud Database (Real-Time Synchronized)`;
-                } else {
-                    statusBanner.className = "bg-amber-500 text-black font-extrabold text-[11px] py-1 px-4 text-center uppercase tracking-widest sticky top-0 z-50 flex items-center justify-center gap-2";
-                    statusBanner.innerHTML = `<i class="fa-solid fa-wifi animate-pulse"></i> Menghubungkan ke Cloud Database...`;
-                }
-            });
+        function loadDataFromStorage() {
+            const savedQRIS = localStorage.getItem('mauren_main_qris');
+            const savedProducts = localStorage.getItem('mauren_products');
+            const savedMembers = localStorage.getItem('mauren_members');
+            const savedEvents = localStorage.getItem('mauren_events');
+            const savedTx = localStorage.getItem('mauren_transactions');
 
-            // Sync QRIS Utama
-            db.ref('mainQRIS').on('value', (snap) => {
-                if (snap.exists()) {
-                    mainQRIS = snap.val();
-                    renderMainQRIS();
-                } else {
-                    db.ref('mainQRIS').set(mainQRIS);
-                }
-            });
+            mainQRIS = savedQRIS || defaultMainQRIS;
+            products = savedProducts ? JSON.parse(savedProducts) : JSON.parse(JSON.stringify(defaultProducts));
+            members = savedMembers ? JSON.parse(savedMembers) : JSON.parse(JSON.stringify(defaultMembers));
+            events = savedEvents ? JSON.parse(savedEvents) : JSON.parse(JSON.stringify(defaultEvents));
+            combinedTransactions = savedTx ? JSON.parse(savedTx) : JSON.parse(JSON.stringify(defaultTransactions));
+        }
 
-            // Sync Produk
-            db.ref('products').on('value', (snap) => {
-                if (snap.exists()) {
-                    const data = snap.val();
-                    products = Array.isArray(data) ? data : Object.values(data);
-                } else {
-                    products = defaultProducts;
-                    db.ref('products').set(products);
-                }
+        function resetAllData() {
+            if (confirm("Apakah Anda yakin ingin MERESET SELURUH DATA kembali ke pengaturan awal?")) {
+                localStorage.clear();
+                loadDataFromStorage();
+                renderMainQRIS();
                 renderProducts();
-            });
-
-            // Sync Members
-            db.ref('members').on('value', (snap) => {
-                members = snap.exists() ? (Array.isArray(snap.val()) ? snap.val() : Object.values(snap.val())) : [];
                 renderMembers();
-            });
-
-            // Sync Events
-            db.ref('events').on('value', (snap) => {
-                events = snap.exists() ? (Array.isArray(snap.val()) ? snap.val() : Object.values(snap.val())) : [];
                 renderEvents();
-            });
-
-            // Sync Transaksi
-            db.ref('transactions').on('value', (snap) => {
-                combinedTransactions = snap.exists() ? (Array.isArray(snap.val()) ? snap.val() : Object.values(snap.val())) : [];
                 renderCombinedTransactions();
                 updateChartData();
-            });
-        }
-
-        // -------------------------------------------------------------
-        // 3. UPLOAD FILE KE FIREBASE STORAGE (PROSES ATOMIK)
-        // -------------------------------------------------------------
-        async function uploadFileToStorage(file, folderPath) {
-            try {
-                const fileRef = storage.ref(`${folderPath}/${Date.now()}_${file.name}`);
-                const snapshot = await fileRef.put(file);
-                const downloadURL = await snapshot.ref.getDownloadURL();
-                return downloadURL;
-            } catch (error) {
-                console.error("Upload storage error:", error);
-                throw error;
+                alert("Seluruh data berhasil di-reset ke awal!");
             }
         }
 
-        // AKSI SIMPAN SELURUH PERUBAHAN OLEH STAFF (Satu Proses Terpadu)
-        async function saveAllStaffChanges() {
-            const saveBtn = document.querySelector('button[onclick="saveAllStaffChanges()"]');
-            const originalHTML = saveBtn.innerHTML;
-            
-            try {
-                saveBtn.disabled = true;
-                saveBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Menyimpan ke Cloud...`;
-
-                // 1. Upload QRIS Utama jika ada
-                if (pendingMainQRISFile) {
-                    mainQRIS = await uploadFileToStorage(pendingMainQRISFile, 'qris');
-                    await db.ref('mainQRIS').set(mainQRIS);
-                    pendingMainQRISFile = null;
-                }
-
-                // 2. Upload Foto Produk yang diubah jika ada
-                for (let prodId in pendingProductImageFiles) {
-                    const file = pendingProductImageFiles[prodId];
-                    const url = await uploadFileToStorage(file, 'products');
-                    const prod = products.find(p => p.id == prodId);
-                    if (prod) prod.img = url;
-                }
-                pendingProductImageFiles = {};
-
-                // 3. Simpan Seluruh Produk ke Realtime Database
-                await db.ref('products').set(products);
-
-                alert("SELESAI! Seluruh perubahan berhasil disimpan dan telah tersinkronisasi ke seluruh perangkat!");
-            } catch (err) {
-                alert("Gagal menyimpan perubahan: " + err.message);
-            } finally {
-                saveBtn.disabled = false;
-                saveBtn.innerHTML = originalHTML;
-            }
-        }
-
-        // -------------------------------------------------------------
-        // 4. RENDER & LOGIKA TAMPILAN
-        // -------------------------------------------------------------
+        // PENGATURAN QRIS UTAMA
         function renderMainQRIS() {
             document.getElementById('main-qris-display').src = mainQRIS;
             document.getElementById('qris-checkout-img').src = mainQRIS;
             document.getElementById('staff-qris-preview').src = mainQRIS;
         }
 
+        function updateMainQRIS() {
+            const fileInput = document.getElementById('main-qris-file');
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    mainQRIS = e.target.result;
+                    renderMainQRIS();
+                    saveDataToStorage();
+                    alert("Gambar QRIS Utama Berhasil Diperbarui!");
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                alert("Pilih file gambar QRIS terlebih dahulu!");
+            }
+        }
+
+        // TAB NAVIGATION
+        function switchTab(tabId) {
+            if (tabId === 'tab4' && !isStaffLoggedIn) {
+                openStaffModal();
+                return;
+            }
+
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-gradient-to-r', 'from-amber-400', 'to-amber-500', 'text-black', 'shadow-lg');
+                btn.classList.add('text-gray-300');
+            });
+
+            document.getElementById(tabId).classList.remove('hidden');
+            const activeNav = document.getElementById(`nav-${tabId}`);
+            if (tabId !== 'tab4') {
+                activeNav.classList.add('bg-gradient-to-r', 'from-amber-400', 'to-amber-500', 'text-black', 'shadow-lg');
+                activeNav.classList.remove('text-gray-300');
+            }
+        }
+
+        // RENDER PRODUK (USER & STAFF PANEL)
         function renderProducts() {
             const grid = document.getElementById('product-grid');
             grid.innerHTML = products.map(p => `
@@ -810,14 +795,12 @@
                         <div>
                             <span class="text-[9px] font-extrabold uppercase tracking-widest text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-md border border-amber-500/20">${p.type}</span>
                             <h4 class="font-extrabold text-white mt-2 leading-snug text-base">${p.name}</h4>
-                            <p class="text-xs ${p.stock > 0 ? 'text-gray-400' : 'text-red-400 font-bold'} mt-1">
-                                ${p.stock > 0 ? 'Stok: ' + p.stock + ' unit' : 'STOK HABIS'}
-                            </p>
+                            <p class="text-xs text-gray-400 mt-1">Stok: ${p.stock} unit</p>
                         </div>
                         <div>
                             <div class="text-lg font-black text-emerald-400 mb-2">Rp ${Number(p.price).toLocaleString('id-ID')}</div>
-                            <button onclick="openCheckoutModal(${p.id})" ${p.stock <= 0 ? 'disabled' : ''} class="w-full py-2.5 ${p.stock > 0 ? 'bg-amber-400 hover:bg-amber-300 text-black' : 'bg-gray-800 text-gray-500 cursor-not-allowed'} font-extrabold rounded-xl text-xs uppercase tracking-wider transition shadow-md flex items-center justify-center gap-1.5">
-                                <i class="fa-solid fa-cart-shopping"></i> ${p.stock > 0 ? 'Beli via QRIS' : 'Stok Habis'}
+                            <button onclick="openCheckoutModal(${p.id})" class="w-full py-2.5 bg-amber-400 hover:bg-amber-300 text-black font-extrabold rounded-xl text-xs uppercase tracking-wider transition shadow-md flex items-center justify-center gap-1.5">
+                                <i class="fa-solid fa-cart-shopping"></i> Beli via QRIS
                             </button>
                         </div>
                     </div>
@@ -826,30 +809,21 @@
 
             const staffProductTbody = document.getElementById('staff-product-tbody');
             if (staffProductTbody) {
-                staffProductTbody.innerHTML = products.map(p => `
+                staffProductTbody.innerHTML = products.map((p, idx) => `
                     <tr class="hover:bg-gray-800/40 transition">
                         <td class="p-3">
                             <div class="relative group w-12 h-12">
-                                <img src="${p.img}" id="preview-prod-img-${p.id}" class="w-12 h-12 object-cover rounded-xl border border-gray-800" onerror="this.src='https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=200&auto=format&fit=crop'">
-                                <input type="file" accept="image/*" onchange="stageProductImage(${p.id}, this)" class="absolute inset-0 opacity-0 cursor-pointer" title="Klik untuk ubah foto">
+                                <img src="${p.img}" class="w-12 h-12 object-cover rounded-xl border border-gray-800" onerror="this.src='https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=200&auto=format&fit=crop'">
+                                <input type="file" accept="image/*" onchange="updateProductImage(${p.id}, this)" class="absolute inset-0 opacity-0 cursor-pointer" title="Klik untuk ubah foto">
                             </div>
                         </td>
+                        <td class="p-3 font-bold text-white">${p.name}</td>
+                        <td class="p-3 text-xs"><span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 font-bold">${p.type}</span></td>
                         <td class="p-3">
-                            <input type="text" value="${p.name}" onchange="updateProductField(${p.id}, 'name', this.value)" class="px-2 py-1 bg-gray-950 border border-gray-800 rounded-lg text-xs font-bold text-white focus:outline-none focus:border-amber-400 w-full">
+                            <input type="number" value="${p.price}" onchange="updateProductPrice(${p.id}, this.value)" class="w-24 px-2 py-1 bg-gray-950 border border-gray-800 rounded-lg text-xs font-bold text-emerald-400 focus:outline-none focus:border-amber-400">
                         </td>
                         <td class="p-3">
-                            <select onchange="updateProductField(${p.id}, 'type', this.value)" class="px-2 py-1 bg-gray-950 border border-gray-800 rounded-lg text-xs font-bold text-amber-400 focus:outline-none focus:border-amber-400">
-                                <option value="Minuman" ${p.type === 'Minuman' ? 'selected' : ''}>Minuman</option>
-                                <option value="Camilan" ${p.type === 'Camilan' ? 'selected' : ''}>Camilan</option>
-                                <option value="Sewa Alat" ${p.type === 'Sewa Alat' ? 'selected' : ''}>Sewa Alat</option>
-                                <option value="Suplemen" ${p.type === 'Suplemen' ? 'selected' : ''}>Suplemen</option>
-                            </select>
-                        </td>
-                        <td class="p-3">
-                            <input type="number" value="${p.price}" onchange="updateProductField(${p.id}, 'price', Number(this.value))" class="w-24 px-2 py-1 bg-gray-950 border border-gray-800 rounded-lg text-xs font-bold text-emerald-400 focus:outline-none focus:border-amber-400">
-                        </td>
-                        <td class="p-3">
-                            <input type="number" value="${p.stock}" onchange="updateProductField(${p.id}, 'stock', Number(this.value))" class="w-16 px-2 py-1 bg-gray-950 border border-gray-800 rounded-lg text-xs font-bold text-amber-300 focus:outline-none focus:border-amber-400">
+                            <input type="number" value="${p.stock}" onchange="updateProductStock(${p.id}, this.value)" class="w-16 px-2 py-1 bg-gray-950 border border-gray-800 rounded-lg text-xs font-bold text-amber-300 focus:outline-none focus:border-amber-400">
                         </td>
                         <td class="p-3 text-center">
                             <button onclick="deleteProduct(${p.id})" class="p-1.5 bg-red-800/60 hover:bg-red-600 text-white rounded-lg transition text-xs">
@@ -861,26 +835,8 @@
             }
         }
 
-        function updateProductField(id, field, value) {
-            const p = products.find(x => x.id === id);
-            if (p) {
-                p[field] = value;
-            }
-        }
-
-        function stageProductImage(id, input) {
-            if (input.files && input.files[0]) {
-                const file = input.files[0];
-                pendingProductImageFiles[id] = file;
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    document.getElementById(`preview-prod-img-${id}`).src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        async function addNewProduct(event) {
+        // AKSI EDISI PRODUK STAFF
+        function addNewProduct(event) {
             event.preventDefault();
             const name = document.getElementById('np-name').value;
             const price = Number(document.getElementById('np-price').value);
@@ -888,28 +844,65 @@
             const type = document.getElementById('np-type').value;
             const fileInput = document.getElementById('np-image');
 
-            let imgUrl = "https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=400&auto=format&fit=crop";
+            const saveProd = (imgUrl) => {
+                products.unshift({ id: Date.now(), name, price, stock, type, img: imgUrl });
+                saveDataToStorage();
+                renderProducts();
+                event.target.reset();
+                alert("Produk baru berhasil ditambahkan!");
+            };
+
             if (fileInput.files && fileInput.files[0]) {
-                imgUrl = await uploadFileToStorage(fileInput.files[0], 'products');
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    saveProd(e.target.result);
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                saveProd("https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=400&auto=format&fit=crop");
             }
-
-            const newProd = { id: Date.now(), name, price, stock, type, img: imgUrl };
-            products.unshift(newProd);
-            await db.ref('products').set(products);
-            
-            event.target.reset();
-            alert("Produk baru berhasil dipublikasikan secara langsung!");
         }
 
-        async function deleteProduct(id) {
-            if (confirm("Hapus produk ini dari database?")) {
+        function updateProductPrice(id, val) {
+            const p = products.find(x => x.id === id);
+            if (p) { p.price = Number(val); renderProducts(); }
+        }
+
+        function updateProductStock(id, val) {
+            const p = products.find(x => x.id === id);
+            if (p) { p.stock = Number(val); renderProducts(); }
+        }
+
+        function updateProductImage(id, input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const p = products.find(x => x.id === id);
+                    if (p) {
+                        p.img = e.target.result;
+                        saveDataToStorage();
+                        renderProducts();
+                        alert("Foto produk berhasil diubah!");
+                    }
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function deleteProduct(id) {
+            if (confirm("Hapus produk ini?")) {
                 products = products.filter(p => p.id !== id);
-                await db.ref('products').set(products);
+                saveDataToStorage();
+                renderProducts();
             }
         }
 
-        // CHECKOUT & ATOMIC STOCK TRANSACTION
+        // KASIR & CHECKOUT
         function openCheckoutModal(id) {
+            if (isMaintenance) {
+                alert("Sistem dalam Pemeliharaan.");
+                return;
+            }
             const p = products.find(x => x.id === id);
             if (!p || p.stock <= 0) {
                 alert("Stok produk habis!");
@@ -922,7 +915,7 @@
             document.getElementById('chk-img').src = p.img;
             document.getElementById('chk-title').innerText = p.name;
             document.getElementById('chk-type').innerText = p.type;
-            document.getElementById('chk-stock').innerText = `Stok Tersedia: ${p.stock} unit`;
+            document.getElementById('chk-stock').innerText = `Stok: ${p.stock} unit`;
             document.getElementById('chk-qty').value = checkoutQty;
 
             updateCheckoutStruk();
@@ -963,40 +956,38 @@
             document.getElementById('checkout-step-1').classList.remove('hidden');
         }
 
-        async function verifyPaymentSuccess() {
+        function verifyPaymentSuccess() {
             if (!selectedProduct) return;
 
-            // Pengurangan Stok Transaksional Realtime
-            const prodRef = db.ref('products');
-            
-            try {
-                const targetProd = products.find(p => p.id === selectedProduct.id);
-                if (targetProd && targetProd.stock >= checkoutQty) {
-                    targetProd.stock -= checkoutQty;
-                    await prodRef.set(products);
+            if (selectedProduct.stock >= checkoutQty) {
+                selectedProduct.stock -= checkoutQty;
+                const totalAmount = selectedProduct.price * checkoutQty;
+                const txId = "TX-" + Math.floor(1000 + Math.random() * 9000);
+                const dateStr = new Date().toISOString().split('T')[0];
+                const itemLabel = `${selectedProduct.name} (x${checkoutQty})`;
 
-                    const totalAmount = selectedProduct.price * checkoutQty;
-                    const txId = "TX-" + Math.floor(1000 + Math.random() * 9000);
-                    const dateStr = new Date().toISOString().split('T')[0];
-                    const itemLabel = `${selectedProduct.name} (x${checkoutQty})`;
+                combinedTransactions.unshift({ 
+                    id: txId, 
+                    category: "Produk", 
+                    item: itemLabel, 
+                    date: dateStr, 
+                    amount: totalAmount 
+                });
 
-                    combinedTransactions.unshift({ id: txId, category: "Produk", item: itemLabel, date: dateStr, amount: totalAmount });
-                    await db.ref('transactions').set(combinedTransactions);
+                saveDataToStorage();
+                renderProducts();
+                renderCombinedTransactions();
+                updateChartData();
+                playMoneySound();
 
-                    playMoneySound();
+                document.getElementById('success-tx-id').innerText = txId;
+                document.getElementById('success-item-desc').innerText = itemLabel;
+                document.getElementById('success-total-amount').innerText = "Rp " + totalAmount.toLocaleString('id-ID');
 
-                    document.getElementById('success-tx-id').innerText = txId;
-                    document.getElementById('success-item-desc').innerText = itemLabel;
-                    document.getElementById('success-total-amount').innerText = "Rp " + totalAmount.toLocaleString('id-ID');
-
-                    document.getElementById('checkout-step-2').classList.add('hidden');
-                    document.getElementById('checkout-step-3').classList.remove('hidden');
-                } else {
-                    alert("Maaf, stok baru saja habis dibeli pengguna lain!");
-                    closeCheckoutModal();
-                }
-            } catch (err) {
-                alert("Gagal memproses transaksi: " + err.message);
+                document.getElementById('checkout-step-2').classList.add('hidden');
+                document.getElementById('checkout-step-3').classList.remove('hidden');
+            } else {
+                alert("Stok produk tidak mencukupi!");
             }
         }
 
@@ -1005,7 +996,35 @@
             selectedProduct = null;
         }
 
-        // MEMBER & EVENT LOGIC
+        function playMoneySound() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
+
+                const tones = [987.77, 1318.51, 1758.40, 2637.02]; 
+                tones.forEach((freq, index) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, ctx.currentTime + index * 0.08);
+
+                    gain.gain.setValueAtTime(0.2, ctx.currentTime + index * 0.08);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + index * 0.08 + 0.3);
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    osc.start(ctx.currentTime + index * 0.08);
+                    osc.stop(ctx.currentTime + index * 0.08 + 0.3);
+                });
+            } catch (e) {
+                console.log("Audio error:", e);
+            }
+        }
+
+        // RENDER MEMBER
         function renderMembers() {
             const today = new Date().toISOString().split('T')[0];
             let totalIncome = 0;
@@ -1016,7 +1035,9 @@
                 members.map((m, idx) => `
                     <tr class="hover:bg-gray-800/40 transition">
                         <td class="p-4 text-xs font-mono text-gray-500">${idx + 1}</td>
-                        <td class="p-4 font-bold text-white flex items-center gap-2"><i class="fa-solid fa-user-circle text-amber-400"></i> ${m.name}</td>
+                        <td class="p-4 font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-user-circle text-amber-400"></i> ${m.name}
+                        </td>
                         <td class="p-4 text-xs font-medium text-gray-300">${m.gender}</td>
                     </tr>
                 `).join('');
@@ -1029,18 +1050,29 @@
                     const isExpired = m.end < today;
                     totalIncome += Number(m.fee);
                     return `
-                        <tr class="${isExpired ? 'bg-red-950/20' : 'hover:bg-gray-800/50'} transition">
-                            <td class="p-3.5 font-bold text-white flex items-center gap-2"><i class="fa-solid fa-user-circle text-amber-400"></i> ${m.name}</td>
+                        <tr class="${isExpired ? 'glass-panel-danger' : 'hover:bg-gray-800/50'} transition">
+                            <td class="p-3.5 font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-user-circle text-amber-400"></i> ${m.name}
+                            </td>
                             <td class="p-3.5 text-xs">${m.gender}</td>
                             <td class="p-3.5 text-xs text-gray-400">${m.start}</td>
                             <td class="p-3.5 text-xs font-semibold ${isExpired ? 'text-red-400' : 'text-emerald-400'}">${m.end}</td>
                             <td class="p-3.5 text-xs font-bold text-emerald-400">Rp ${Number(m.fee).toLocaleString('id-ID')}</td>
-                            <td class="p-3.5">${isExpired ? '<span class="px-2 py-0.5 text-[10px] font-black uppercase bg-red-900/80 text-red-200 rounded border border-red-500/50">Kadaluarsa</span>' : '<span class="px-2 py-0.5 text-[10px] font-black uppercase bg-emerald-900/80 text-emerald-200 rounded border border-emerald-500/50">Aktif</span>'}</td>
-                            <td class="p-3.5 text-center"><button onclick="deleteMember(${m.id})" class="p-1.5 bg-red-800/60 hover:bg-red-600 text-white rounded-lg text-xs"><i class="fa-solid fa-trash"></i></button></td>
+                            <td class="p-3.5">
+                                ${isExpired 
+                                    ? '<span class="px-2 py-0.5 text-[10px] font-black uppercase bg-red-900/80 text-red-200 rounded border border-red-500/50"><i class="fa-solid fa-circle-xmark mr-1"></i> Kadaluarsa</span>' 
+                                    : '<span class="px-2 py-0.5 text-[10px] font-black uppercase bg-emerald-900/80 text-emerald-200 rounded border border-emerald-500/50"><i class="fa-solid fa-circle-check mr-1"></i> Aktif</span>'}
+                            </td>
+                            <td class="p-3.5 text-center">
+                                <button onclick="deleteMember(${m.id})" class="p-1.5 bg-red-800/60 hover:bg-red-600 text-white rounded-lg transition text-xs">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
                         </tr>
                     `;
                 }).join('');
             }
+
             if (document.getElementById('staff-total-member-income')) {
                 document.getElementById('staff-total-member-income').innerText = "Rp " + totalIncome.toLocaleString('id-ID');
             }
@@ -1049,7 +1081,7 @@
         function openAddMemberModal() { document.getElementById('add-member-modal').classList.remove('hidden'); }
         function closeAddMemberModal() { document.getElementById('add-member-modal').classList.add('hidden'); }
 
-        async function saveMember(event) {
+        function saveMember(event) {
             event.preventDefault();
             const name = document.getElementById('m-name').value;
             const gender = document.getElementById('m-gender').value;
@@ -1058,33 +1090,43 @@
             const fee = Number(document.getElementById('m-fee').value);
 
             members.unshift({ id: Date.now(), name, gender, start, end, fee });
-            combinedTransactions.unshift({ id: "TX-" + Math.floor(1000 + Math.random() * 9000), category: "Member", item: `Pendaftaran Member ${name}`, date: start, amount: fee });
+            combinedTransactions.unshift({
+                id: "TX-" + Math.floor(1000 + Math.random() * 9000),
+                category: "Member",
+                item: `Pendaftaran Member ${name}`,
+                date: start,
+                amount: fee
+            });
 
-            await db.ref('members').set(members);
-            await db.ref('transactions').set(combinedTransactions);
-
+            saveDataToStorage();
+            renderMembers();
+            renderCombinedTransactions();
+            updateChartData();
             closeAddMemberModal();
             document.getElementById('add-member-form').reset();
         }
 
-        async function deleteMember(id) {
+        function deleteMember(id) {
             if (confirm("Hapus member ini?")) {
                 members = members.filter(m => m.id !== id);
-                await db.ref('members').set(members);
+                saveDataToStorage();
+                renderMembers();
             }
         }
 
-        async function purgeExpiredMembers() {
+        function purgeExpiredMembers() {
             const today = new Date().toISOString().split('T')[0];
             const expiredCount = members.filter(m => m.end < today).length;
             if (expiredCount === 0) return alert("Tidak ada member kadaluarsa.");
 
             if (confirm(`Hapus ${expiredCount} member kadaluarsa?`)) {
                 members = members.filter(m => m.end >= today);
-                await db.ref('members').set(members);
+                saveDataToStorage();
+                renderMembers();
             }
         }
 
+        // RENDER EVENT
         function renderEvents() {
             const grid = document.getElementById('event-grid');
             grid.innerHTML = events.map((e, idx) => `
@@ -1111,38 +1153,51 @@
                         <td class="p-3.5 font-bold text-white">${e.title}</td>
                         <td class="p-3.5 text-xs"><span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold">${e.tag}</span></td>
                         <td class="p-3.5 text-xs text-gray-400">${e.desc}</td>
-                        <td class="p-3.5 text-center"><button onclick="deleteEvent(${e.id})" class="p-1.5 bg-red-800/60 hover:bg-red-600 text-white rounded-lg text-xs"><i class="fa-solid fa-trash"></i></button></td>
+                        <td class="p-3.5 text-center">
+                            <button onclick="deleteEvent(${e.id})" class="p-1.5 bg-red-800/60 hover:bg-red-600 text-white rounded-lg text-xs">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
                     </tr>
                 `).join('');
             }
         }
 
-        async function addNewEvent(event) {
+        function addNewEvent(event) {
             event.preventDefault();
             const title = document.getElementById('ev-title').value;
             const tag = document.getElementById('ev-tag').value;
             const desc = document.getElementById('ev-desc').value;
             const fileInput = document.getElementById('ev-image');
 
-            let imgUrl = "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=400&auto=format&fit=crop";
-            if (fileInput.files && fileInput.files[0]) {
-                imgUrl = await uploadFileToStorage(fileInput.files[0], 'events');
-            }
+            const createAndSave = (imgUrl) => {
+                events.unshift({ id: Date.now(), title, tag, desc, img: imgUrl });
+                saveDataToStorage();
+                renderEvents();
+                event.target.reset();
+                alert("Event berhasil dipubliskan!");
+            };
 
-            events.unshift({ id: Date.now(), title, tag, desc, img: imgUrl });
-            await db.ref('events').set(events);
-            
-            event.target.reset();
-            alert("Event berhasil dipublikasikan!");
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    createAndSave(e.target.result);
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                createAndSave("https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=400&auto=format&fit=crop");
+            }
         }
 
-        async function deleteEvent(id) {
+        function deleteEvent(id) {
             if (confirm("Hapus event ini?")) {
                 events = events.filter(e => e.id !== id);
-                await db.ref('events').set(events);
+                saveDataToStorage();
+                renderEvents();
             }
         }
 
+        // TRANSAKSI & GRAFIK
         function renderCombinedTransactions() {
             const tbody = document.getElementById('combined-transaction-tbody');
             tbody.innerHTML = combinedTransactions.map(t => `
@@ -1154,22 +1209,6 @@
                     <td class="p-3.5 text-xs font-extrabold text-emerald-400">Rp ${Number(t.amount).toLocaleString('id-ID')}</td>
                 </tr>
             `).join('');
-        }
-
-        // SYSTEM UTILITIES
-        function switchTab(tabId) {
-            if (tabId === 'tab4' && !isStaffLoggedIn) { openStaffModal(); return; }
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('bg-gradient-to-r', 'from-amber-400', 'to-amber-500', 'text-black', 'shadow-lg');
-                btn.classList.add('text-gray-300');
-            });
-            document.getElementById(tabId).classList.remove('hidden');
-            const activeNav = document.getElementById(`nav-${tabId}`);
-            if (tabId !== 'tab4') {
-                activeNav.classList.add('bg-gradient-to-r', 'from-amber-400', 'to-amber-500', 'text-black', 'shadow-lg');
-                activeNav.classList.remove('text-gray-300');
-            }
         }
 
         function openStaffModal() {
@@ -1200,6 +1239,13 @@
             switchTab('tab1');
         }
 
+        function toggleMaintenance() {
+            isMaintenance = !isMaintenance;
+            const btn = document.getElementById('btn-maintenance');
+            btn.innerText = isMaintenance ? "Mode Pemeliharaan (Aktif)" : "Mode Operasional Normal";
+            btn.className = isMaintenance ? "w-full bg-red-900/50 border border-red-500/50 text-red-300 py-2.5 rounded-xl font-bold text-xs uppercase transition animate-pulse" : "w-full bg-emerald-900/40 border border-emerald-500/50 text-emerald-300 py-2.5 rounded-xl font-bold text-xs uppercase transition";
+        }
+
         function exportToCSV() {
             let csvContent = "data:text/csv;charset=utf-8,ID Transaksi,Kategori,Keterangan,Tanggal,Jumlah (Rp)\n";
             combinedTransactions.forEach(t => { csvContent += `${t.id},${t.category},"${t.item}",${t.date},${t.amount}\n`; });
@@ -1210,27 +1256,6 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-        }
-
-        function playMoneySound() {
-            try {
-                const AudioContext = window.AudioContext || window.webkitAudioContext;
-                if (!AudioContext) return;
-                const ctx = new AudioContext();
-                const tones = [987.77, 1318.51, 1758.40, 2637.02]; 
-                tones.forEach((freq, index) => {
-                    const osc = ctx.createOscillator();
-                    const gain = ctx.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(freq, ctx.currentTime + index * 0.08);
-                    gain.gain.setValueAtTime(0.2, ctx.currentTime + index * 0.08);
-                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + index * 0.08 + 0.3);
-                    osc.connect(gain);
-                    gain.connect(ctx.destination);
-                    osc.start(ctx.currentTime + index * 0.08);
-                    osc.stop(ctx.currentTime + index * 0.08 + 0.3);
-                });
-            } catch (e) {}
         }
 
         function calculateWeeklySales() {
