@@ -1,122 +1,145 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mauren Sport - Owner Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
-    </style>
-</head>
-<body class="flex h-screen overflow-hidden">
+Saya ingin membangun sebuah **platform website manajemen bisnis** yang berfungsi sebagai sistem operasional utama untuk usaha saya. Platform ini tidak hanya berperan sebagai aplikasi kasir (POS), tetapi juga sebagai sistem pembukuan keuangan, manajemen stok, analisis bisnis, dan monitoring usaha secara **real-time**.
 
-    <!-- Sidebar -->
-    <aside class="w-64 bg-gray-900 text-white flex flex-col">
-        <div class="h-16 flex items-center justify-center border-b border-gray-800">
-            <h1 class="text-2xl font-bold text-blue-500">Mauren<span class="text-white">Sport</span></h1>
-        </div>
-        <nav class="flex-1 px-4 py-6 space-y-2">
-            <a href="#" class="flex items-center gap-3 px-4 py-3 bg-blue-600 rounded-lg text-white"><i class="fas fa-home"></i> Dashboard</a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-gray-800 hover:text-white rounded-lg"><i class="fas fa-cash-register"></i> Kasir (POS)</a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-gray-800 hover:text-white rounded-lg"><i class="fas fa-chart-line"></i> Laba / Rugi</a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-gray-800 hover:text-white rounded-lg"><i class="fas fa-boxes"></i> Stok & Cafe</a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-gray-800 hover:text-white rounded-lg"><i class="fas fa-dumbbell"></i> Aset & Penyusutan</a>
-        </nav>
-        <div class="p-4 border-t border-gray-800">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center"><i class="fas fa-user"></i></div>
-                <div>
-                    <p class="text-sm font-semibold">Owner (Admin)</p>
-                    <p class="text-xs text-green-400">Live Status: Online</p>
-                </div>
-            </div>
-        </div>
-    </aside>
+## Latar Belakang
 
-    <!-- Main Content -->
-    <main class="flex-1 flex flex-col overflow-y-auto">
-        <!-- Header -->
-        <header class="h-16 bg-white shadow-sm flex items-center justify-between px-8">
-            <h2 class="text-xl font-semibold text-gray-800">Live Overview</h2>
-            <button class="bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-600">Logout</button>
-        </header>
+Saya memiliki bisnis pusat kebugaran bernama **Mauren Sport** yang memiliki beberapa sumber pendapatan, antara lain:
 
-        <!-- Dashboard Widgets -->
-        <div class="p-8 space-y-6">
-            <!-- Top Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                    <p class="text-sm text-gray-500 font-medium">High Income Hari Ini</p>
-                    <p class="text-2xl font-bold text-gray-800 mt-2">Rp 4.500.000</p>
-                    <p class="text-xs text-green-500 mt-1"><i class="fas fa-arrow-up"></i> +15% dari kemarin</p>
-                </div>
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                    <p class="text-sm text-gray-500 font-medium">Member Gym Aktif</p>
-                    <p class="text-2xl font-bold text-gray-800 mt-2">124 Orang</p>
-                </div>
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                    <p class="text-sm text-gray-500 font-medium">Penyusutan Aset (Bulan ini)</p>
-                    <p class="text-2xl font-bold text-red-500 mt-2">Rp 850.000</p>
-                    <p class="text-xs text-gray-400 mt-1">Alat Gym & Karpet Futsal</p>
-                </div>
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                    <p class="text-sm text-gray-500 font-medium">Peringatan Stok Cafe</p>
-                    <p class="text-xl font-bold text-orange-500 mt-2">3 Item Menipis</p>
-                    <p class="text-xs text-gray-400 mt-1">Air Mineral, Whey, Isotonik</p>
-                </div>
-            </div>
+* Membership Gym.
+* Gym Harian (Daily Pass).
+* Trampolin.
+* Badminton.
+* Futsal.
+* Penjualan minuman.
+* Café.
 
-            <!-- Charts Section (Algorithms Visualization) -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Peak Hours Chart -->
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Algoritma Waktu Ramai (Peak Hours)</h3>
-                    <canvas id="peakHoursChart" height="150"></canvas>
-                </div>
-                <!-- Revenue Distribution -->
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Sumber High Income</h3>
-                    <canvas id="incomeChart" height="150"></canvas>
-                </div>
-            </div>
-        </div>
-    </main>
+Saat ini seluruh pencatatan masih banyak dilakukan secara manual sehingga kurang efisien, rawan kesalahan, dan menyulitkan ketika ingin melihat laporan bisnis secara cepat.
 
-    <script>
-        // Data Dummy untuk Algoritma Waktu Ramai (Traffic per Jam)
-        const ctxPeak = document.getElementById('peakHoursChart').getContext('2d');
-        new Chart(ctxPeak, {
-            type: 'line',
-            data: {
-                labels: ['06:00', '09:00', '12:00', '15:00', '17:00', '19:00', '21:00'],
-                datasets: [{
-                    label: 'Jumlah Pengunjung',
-                    data: [15, 10, 25, 40, 85, 95, 45], // Algoritma mendeteksi lonjakan di 17:00 - 19:00
-                    borderColor: '#3b82f6',
-                    backgroundColor: 'rgba(59, 130, 246, 0.2)',
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: { responsive: true }
-        });
+Karena itu, saya ingin seluruh proses operasional dipusatkan dalam **satu platform** sehingga seluruh aktivitas usaha dapat dikelola secara otomatis.
 
-        // Data Dummy untuk Distribusi Pendapatan
-        const ctxIncome = document.getElementById('incomeChart').getContext('2d');
-        new Chart(ctxIncome, {
-            type: 'doughnut',
-            data: {
-                labels: ['Member Gym', 'Sewa Futsal', 'Badminton', 'Cafe & Minuman', 'Trampolin'],
-                datasets: [{
-                    data: [40, 25, 15, 12, 8],
-                    backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6']
-                }]
-            },
-            options: { responsive: true, maintainAspectRatio: false }
-        });
-    </script>
-</body>
-</html>
+## Tujuan Platform
+
+Website ini harus menjadi pusat manajemen bisnis yang mampu mengelola seluruh aktivitas operasional dalam satu sistem, meliputi:
+
+* Kasir (Point of Sale/POS).
+* Pembukuan keuangan.
+* Laporan pemasukan dan pengeluaran.
+* Manajemen stok barang.
+* Manajemen harga produk.
+* Monitoring penjualan.
+* Analisis performa bisnis.
+* Monitoring aset dan perawatan alat gym.
+
+## Sistem Hak Akses
+
+Website bersifat **private** dan memiliki beberapa tingkat akses.
+
+### Staff
+
+Staff hanya dapat:
+
+* Melakukan transaksi penjualan.
+* Mengelola stok.
+* Mengelola data produk sesuai izin.
+* Melihat data yang diperlukan untuk operasional harian.
+
+### Owner
+
+Owner memiliki akses penuh untuk:
+
+* Melihat seluruh laporan.
+* Mengelola seluruh data.
+* Mengubah pengaturan sistem.
+* Melihat omzet.
+* Melihat keuntungan.
+* Memantau seluruh aktivitas usaha dari mana saja secara real-time.
+
+Hak akses owner harus menggunakan akun dan password yang berbeda dengan staff serta tidak dapat diakses oleh staff.
+
+## Dashboard Owner
+
+Dashboard owner harus menampilkan informasi secara real-time, seperti:
+
+* Total omzet hari ini.
+* Total omzet mingguan.
+* Total omzet bulanan.
+* Total laba.
+* Total transaksi.
+* Produk yang paling laris.
+* Cabang atau layanan dengan pendapatan tertinggi.
+* Stok barang yang mulai menipis.
+* Nilai persediaan barang.
+* Riwayat transaksi.
+* Grafik penjualan.
+
+Semua data harus dapat dipantau dari jarak jauh menggunakan perangkat apa pun.
+
+## Sistem Inventaris
+
+Setiap produk harus memiliki informasi seperti:
+
+* Nama produk.
+* Foto produk.
+* Harga jual.
+* Harga modal (opsional).
+* Jumlah stok.
+* Status stok.
+* Riwayat perubahan stok.
+
+Jika stok hampir habis, sistem dapat memberikan peringatan kepada owner atau staff.
+
+Selain barang dagangan, sistem juga harus dapat mencatat aset usaha seperti alat gym.
+
+Contohnya:
+
+* Nama alat.
+* Tanggal pembelian.
+* Kondisi alat.
+* Estimasi umur pakai.
+* Jadwal servis.
+* Jadwal penggantian.
+
+Dengan demikian owner mengetahui kapan suatu alat harus diperbaiki atau diganti.
+
+## Analisis Bisnis
+
+Saya juga ingin sistem memiliki fitur analisis yang membantu pengambilan keputusan, misalnya:
+
+* Menghitung rata-rata jam operasional yang paling ramai.
+* Menampilkan hari dengan transaksi tertinggi.
+* Menampilkan layanan yang menghasilkan pendapatan terbesar (high income).
+* Menampilkan produk yang paling sering dibeli.
+* Menampilkan tren penjualan berdasarkan waktu.
+* Menampilkan laporan bulanan secara otomatis.
+
+Data tersebut nantinya dapat digunakan sebagai dasar strategi bisnis.
+
+## Sinkronisasi Data Real-Time
+
+Ini adalah bagian yang paling penting.
+
+Saya ingin seluruh data menggunakan **database/cloud** sehingga tidak bergantung pada satu perangkat.
+
+Artinya:
+
+* Jika staff mengubah stok dari komputer kasir, maka owner yang membuka dashboard dari rumah dapat langsung melihat perubahan tersebut.
+* Jika terjadi transaksi, seluruh perangkat langsung menerima pembaruan.
+* Jika harga diubah, semua perangkat langsung menampilkan harga terbaru.
+* Jika stok berkurang, semua pengguna langsung melihat jumlah stok yang baru.
+
+Saya tidak ingin data disimpan hanya di local storage browser, tetapi benar-benar tersimpan pada database sehingga dapat diakses oleh seluruh perangkat secara bersamaan.
+
+## Arsitektur Sistem
+
+Mohon rancang sistem menggunakan arsitektur yang modern dan scalable sehingga:
+
+* Mendukung sinkronisasi data secara real-time.
+* Stabil digunakan oleh banyak perangkat secara bersamaan.
+* Aman dengan sistem autentikasi dan hak akses yang jelas.
+* Mudah dikembangkan di masa depan.
+* Memiliki performa yang cepat dan minim bug.
+
+## Tujuan Akhir
+
+Target saya adalah memiliki sebuah platform bisnis yang menjadi pusat operasional **Mauren Sport**. Semua proses, mulai dari transaksi, stok, pembukuan, laporan keuangan, analisis bisnis, hingga monitoring aset, dikelola dalam satu website yang dapat dipantau oleh owner secara real-time dari mana saja.
+
+Silakan lakukan perancangan sistem secara menyeluruh, termasuk struktur database, arsitektur aplikasi, alur kerja (workflow), dan antarmuka pengguna (UI/UX), agar platform ini siap digunakan sebagai sistem manajemen bisnis yang profesional, efisien, mudah digunakan, dan dapat terus dikembangkan seiring pertumbuhan usaha.
