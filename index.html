@@ -1,32 +1,1088 @@
-function playMoneySound() {
-    try {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        if (!AudioContext) return;
-        const ctx = new AudioContext();
-        
-        // Resume AudioContext jika dalam keadaan suspended
-        if (ctx.state === 'suspended') {
-            ctx.resume();
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAUREN SPORT - Gym Kasir & POS System</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            gold: '#FFD700',
+                            red: '#FF2E93',
+                            dark: '#0B0C10',
+                            card: '#1F2833',
+                            accent: '#D4AF37',
+                            neon: '#E6B800'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #050505;
+            background-image: 
+                radial-gradient(circle at 50% 20%, rgba(230, 184, 0, 0.08) 0%, transparent 50%),
+                linear-gradient(to bottom, rgba(5, 5, 5, 0.85), rgba(5, 5, 5, 0.95)),
+                url('https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=1920&auto=format&fit=crop');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+        }
+        .glass-panel {
+            background: rgba(31, 40, 51, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(230, 184, 0, 0.25);
+        }
+        .glass-panel-danger {
+            background: rgba(239, 68, 68, 0.15) !important;
+            border: 1px solid rgba(239, 68, 68, 0.4) !important;
+        }
+        .receipt-paper {
+            background: #ffffff;
+            color: #111827;
+            font-family: 'Courier New', Courier, monospace;
+        }
+    </style>
+</head>
+<body class="text-gray-200 font-sans antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- HEADER / NAVIGATION BAR -->
+    <header class="sticky top-0 z-40 glass-panel border-b border-gray-800 px-4 py-3 shadow-2xl">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('tab1')">
+                <div class="h-12 px-3 bg-gray-900 rounded-lg border border-brand-neon/40 flex items-center justify-center font-black text-brand-neon tracking-wider">
+                    <i class="fa-solid fa-dumbbell mr-2 text-xl"></i> MAUREN SPORT
+                </div>
+            </div>
+            
+            <nav class="flex flex-wrap gap-2 justify-center">
+                <button onclick="switchTab('tab1')" id="nav-tab1" class="tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all duration-200 bg-brand-neon text-black shadow-lg shadow-brand-neon/20">
+                    <i class="fa-solid fa-store mr-1"></i> Produk & QRIS
+                </button>
+                <button onclick="switchTab('tab2')" id="nav-tab2" class="tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all duration-200 text-gray-300 hover:text-white hover:bg-gray-800">
+                    <i class="fa-solid fa-users mr-1"></i> Daftar Member
+                </button>
+                <button onclick="switchTab('tab3')" id="nav-tab3" class="tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all duration-200 text-gray-300 hover:text-white hover:bg-gray-800">
+                    <i class="fa-solid fa-calendar-check mr-1"></i> Event Bulanan
+                </button>
+                <button onclick="openStaffModal()" id="nav-tab4" class="tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all duration-200 text-amber-400 hover:bg-amber-500/20 border border-amber-500/30">
+                    <i class="fa-solid fa-lock mr-1"></i> Staf Only <span id="staff-status-badge" class="ml-1 text-xs bg-red-900 text-red-200 px-1.5 py-0.5 rounded">Terkunci</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="max-w-7xl mx-auto w-full p-4 flex-grow">
+
+        <!-- TAB 1: PRODUK & QRIS -->
+        <section id="tab1" class="tab-content space-y-6">
+            <div id="qris-banner" class="glass-panel p-6 rounded-2xl border border-brand-neon/40 text-center relative overflow-hidden shadow-2xl">
+                <div class="absolute -right-10 -bottom-10 text-9xl text-white/5 pointer-events-none">
+                    <i class="fa-solid fa-qrcode"></i>
+                </div>
+                <h2 class="text-xl font-extrabold text-brand-neon uppercase tracking-widest mb-1">Pembayaran Instan All Payment</h2>
+                <p class="text-xs text-gray-400 mb-4">Pindai QRIS menggunakan BCA, Mandiri, GoPay, OVO, ShopeePay, Dana, dll.</p>
+                <div class="inline-block bg-white p-3 rounded-xl shadow-2xl border-4 border-brand-neon">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=MAUREN_SPORT_GYM_QRIS" alt="QRIS Payment" class="w-[180px] h-[180px] object-contain rounded">
+                </div>
+                <p class="text-xs text-brand-neon mt-3 font-semibold"><i class="fa-solid fa-shield-halved mr-1"></i> Pilih barang di bawah untuk melakukan transaksi instan</p>
+            </div>
+
+            <div class="flex justify-between items-center border-b border-gray-800 pb-3">
+                <h3 class="text-2xl font-black text-white tracking-wide uppercase"><i class="fa-solid fa-bottle-water text-brand-neon mr-2"></i> Supplement, Minuman & Sewa Alat</h3>
+                <span class="text-xs text-gray-400">Pilih item untuk dibeli atau disewa</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="product-grid"></div>
+        </section>
+
+        <!-- TAB 2: DAFTAR MEMBER (PUBLIK) -->
+        <section id="tab2" class="tab-content hidden space-y-6">
+            <div class="glass-panel p-6 rounded-2xl">
+                <div class="border-b border-gray-800 pb-4 mb-6">
+                    <h2 class="text-2xl font-black text-white uppercase"><i class="fa-solid fa-address-card text-brand-neon mr-2"></i> Direktori Member Gym</h2>
+                    <p class="text-sm text-gray-400">Daftar nama anggota terdaftar aktif di MAUREN SPORT Gym.</p>
+                </div>
+
+                <div class="overflow-x-auto rounded-xl border border-gray-800">
+                    <table class="w-full text-left text-sm text-gray-300">
+                        <thead class="bg-gray-900 text-brand-neon uppercase text-xs font-bold tracking-wider">
+                            <tr>
+                                <th class="p-4">No</th>
+                                <th class="p-4">Nama Member</th>
+                                <th class="p-4">Gender</th>
+                            </tr>
+                        </thead>
+                        <tbody id="public-member-tbody" class="divide-y divide-gray-800"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: EVENT BULANAN (PUBLIK) -->
+        <section id="tab3" class="tab-content hidden space-y-6">
+            <div class="border-b border-gray-800 pb-3">
+                <h2 class="text-2xl font-black text-white uppercase"><i class="fa-solid fa-bullhorn text-brand-neon mr-2"></i> Program & Event Bulanan Gym</h2>
+                <p class="text-sm text-gray-400">Promosi eksklusif, tantangan fisik, dan benefit keanggotaan</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="event-grid"></div>
+        </section>
+
+        <!-- TAB 4: STAFF ONLY -->
+        <section id="tab4" class="tab-content hidden space-y-6">
+            <div class="glass-panel p-6 rounded-2xl border-amber-500/20">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b border-gray-800 pb-4">
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <span class="px-2.5 py-1 bg-amber-500/20 text-amber-400 font-bold text-xs rounded border border-amber-500/40">STAFF ONLY</span>
+                            <h2 class="text-2xl font-black text-white uppercase">Pengaturan Keuangan & Manajemen Member</h2>
+                        </div>
+                        <p class="text-sm text-gray-400 mt-1">Laporan finansial dan kontrol penuh langganan anggota.</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="exportToCSV()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold text-sm transition flex items-center shadow-lg">
+                            <i class="fa-solid fa-file-excel mr-2"></i> Ekspor CSV
+                        </button>
+                        <button onclick="lockStaffTab()" class="px-4 py-2 bg-red-600/80 hover:bg-red-600 text-white rounded-lg font-bold text-sm transition">
+                            <i class="fa-solid fa-right-from-bracket mr-1"></i> Kunci Sesi
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Panel Kontrol Kas & Suara -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-gray-900/90 p-4 rounded-xl border border-gray-800">
+                        <label class="text-xs text-gray-400 font-bold uppercase block mb-2">Simulasi Suara Uang Masuk</label>
+                        <button onclick="playMoneySound()" class="w-full bg-brand-neon/20 border border-brand-neon/50 hover:bg-brand-neon/30 text-brand-neon py-2 rounded-lg font-bold text-xs transition">
+                            <i class="fa-solid fa-coins mr-2"></i> Tes Efek Suara "Chime"
+                        </button>
+                    </div>
+                    <div class="bg-gray-900/90 p-4 rounded-xl border border-gray-800">
+                        <label class="text-xs text-gray-400 font-bold uppercase block mb-2">Penyesuaian Selisih Kas (Reset)</label>
+                        <button onclick="resetAllData()" class="w-full bg-amber-500/20 border border-amber-500/50 hover:bg-amber-500/30 text-amber-300 py-2 rounded-lg font-bold text-xs transition">
+                            <i class="fa-solid fa-rotate mr-2"></i> Reset Data ke Default
+                        </button>
+                    </div>
+                    <div class="bg-gray-900/90 p-4 rounded-xl border border-gray-800">
+                        <label class="text-xs text-gray-400 font-bold uppercase block mb-2">Status Pemeliharaan Sistem</label>
+                        <button id="btn-maintenance" onclick="toggleMaintenance()" class="w-full bg-emerald-900/40 border border-emerald-500/50 text-emerald-300 py-2 rounded-lg font-bold text-xs transition">
+                            Mode Operasional Normal
+                        </button>
+                    </div>
+                </div>
+
+                <!-- KELOLA MEMBER -->
+                <div class="bg-gray-900/90 p-6 rounded-xl border border-gray-800 mb-6 space-y-4">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-white uppercase"><i class="fa-solid fa-users-gear text-brand-neon mr-2"></i> Kelola Langganan Member</h3>
+                            <p class="text-xs text-gray-400">Tambah member baru atau bersihkan member kadaluarsa.</p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-3">
+                            <button onclick="saveDataToStorage()" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-extrabold rounded-xl text-xs uppercase transition shadow-lg flex items-center border border-blue-400">
+                                <i class="fa-solid fa-floppy-disk mr-1.5"></i> Simpan Perubahan
+                            </button>
+
+                            <div class="bg-gray-800 px-4 py-2 rounded-xl border border-gray-700 text-right">
+                                <span class="text-[10px] text-gray-400 block">Total Pemasukan Member</span>
+                                <span class="text-lg font-extrabold text-emerald-400" id="staff-total-member-income">Rp 0</span>
+                            </div>
+                            <button onclick="openAddMemberModal()" class="px-3.5 py-2.5 bg-brand-neon hover:bg-yellow-400 text-black font-extrabold rounded-xl text-xs uppercase transition shadow-md flex items-center">
+                                <i class="fa-solid fa-plus mr-1.5"></i> Tambah Member
+                            </button>
+                            <button onclick="purgeExpiredMembers()" class="px-3.5 py-2.5 bg-red-900/80 hover:bg-red-800 border border-red-500/50 text-red-200 font-bold rounded-xl text-xs uppercase transition shadow-md flex items-center">
+                                <i class="fa-solid fa-trash-can mr-1.5"></i> Hapus Kadaluarsa
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto rounded-xl border border-gray-800">
+                        <table class="w-full text-left text-sm text-gray-300">
+                            <thead class="bg-gray-900 text-brand-neon uppercase text-xs font-bold tracking-wider">
+                                <tr>
+                                    <th class="p-3">Nama Member</th>
+                                    <th class="p-3">Gender</th>
+                                    <th class="p-3">Tgl Mulai</th>
+                                    <th class="p-3">Tgl Akhir</th>
+                                    <th class="p-3">Biaya</th>
+                                    <th class="p-3">Status</th>
+                                    <th class="p-3 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="staff-member-tbody" class="divide-y divide-gray-800"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- SEKSI KELOLA EVENT BULANAN & UPLOAD FOTO -->
+                <div class="bg-gray-900/90 p-6 rounded-xl border border-gray-800 mb-6 space-y-4">
+                    <div class="flex justify-between items-center border-b border-gray-800 pb-3">
+                        <div>
+                            <h3 class="text-lg font-bold text-white uppercase"><i class="fa-solid fa-calendar-plus text-brand-neon mr-2"></i> Kelola Event & Promo Bulanan</h3>
+                            <p class="text-xs text-gray-400">Tambah foto event langsung dari galeri HP atau komputer.</p>
+                        </div>
+                    </div>
+
+                    <form onsubmit="addNewEvent(event)" class="grid grid-cols-1 md:grid-cols-4 gap-3 bg-gray-800/60 p-4 rounded-xl border border-gray-700">
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-300 block mb-1">Judul Event / Promo</label>
+                            <input type="text" id="ev-title" required placeholder="Contoh: Promo Merdeka" class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-xs text-white focus:outline-none focus:border-brand-neon">
+                        </div>
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-300 block mb-1">Kategori / Tag</label>
+                            <select id="ev-tag" class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-xs text-white focus:outline-none focus:border-brand-neon">
+                                <option value="Promo">Promo</option>
+                                <option value="Kompetisi">Kompetisi</option>
+                                <option value="Tantangan">Tantangan</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-300 block mb-1">Deskripsi Ringkas</label>
+                            <input type="text" id="ev-desc" required placeholder="Contoh: Diskon member 50%" class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-xs text-white focus:outline-none focus:border-brand-neon">
+                        </div>
+                        <div>
+                            <label class="text-[11px] font-bold text-amber-400 block mb-1"><i class="fa-solid fa-image mr-1"></i> Upload Foto dari HP</label>
+                            <input type="file" id="ev-image" accept="image/*" class="w-full text-xs text-gray-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-neon file:text-black hover:file:bg-yellow-400 cursor-pointer">
+                        </div>
+                        <div class="md:col-span-4 text-right pt-2">
+                            <button type="submit" class="px-5 py-2 bg-brand-neon hover:bg-yellow-400 text-black font-extrabold text-xs uppercase rounded-lg shadow-md">
+                                <i class="fa-solid fa-plus mr-1"></i> Publisikan Event
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="overflow-x-auto rounded-xl border border-gray-800">
+                        <table class="w-full text-left text-sm text-gray-300">
+                            <thead class="bg-gray-900 text-brand-neon uppercase text-xs font-bold">
+                                <tr>
+                                    <th class="p-3">Gambar</th>
+                                    <th class="p-3">Judul Event</th>
+                                    <th class="p-3">Tag</th>
+                                    <th class="p-3">Deskripsi</th>
+                                    <th class="p-3 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="staff-event-tbody" class="divide-y divide-gray-800"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- GRAFIK OMSET -->
+                <div class="bg-gray-900/90 p-6 rounded-xl border border-gray-800 mb-6">
+                    <h3 class="text-lg font-bold text-white mb-4"><i class="fa-solid fa-chart-line text-brand-neon mr-2"></i> Grafik Omset Penjualan Harian (Akurat Real-Time)</h3>
+                    <div class="h-64">
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- RIWAYAT TRANSAKSI -->
+                <div class="space-y-3">
+                    <h3 class="text-lg font-bold text-white"><i class="fa-solid fa-table mr-2 text-brand-neon"></i> Data Gabungan Semua Transaksi</h3>
+                    <div class="overflow-x-auto rounded-xl border border-gray-800">
+                        <table class="w-full text-left text-sm text-gray-300">
+                            <thead class="bg-gray-900 text-gray-400 uppercase text-xs">
+                                <tr>
+                                    <th class="p-3">ID Transaksi</th>
+                                    <th class="p-3">Kategori</th>
+                                    <th class="p-3">Keterangan / Item</th>
+                                    <th class="p-3">Tanggal</th>
+                                    <th class="p-3">Jumlah</th>
+                                </tr>
+                            </thead>
+                            <tbody id="combined-transaction-tbody" class="divide-y divide-gray-800"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="glass-panel border-t border-gray-800 py-4 px-6 text-center text-xs text-gray-500 mt-10">
+        <p>© 2026 MAUREN SPORT POS System — Akses Real-Time & Manajemen Terpadu</p>
+    </footer>
+
+    <!-- MODAL PEMBELIAN ALUR BARU (HITUNG -> STRUK -> QRIS PENDING -> SUCCESSFUL) -->
+    <div id="checkout-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center hidden p-4 overflow-y-auto">
+        <div class="glass-panel p-6 rounded-2xl max-w-md w-full border border-brand-neon/50 shadow-2xl space-y-4 my-auto">
+            
+            <!-- HEADER MODAL -->
+            <div class="flex justify-between items-center border-b border-gray-800 pb-3">
+                <h3 class="text-lg font-black text-white uppercase flex items-center gap-2">
+                    <i class="fa-solid fa-cash-register text-brand-neon"></i> Transaksi Kasir
+                </h3>
+                <button onclick="closeCheckoutModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <!-- TAHAP 1: STRUK RINCIAN PEMBELIAN -->
+            <div id="checkout-step-1" class="space-y-4">
+                <div class="bg-gray-900/90 p-4 rounded-xl border border-gray-800 space-y-3">
+                    <div class="flex items-center gap-3">
+                        <img id="chk-img" src="" alt="Produk" class="w-16 h-16 object-cover rounded-lg border border-gray-700" onerror="this.src='https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=200&auto=format&fit=crop'">
+                        <div>
+                            <span id="chk-type" class="text-[10px] font-bold text-brand-neon uppercase px-2 py-0.5 rounded bg-brand-neon/10 border border-brand-neon/20">Minuman</span>
+                            <h4 id="chk-title" class="font-extrabold text-white text-base">Nama Produk</h4>
+                            <p id="chk-stock" class="text-xs text-amber-400 font-semibold">Stok: 0</p>
+                        </div>
+                    </div>
+
+                    <!-- PENGATURAN JUMLAH (VOTE/+) -->
+                    <div class="pt-3 border-t border-gray-800 flex items-center justify-between">
+                        <span class="text-sm font-bold text-gray-300">Jumlah Barang:</span>
+                        <div class="flex items-center gap-2">
+                            <button onclick="updateCheckoutQty(-1)" class="w-9 h-9 rounded-lg bg-gray-800 hover:bg-gray-700 text-white font-black text-lg flex items-center justify-center border border-gray-700">-</button>
+                            <input type="number" id="chk-qty" value="1" min="1" class="w-14 text-center bg-gray-900 border border-gray-700 rounded-lg py-1 font-bold text-brand-neon text-lg" readonly>
+                            <button onclick="updateCheckoutQty(1)" class="w-9 h-9 rounded-lg bg-gray-800 hover:bg-gray-700 text-white font-black text-lg flex items-center justify-center border border-gray-700">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RINCIAN STRUK BARANG -->
+                <div class="receipt-paper p-4 rounded-xl shadow-inner space-y-2 text-xs">
+                    <div class="text-center font-bold border-b border-dashed border-gray-400 pb-2">
+                        <p class="text-sm uppercase tracking-wider">MAUREN SPORT GYM</p>
+                        <p class="text-[10px] text-gray-600 font-sans">Nota Pembelian Kasir</p>
+                    </div>
+                    <div class="space-y-1 py-1">
+                        <div class="flex justify-between">
+                            <span id="receipt-item-name">Item Name</span>
+                            <span id="receipt-item-unit">1x @ Rp 0</span>
+                        </div>
+                        <div class="flex justify-between font-bold border-t border-gray-300 pt-1">
+                            <span>SUBTOTAL BARANG</span>
+                            <span id="receipt-subtotal">Rp 0</span>
+                        </div>
+                    </div>
+                    <div class="border-t-2 border-dashed border-gray-800 pt-2 flex justify-between items-center font-black text-sm">
+                        <span>TOTAL BAYAR:</span>
+                        <span id="receipt-total" class="text-emerald-700">Rp 0</span>
+                    </div>
+                </div>
+
+                <div class="flex gap-2">
+                    <button onclick="closeCheckoutModal()" class="w-1/3 py-2.5 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs uppercase">Batal</button>
+                    <button onclick="goToQRISStep()" class="w-2/3 py-2.5 bg-brand-neon hover:bg-yellow-400 text-black font-extrabold rounded-xl text-xs uppercase shadow-lg flex items-center justify-center gap-1">
+                        <i class="fa-solid fa-qrcode"></i> Lanjut ke QRIS
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAHAP 2: STATUS PENDING & TAMPILAN QRIS -->
+            <div id="checkout-step-2" class="space-y-4 hidden">
+                <!-- INDIKATOR PENDING -->
+                <div class="bg-amber-500/15 border border-amber-500/50 p-3 rounded-xl text-center space-y-1">
+                    <div class="inline-flex items-center gap-2 text-amber-400 font-black uppercase text-xs animate-pulse">
+                        <i class="fa-solid fa-spinner fa-spin"></i> Status: Pending Pembayaran
+                    </div>
+                    <p class="text-[11px] text-gray-300">Silakan scan QRIS di bawah ini untuk menyelesaikan transaksi.</p>
+                </div>
+
+                <!-- QRIS DISPLAY (PASTI MUNCUL) -->
+                <div class="bg-white p-4 rounded-xl text-center shadow-2xl border-4 border-brand-neon mx-auto max-w-[220px]">
+                    <img id="qris-checkout-img" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=MAUREN_SPORT_GYM_QRIS" alt="QRIS Code" class="w-full h-auto object-contain mx-auto rounded">
+                    <p class="text-[10px] text-gray-800 font-bold mt-2 uppercase tracking-wide">Scan All Payment QRIS</p>
+                </div>
+
+                <div class="bg-gray-900/80 p-3 rounded-xl border border-gray-800 text-xs space-y-1">
+                    <div class="flex justify-between text-gray-400">
+                        <span>Total yang Harus Dibayar:</span>
+                        <span id="pending-total-display" class="font-extrabold text-emerald-400">Rp 0</span>
+                    </div>
+                </div>
+
+                <div class="flex gap-2">
+                    <button onclick="backToStep1()" class="w-1/3 py-2.5 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs uppercase">Kembali</button>
+                    <button onclick="verifyPaymentSuccess()" class="w-2/3 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold rounded-xl text-xs uppercase shadow-lg flex items-center justify-center gap-1">
+                        <i class="fa-solid fa-check-circle"></i> Konfirmasi Sudah Bayar
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAHAP 3: STATUS SUCCESSFUL (BUKTI PEMBAYARAN KE STAF) -->
+            <div id="checkout-step-3" class="space-y-4 hidden text-center">
+                <div class="bg-emerald-500/20 border-2 border-emerald-500 p-4 rounded-xl space-y-2">
+                    <div class="w-12 h-12 bg-emerald-500 text-black rounded-full flex items-center justify-center mx-auto text-2xl font-black shadow-lg">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <h4 class="text-xl font-black text-emerald-400 uppercase tracking-wide">STATUS: SUCCESSFUL</h4>
+                    <p class="text-xs text-gray-200">Pembayaran QRIS Terverifikasi Berhasil!</p>
+                </div>
+
+                <div class="bg-gray-900/90 p-4 rounded-xl border border-gray-800 text-left space-y-2 text-xs">
+                    <p class="text-[11px] text-amber-400 font-bold text-center border-b border-gray-800 pb-2">
+                        <i class="fa-solid fa-hand-holding-hand mr-1"></i> TUNJUKKAN LAYAR INI KEPADA STAF/KASIR UNTUK MENGAMBIL BARANG
+                    </p>
+                    <div class="flex justify-between text-gray-400 pt-1">
+                        <span>ID Transaksi:</span>
+                        <span id="success-tx-id" class="font-mono font-bold text-brand-neon">TX-0000</span>
+                    </div>
+                    <div class="flex justify-between text-gray-400">
+                        <span>Detail Barang:</span>
+                        <span id="success-item-desc" class="font-bold text-white">Item (x1)</span>
+                    </div>
+                    <div class="flex justify-between text-gray-400">
+                        <span>Total Pembayaran:</span>
+                        <span id="success-total-amount" class="font-extrabold text-emerald-400">Rp 0</span>
+                    </div>
+                </div>
+
+                <button onclick="closeCheckoutModal()" class="w-full py-3 bg-brand-neon hover:bg-yellow-400 text-black font-extrabold rounded-xl text-xs uppercase shadow-lg">
+                    Selesai / Ambil Barang
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MODAL TAMBAH MEMBER -->
+    <div id="add-member-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center hidden">
+        <div class="glass-panel p-6 rounded-2xl max-w-md w-full mx-4 border border-brand-neon/50 shadow-2xl space-y-4">
+            <div class="text-center border-b border-gray-800 pb-3">
+                <h3 class="text-xl font-black text-white uppercase"><i class="fa-solid fa-user-plus text-brand-neon mr-2"></i> Tambah Member Baru</h3>
+                <p class="text-xs text-gray-400 mt-1">Masukkan rincian data keanggotaan gym</p>
+            </div>
+
+            <form id="add-member-form" onsubmit="saveMember(event)" class="space-y-3">
+                <div>
+                    <label class="text-xs font-bold text-gray-300 block mb-1">Nama Lengkap</label>
+                    <input type="text" id="m-name" required placeholder="Contoh: Budi Santoso" class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-xl text-sm text-white focus:outline-none focus:border-brand-neon">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-300 block mb-1">Gender / Jenis Kelamin</label>
+                    <select id="m-gender" class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-xl text-sm text-white focus:outline-none focus:border-brand-neon">
+                        <option value="Pria">Pria</option>
+                        <option value="Wanita">Wanita</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs font-bold text-gray-300 block mb-1">Tgl Mulai</label>
+                        <input type="date" id="m-start" required class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-xl text-sm text-white focus:outline-none focus:border-brand-neon">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-gray-300 block mb-1">Tgl Akhir</label>
+                        <input type="date" id="m-end" required class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-xl text-sm text-white focus:outline-none focus:border-brand-neon">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-300 block mb-1">Biaya Pendaftaran (Rp)</label>
+                    <input type="number" id="m-fee" required value="350000" class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-xl text-sm text-white focus:outline-none focus:border-brand-neon">
+                </div>
+
+                <div class="flex gap-3 pt-3">
+                    <button type="button" onclick="closeAddMemberModal()" class="w-1/2 py-2.5 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs uppercase transition">Batal</button>
+                    <button type="submit" class="w-1/2 py-2.5 bg-brand-neon hover:bg-yellow-400 text-black font-extrabold rounded-xl text-xs uppercase transition shadow-lg">Simpan Member</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL AUTH STAF -->
+    <div id="staff-auth-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center hidden">
+        <div class="glass-panel p-8 rounded-2xl max-w-sm w-full mx-4 border border-amber-500/40 shadow-2xl space-y-6">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-amber-500/20 text-amber-400 rounded-full flex items-center justify-center mx-auto mb-3 border border-amber-500/50">
+                    <i class="fa-solid fa-user-shield text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-black text-white uppercase">Otentikasi Staf</h3>
+                <p class="text-xs text-gray-400 mt-1">Masukkan PIN Otorisasi Khusus Staf</p>
+            </div>
+
+            <div>
+                <input type="password" id="staff-pin-input" placeholder="Masukkan PIN (Default: 1234)" class="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl text-center text-xl font-bold tracking-widest text-brand-neon focus:outline-none focus:border-brand-neon">
+                <p id="pin-error-msg" class="text-xs text-red-500 text-center mt-2 hidden">PIN Salah! Silakan coba lagi.</p>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="closeStaffModal()" class="w-1/2 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-sm">Batal</button>
+                <button onclick="verifyStaffPIN()" class="w-1/2 py-3 bg-amber-500 hover:bg-amber-400 text-black font-extrabold rounded-xl text-sm">Masuk</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT APPLICATION LOGIC -->
+    <script>
+        let isStaffLoggedIn = false;
+        let isMaintenance = false;
+        let selectedProduct = null;
+        let checkoutQty = 1;
+        let salesChartInstance = null;
+
+        const defaultProducts = [
+            { id: 1, name: "Pocari Sweat", price: 8000, stock: 18, type: "Minuman", img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=400&auto=format&fit=crop" },
+            { id: 2, name: "SUSU Indomilk", price: 5000, stock: 25, type: "Minuman", img: "https://images.unsplash.com/photo-1563636619-e9143da7973b?q=80&w=400&auto=format&fit=crop" },
+            { id: 3, name: "Mizone Isotonik", price: 5000, stock: 40, type: "Minuman", img: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?q=80&w=400&auto=format&fit=crop" },
+            { id: 4, name: "SUSU Milkku", price: 4000, stock: 15, type: "Minuman", img: "https://images.unsplash.com/photo-1550583724-b2692b85b150?q=80&w=400&auto=format&fit=crop" },
+            { id: 5, name: "Fresh Tea", price: 6000, stock: 18, type: "Minuman", img: "https://images.unsplash.com/photo-1556679343-c7306c1976bc?q=80&w=400&auto=format&fit=crop" },
+            { id: 6, name: "Floridina Jeruk", price: 4000, stock: 20, type: "Minuman", img: "https://images.unsplash.com/photo-1613478223719-2ab802602423?q=80&w=400&auto=format&fit=crop" },
+            { id: 7, name: "Teh Kotak", price: 4000, stock: 40, type: "Minuman", img: "https://images.unsplash.com/photo-1544787219-7f47ccb76574?q=80&w=400&auto=format&fit=crop" },
+            { id: 8, name: "Kopyor Jelly", price: 9000, stock: 15, type: "Minuman", img: "https://images.unsplash.com/photo-1559839914-17aae19cec71?q=80&w=400&auto=format&fit=crop" },
+            { id: 9, name: "Mineral VIT", price: 3000, stock: 50, type: "Minuman", img: "https://images.unsplash.com/photo-1548839140-29a749e1bc4e?q=80&w=400&auto=format&fit=crop" },
+            { id: 10, name: "Mineral Dus (Kardus)", price: 20000, stock: 10, type: "Minuman", img: "https://images.unsplash.com/photo-1523362628745-0c100150b504?q=80&w=400&auto=format&fit=crop" },
+            { id: 11, name: "KOK Bulu Tangkis (Satuan)", price: 12000, stock: 30, type: "Sewa Alat", img: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=400&auto=format&fit=crop" },
+            { id: 12, name: "KOK Bulu Tangkis (Slop)", price: 140000, stock: 12, type: "Sewa Alat", img: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=400&auto=format&fit=crop" }
+        ];
+
+        const defaultMembers = [
+            { id: 101, name: "Budi Santoso", gender: "Pria", start: "2026-07-01", end: "2026-08-31", fee: 350000 },
+            { id: 102, name: "Siti Rahma", gender: "Wanita", start: "2026-06-01", end: "2026-07-01", fee: 350000 },
+            { id: 103, name: "Andi Wijaya", gender: "Pria", start: "2026-07-15", end: "2026-08-15", fee: 350000 }
+        ];
+
+        const defaultEvents = [
+            { id: 1, title: "Push Pull Legs Challenge", tag: "Kompetisi", desc: "Tantangan angkatan beban terbesar bulan ini berhadiah Suplemen Gratis 1 Tahun.", img: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=400&auto=format&fit=crop" },
+            { id: 2, title: "MEMBER BULANAN", tag: "Promo", desc: "Potongan harga tarif sampai 67% LEBIH MURAH dari harga harian.", img: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=400&auto=format&fit=crop" }
+        ];
+
+        const defaultTransactions = [
+            { id: "TX-901", category: "Member", item: "Pendaftaran Member Budi Santoso", date: "2026-07-27", amount: 350000 },
+            { id: "TX-902", category: "Produk", item: "Pocari Sweat (x2)", date: "2026-07-30", amount: 16000 }
+        ];
+
+        let products = [];
+        let members = [];
+        let events = [];
+        let combinedTransactions = [];
+
+        document.addEventListener("DOMContentLoaded", () => {
+            loadDataFromStorage();
+            renderProducts();
+            renderMembers();
+            renderEvents();
+            renderCombinedTransactions();
+            initChart();
+
+            const today = new Date().toISOString().split('T')[0];
+            const nextMonth = new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0];
+            if (document.getElementById('m-start')) document.getElementById('m-start').value = today;
+            if (document.getElementById('m-end')) document.getElementById('m-end').value = nextMonth;
+        });
+
+        // PERSISTENSI LOCAL STORAGE
+        function saveDataToStorage() {
+            try {
+                localStorage.setItem('mauren_products', JSON.stringify(products));
+                localStorage.setItem('mauren_members', JSON.stringify(members));
+                localStorage.setItem('mauren_events', JSON.stringify(events));
+                localStorage.setItem('mauren_transactions', JSON.stringify(combinedTransactions));
+                alert("Perubahan berhasil disimpan!");
+            } catch (e) {
+                alert("Gagal menyimpan data: " + e.message);
+            }
         }
 
-        const tones = [987.77, 1318.51, 1758.40, 2637.02]; 
-        tones.forEach((freq, index) => {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
+        function loadDataFromStorage() {
+            const savedProducts = localStorage.getItem('mauren_products');
+            const savedMembers = localStorage.getItem('mauren_members');
+            const savedEvents = localStorage.getItem('mauren_events');
+            const savedTx = localStorage.getItem('mauren_transactions');
 
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, ctx.currentTime + index * 0.08);
+            products = savedProducts ? JSON.parse(savedProducts) : JSON.parse(JSON.stringify(defaultProducts));
+            members = savedMembers ? JSON.parse(savedMembers) : JSON.parse(JSON.stringify(defaultMembers));
+            events = savedEvents ? JSON.parse(savedEvents) : JSON.parse(JSON.stringify(defaultEvents));
+            combinedTransactions = savedTx ? JSON.parse(savedTx) : JSON.parse(JSON.stringify(defaultTransactions));
+        }
 
-            gain.gain.setValueAtTime(0.2, ctx.currentTime + index * 0.08);
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + index * 0.08 + 0.3);
+        function resetAllData() {
+            if (confirm("Apakah Anda yakin ingin MERESET SELURUH DATA kembali ke pengaturan awal?")) {
+                localStorage.clear();
+                loadDataFromStorage();
+                renderProducts();
+                renderMembers();
+                renderEvents();
+                renderCombinedTransactions();
+                updateChartData();
+                alert("Seluruh data berhasil di-reset ke awal!");
+            }
+        }
 
-            osc.connect(gain);
-            gain.connect(ctx.destination);
+        // TAB NAVIGATION
+        function switchTab(tabId) {
+            if (tabId === 'tab4' && !isStaffLoggedIn) {
+                openStaffModal();
+                return;
+            }
 
-            osc.start(ctx.currentTime + index * 0.08);
-            osc.stop(ctx.currentTime + index * 0.08 + 0.3);
-        });
-    } catch (e) {
-        console.log("Audio error:", e);
-    }
-}
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-brand-neon', 'text-black', 'shadow-lg');
+                btn.classList.add('text-gray-300');
+            });
+
+            document.getElementById(tabId).classList.remove('hidden');
+            const activeNav = document.getElementById(`nav-${tabId}`);
+            if (tabId !== 'tab4') {
+                activeNav.classList.add('bg-brand-neon', 'text-black', 'shadow-lg');
+                activeNav.classList.remove('text-gray-300');
+            }
+        }
+
+        // RENDER PRODUK DENGAN FALLBACK GAMBAR JIKA ERROR
+        function renderProducts() {
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = products.map(p => `
+                <div class="glass-panel rounded-2xl overflow-hidden hover:border-brand-neon transition flex flex-col justify-between shadow-lg">
+                    <img src="${p.img}" alt="${p.name}" class="w-full h-40 object-cover" onerror="this.src='https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=400&auto=format&fit=crop'">
+                    <div class="p-4 flex-grow flex flex-col justify-between space-y-3">
+                        <div>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-brand-neon bg-brand-neon/10 px-2 py-0.5 rounded border border-brand-neon/20">${p.type}</span>
+                            <h4 class="font-bold text-white mt-1 leading-snug">${p.name}</h4>
+                            <p class="text-xs text-gray-400">Stok: ${p.stock} unit</p>
+                        </div>
+                        <div>
+                            <div class="text-lg font-black text-emerald-400 mb-2">Rp ${p.price.toLocaleString('id-ID')}</div>
+                            <button onclick="openCheckoutModal(${p.id})" class="w-full py-2 bg-brand-neon hover:bg-yellow-400 text-black font-extrabold rounded-xl text-xs uppercase transition shadow-md flex items-center justify-center gap-1">
+                                <i class="fa-solid fa-cart-shopping"></i> Beli via QRIS
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // --- SISTEM PEMBELIAN BARU (STRUK -> QRIS PENDING -> SUCCESSFUL) ---
+        function openCheckoutModal(id) {
+            if (isMaintenance) {
+                alert("Sistem dalam Pemeliharaan.");
+                return;
+            }
+            const p = products.find(x => x.id === id);
+            if (!p || p.stock <= 0) {
+                alert("Stok produk habis!");
+                return;
+            }
+
+            selectedProduct = p;
+            checkoutQty = 1;
+
+            document.getElementById('chk-img').src = p.img;
+            document.getElementById('chk-title').innerText = p.name;
+            document.getElementById('chk-type').innerText = p.type;
+            document.getElementById('chk-stock').innerText = `Stok: ${p.stock} unit`;
+            document.getElementById('chk-qty').value = checkoutQty;
+
+            updateCheckoutStruk();
+
+            // Tampilkan Tahap 1, sembunyikan sisanya
+            document.getElementById('checkout-step-1').classList.remove('hidden');
+            document.getElementById('checkout-step-2').classList.add('hidden');
+            document.getElementById('checkout-step-3').classList.add('hidden');
+            document.getElementById('checkout-modal').classList.remove('hidden');
+        }
+
+        function updateCheckoutQty(change) {
+            if (!selectedProduct) return;
+            const newQty = checkoutQty + change;
+            if (newQty >= 1 && newQty <= selectedProduct.stock) {
+                checkoutQty = newQty;
+                document.getElementById('chk-qty').value = checkoutQty;
+                updateCheckoutStruk();
+            }
+        }
+
+        function updateCheckoutStruk() {
+            if (!selectedProduct) return;
+            const subtotal = selectedProduct.price * checkoutQty;
+            document.getElementById('receipt-item-name').innerText = selectedProduct.name;
+            document.getElementById('receipt-item-unit').innerText = `${checkoutQty}x @ Rp ${selectedProduct.price.toLocaleString('id-ID')}`;
+            document.getElementById('receipt-subtotal').innerText = "Rp " + subtotal.toLocaleString('id-ID');
+            document.getElementById('receipt-total').innerText = "Rp " + subtotal.toLocaleString('id-ID');
+            document.getElementById('pending-total-display').innerText = "Rp " + subtotal.toLocaleString('id-ID');
+        }
+
+        function goToQRISStep() {
+            document.getElementById('checkout-step-1').classList.add('hidden');
+            document.getElementById('checkout-step-2').classList.remove('hidden');
+        }
+
+        function backToStep1() {
+            document.getElementById('checkout-step-2').classList.add('hidden');
+            document.getElementById('checkout-step-1').classList.remove('hidden');
+        }
+
+        function verifyPaymentSuccess() {
+            if (!selectedProduct) return;
+
+            if (selectedProduct.stock >= checkoutQty) {
+                // Potong Stok & Buat Transaksi
+                selectedProduct.stock -= checkoutQty;
+                const totalAmount = selectedProduct.price * checkoutQty;
+                const txId = "TX-" + Math.floor(1000 + Math.random() * 9000);
+                const dateStr = new Date().toISOString().split('T')[0];
+                const itemLabel = `${selectedProduct.name} (x${checkoutQty})`;
+
+                combinedTransactions.unshift({ 
+                    id: txId, 
+                    category: "Produk", 
+                    item: itemLabel, 
+                    date: dateStr, 
+                    amount: totalAmount 
+                });
+
+                saveDataToStorage();
+                renderProducts();
+                renderCombinedTransactions();
+                updateChartData();
+                playMoneySound();
+
+                // Tampilkan Layar Bukti Successful Ke Staf
+                document.getElementById('success-tx-id').innerText = txId;
+                document.getElementById('success-item-desc').innerText = itemLabel;
+                document.getElementById('success-total-amount').innerText = "Rp " + totalAmount.toLocaleString('id-ID');
+
+                document.getElementById('checkout-step-2').classList.add('hidden');
+                document.getElementById('checkout-step-3').classList.remove('hidden');
+            } else {
+                alert("Stok produk tidak mencukupi!");
+            }
+        }
+
+        function closeCheckoutModal() {
+            document.getElementById('checkout-modal').classList.add('hidden');
+            selectedProduct = null;
+        }
+
+        function playMoneySound() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
+
+                const tones = [987.77, 1318.51, 1758.40, 2637.02]; 
+                tones.forEach((freq, index) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, ctx.currentTime + index * 0.08);
+
+                    gain.gain.setValueAtTime(0.2, ctx.currentTime + index * 0.08);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + index * 0.08 + 0.3);
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    osc.start(ctx.currentTime + index * 0.08);
+                    osc.stop(ctx.currentTime + index * 0.08 + 0.3);
+                });
+            } catch (e) {
+                console.log("Audio error:", e);
+            }
+        }
+
+        // RENDER MEMBER
+        function renderMembers() {
+            const today = new Date().toISOString().split('T')[0];
+            let totalIncome = 0;
+
+            const publicTbody = document.getElementById('public-member-tbody');
+            if (publicTbody) {
+                publicTbody.innerHTML = members.length === 0 ? `<tr><td colspan="3" class="p-4 text-center text-gray-500">Belum ada member terdaftar.</td></tr>` : 
+                members.map((m, idx) => `
+                    <tr class="hover:bg-gray-800/40 transition">
+                        <td class="p-4 text-xs font-mono text-gray-500">${idx + 1}</td>
+                        <td class="p-4 font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-user-circle text-gray-400"></i> ${m.name}
+                        </td>
+                        <td class="p-4 text-xs font-medium text-gray-300">${m.gender}</td>
+                    </tr>
+                `).join('');
+            }
+
+            const staffTbody = document.getElementById('staff-member-tbody');
+            if (staffTbody) {
+                staffTbody.innerHTML = members.length === 0 ? `<tr><td colspan="7" class="p-4 text-center text-gray-500">Belum ada member terdaftar.</td></tr>` :
+                members.map(m => {
+                    const isExpired = m.end < today;
+                    totalIncome += Number(m.fee);
+                    return `
+                        <tr class="${isExpired ? 'glass-panel-danger' : 'hover:bg-gray-800/50'} transition">
+                            <td class="p-3 font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-user-circle text-gray-400"></i> ${m.name}
+                            </td>
+                            <td class="p-3 text-xs">${m.gender}</td>
+                            <td class="p-3 text-xs text-gray-400">${m.start}</td>
+                            <td class="p-3 text-xs font-semibold ${isExpired ? 'text-red-400' : 'text-emerald-400'}">${m.end}</td>
+                            <td class="p-3 text-xs font-bold text-emerald-400">Rp ${Number(m.fee).toLocaleString('id-ID')}</td>
+                            <td class="p-3">
+                                ${isExpired 
+                                    ? '<span class="px-2 py-0.5 text-[10px] font-black uppercase bg-red-900/80 text-red-200 rounded border border-red-500/50"><i class="fa-solid fa-circle-xmark mr-1"></i> Kadaluarsa</span>' 
+                                    : '<span class="px-2 py-0.5 text-[10px] font-black uppercase bg-emerald-900/80 text-emerald-200 rounded border border-emerald-500/50"><i class="fa-solid fa-circle-check mr-1"></i> Aktif</span>'}
+                            </td>
+                            <td class="p-3 text-center">
+                                <button onclick="deleteMember(${m.id})" class="p-1.5 bg-red-800/60 hover:bg-red-600 text-white rounded-lg transition text-xs">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            if (document.getElementById('staff-total-member-income')) {
+                document.getElementById('staff-total-member-income').innerText = "Rp " + totalIncome.toLocaleString('id-ID');
+            }
+        }
+
+        function openAddMemberModal() { document.getElementById('add-member-modal').classList.remove('hidden'); }
+        function closeAddMemberModal() { document.getElementById('add-member-modal').classList.add('hidden'); }
+
+        function saveMember(event) {
+            event.preventDefault();
+            const name = document.getElementById('m-name').value;
+            const gender = document.getElementById('m-gender').value;
+            const start = document.getElementById('m-start').value;
+            const end = document.getElementById('m-end').value;
+            const fee = Number(document.getElementById('m-fee').value);
+
+            members.unshift({ id: Date.now(), name, gender, start, end, fee });
+            combinedTransactions.unshift({
+                id: "TX-" + Math.floor(1000 + Math.random() * 9000),
+                category: "Member",
+                item: `Pendaftaran Member ${name}`,
+                date: start,
+                amount: fee
+            });
+
+            saveDataToStorage();
+            renderMembers();
+            renderCombinedTransactions();
+            updateChartData();
+            closeAddMemberModal();
+            document.getElementById('add-member-form').reset();
+        }
+
+        function deleteMember(id) {
+            if (confirm("Hapus member ini?")) {
+                members = members.filter(m => m.id !== id);
+                saveDataToStorage();
+                renderMembers();
+            }
+        }
+
+        function purgeExpiredMembers() {
+            const today = new Date().toISOString().split('T')[0];
+            const expiredCount = members.filter(m => m.end < today).length;
+            if (expiredCount === 0) return alert("Tidak ada member kadaluarsa.");
+
+            if (confirm(`Hapus ${expiredCount} member kadaluarsa?`)) {
+                members = members.filter(m => m.end >= today);
+                saveDataToStorage();
+                renderMembers();
+            }
+        }
+
+        // RENDER EVENT BULANAN
+        function renderEvents() {
+            const grid = document.getElementById('event-grid');
+            grid.innerHTML = events.map((e, idx) => `
+                <div class="glass-panel rounded-2xl overflow-hidden border border-gray-800 hover:border-brand-neon transition flex flex-col justify-between shadow-md">
+                    <img src="${e.img}" alt="${e.title}" class="w-full h-48 object-cover" onerror="this.src='https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=400&auto=format&fit=crop'">
+                    <div class="p-5 flex-grow flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-[10px] font-black uppercase tracking-wider text-brand-neon bg-brand-neon/10 px-2 py-0.5 rounded border border-brand-neon/20">Event #${idx+1}</span>
+                                <span class="text-[10px] font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">${e.tag}</span>
+                            </div>
+                            <h4 class="text-lg font-extrabold text-white mb-2">${e.title}</h4>
+                            <p class="text-xs text-gray-400 leading-relaxed">${e.desc}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            const staffTbody = document.getElementById('staff-event-tbody');
+            if (staffTbody) {
+                staffTbody.innerHTML = events.map(e => `
+                    <tr class="hover:bg-gray-800/40 transition">
+                        <td class="p-3"><img src="${e.img}" class="w-12 h-12 object-cover rounded-lg border border-gray-700" onerror="this.src='https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=200&auto=format&fit=crop'"></td>
+                        <td class="p-3 font-bold text-white">${e.title}</td>
+                        <td class="p-3 text-xs"><span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold">${e.tag}</span></td>
+                        <td class="p-3 text-xs text-gray-400">${e.desc}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="deleteEvent(${e.id})" class="p-1.5 bg-red-800/60 hover:bg-red-600 text-white rounded-lg text-xs">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        function addNewEvent(event) {
+            event.preventDefault();
+            const title = document.getElementById('ev-title').value;
+            const tag = document.getElementById('ev-tag').value;
+            const desc = document.getElementById('ev-desc').value;
+            const fileInput = document.getElementById('ev-image');
+
+            const createAndSave = (imgUrl) => {
+                events.unshift({ id: Date.now(), title, tag, desc, img: imgUrl });
+                saveDataToStorage();
+                renderEvents();
+                event.target.reset();
+                alert("Event berhasil dipubliskan!");
+            };
+
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    createAndSave(e.target.result);
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                createAndSave("https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=400&auto=format&fit=crop");
+            }
+        }
+
+        function deleteEvent(id) {
+            if (confirm("Hapus event ini?")) {
+                events = events.filter(e => e.id !== id);
+                saveDataToStorage();
+                renderEvents();
+            }
+        }
+
+        // TRANSAKSI & GRAFIK
+        function renderCombinedTransactions() {
+            const tbody = document.getElementById('combined-transaction-tbody');
+            tbody.innerHTML = combinedTransactions.map(t => `
+                <tr class="hover:bg-gray-800/40 transition">
+                    <td class="p-3 font-mono text-xs text-brand-neon">${t.id}</td>
+                    <td class="p-3 text-xs"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${t.category === 'Member' ? 'bg-purple-900/60 text-purple-300' : 'bg-cyan-900/60 text-cyan-300'}">${t.category}</span></td>
+                    <td class="p-3 text-xs font-medium text-white">${t.item}</td>
+                    <td class="p-3 text-xs text-gray-400">${t.date}</td>
+                    <td class="p-3 text-xs font-bold text-emerald-400">Rp ${Number(t.amount).toLocaleString('id-ID')}</td>
+                </tr>
+            `).join('');
+        }
+
+        function openStaffModal() {
+            if (isStaffLoggedIn) { switchTab('tab4'); return; }
+            document.getElementById('staff-auth-modal').classList.remove('hidden');
+            document.getElementById('staff-pin-input').value = '';
+            document.getElementById('pin-error-msg').classList.add('hidden');
+        }
+
+        function closeStaffModal() { document.getElementById('staff-auth-modal').classList.add('hidden'); }
+
+        function verifyStaffPIN() {
+            if (document.getElementById('staff-pin-input').value === '1234') {
+                isStaffLoggedIn = true;
+                closeStaffModal();
+                document.getElementById('staff-status-badge').innerText = "Aktif";
+                document.getElementById('staff-status-badge').className = "ml-1 text-xs bg-emerald-900 text-emerald-200 px-1.5 py-0.5 rounded";
+                switchTab('tab4');
+            } else {
+                document.getElementById('pin-error-msg').classList.remove('hidden');
+            }
+        }
+
+        function lockStaffTab() {
+            isStaffLoggedIn = false;
+            document.getElementById('staff-status-badge').innerText = "Terkunci";
+            document.getElementById('staff-status-badge').className = "ml-1 text-xs bg-red-900 text-red-200 px-1.5 py-0.5 rounded";
+            switchTab('tab1');
+        }
+
+        function toggleMaintenance() {
+            isMaintenance = !isMaintenance;
+            const btn = document.getElementById('btn-maintenance');
+            btn.innerText = isMaintenance ? "Mode Pemeliharaan (Aktif)" : "Mode Operasional Normal";
+            btn.className = isMaintenance ? "w-full bg-red-900/50 border border-red-500/50 text-red-300 py-2 rounded-lg font-bold text-xs transition animate-pulse" : "w-full bg-emerald-900/40 border border-emerald-500/50 text-emerald-300 py-2 rounded-lg font-bold text-xs transition";
+        }
+
+        function exportToCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,ID Transaksi,Kategori,Keterangan,Tanggal,Jumlah (Rp)\n";
+            combinedTransactions.forEach(t => { csvContent += `${t.id},${t.category},"${t.item}",${t.date},${t.amount}\n`; });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `MAUREN_SPORT_Rekap_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function calculateWeeklySales() {
+            const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            const labels = [];
+            const salesData = [0, 0, 0, 0, 0, 0, 0];
+            const now = new Date();
+
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(now.getDate() - i);
+                labels.push(days[d.getDay()]);
+            }
+
+            combinedTransactions.forEach(t => {
+                const tDate = new Date(t.date);
+                const diffTime = Math.abs(now - tDate);
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                if (diffDays >= 0 && diffDays < 7) {
+                    salesData[6 - diffDays] += Number(t.amount);
+                }
+            });
+
+            return { labels, salesData };
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            const { labels, salesData } = calculateWeeklySales();
+
+            salesChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Omset Penjualan (Rp)',
+                        data: salesData,
+                        borderColor: '#E6B800',
+                        backgroundColor: 'rgba(230, 184, 0, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3,
+                        pointBackgroundColor: '#FFD700',
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#D1D5DB', font: { weight: 'bold' } } } },
+                    scales: {
+                        x: { ticks: { color: '#9CA3AF' }, grid: { color: 'rgba(255, 255, 255, 0.05)' } },
+                        y: { ticks: { color: '#9CA3AF', callback: value => 'Rp ' + (value/1000) + 'k' }, grid: { color: 'rgba(255, 255, 255, 0.05)' } }
+                    }
+                }
+            });
+        }
+
+        function updateChartData() {
+            if (!salesChartInstance) return;
+            const { labels, salesData } = calculateWeeklySales();
+            salesChartInstance.data.labels = labels;
+            salesChartInstance.data.datasets[0].data = salesData;
+            salesChartInstance.update();
+        }
+    </script>
+</body>
+</html>
