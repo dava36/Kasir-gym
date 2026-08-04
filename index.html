@@ -31,6 +31,7 @@
         }
     </script>
     <style>
+        /* Bodybuilder Background Silhouette Aesthetic */
         body {
             background-color: #050505;
             background-image: 
@@ -47,12 +48,12 @@
             border: 1px solid rgba(102, 252, 241, 0.15);
         }
         .glass-panel-danger {
-            background: rgba(239, 68, 68, 0.15) !important;
-            border: 1px solid rgba(239, 68, 68, 0.4) !important;
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
         }
     </style>
 </head>
-<body class="text-gray-200 font-sans antialiased min-h-screen flex flex-col justify-between">
+<text class="text-gray-200 font-sans antialiased min-h-screen flex flex-col justify-between">
 
     <!-- HEADER / NAVIGATION BAR -->
     <header class="sticky top-0 z-40 glass-panel border-b border-gray-800 px-4 py-3 shadow-2xl">
@@ -83,7 +84,7 @@
     <!-- MAIN CONTENT AREA -->
     <main class="max-w-7xl mx-auto w-full p-4 flex-grow">
 
-        <!-- BERANDA 1: KATALOG PRODUK & QRIS -->
+        <!-- BERANDA 1: KATALOG PRODUK & QRIS (CUSTOMER & KASIR) -->
         <section id="tab1" class="tab-content space-y-6">
             <!-- Banner Dynamic QRIS -->
             <div class="glass-panel p-6 rounded-2xl border border-brand-neon/30 text-center relative overflow-hidden shadow-2xl">
@@ -106,11 +107,11 @@
 
             <!-- Grid Produk -->
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="product-grid">
-                <!-- Rendered dynamically -->
+                <!-- Produk di-render dinamis via JS -->
             </div>
         </section>
 
-        <!-- BERANDA 2: MEMBER GYM -->
+        <!-- BERANDA 2: MEMBER GYM & OTOMATISASI KADALUARSA -->
         <section id="tab2" class="tab-content hidden space-y-6">
             <div class="glass-panel p-6 rounded-2xl">
                 <div class="flex flex-col md:flex-row justify-between items-md-center gap-4 mb-6">
@@ -138,26 +139,27 @@
                             </tr>
                         </thead>
                         <tbody id="member-table-body" class="divide-y divide-gray-800">
-                            <!-- Rendered dynamically -->
+                            <!-- Rows di-render via JS -->
                         </tbody>
                     </table>
                 </div>
             </div>
         </section>
 
-        <!-- BERANDA 3: POSTER EVENT BULANAN (GRID 3x4) -->
+        <!-- BERANDA 3: POSTER EVENT BULANAN GYM (GRID 3x4) -->
         <section id="tab3" class="tab-content hidden space-y-6">
             <div class="border-b border-gray-800 pb-3">
                 <h2 class="text-2xl font-black text-white uppercase"><i class="fa-solid fa-bullhorn text-brand-neon mr-2"></i> Program & Event Bulanan Gym</h2>
                 <p class="text-sm text-gray-400">Promosi eksklusif, tantangan fisik, dan benefit keanggotaan</p>
             </div>
 
+            <!-- Grid 3x4 Poster -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="event-grid">
-                <!-- Rendered dynamically -->
+                <!-- 12 Item Event di-render via JS -->
             </div>
         </section>
 
-        <!-- BERANDA 4: PRIVATE STAFF ONLY -->
+        <!-- BERANDA 4: PRIVATE STAFF ONLY (KEUANGAN & GRAFIK) -->
         <section id="tab4" class="tab-content hidden space-y-6">
             <div class="glass-panel p-6 rounded-2xl border-amber-500/20">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b border-gray-800 pb-4">
@@ -264,7 +266,7 @@
 
     <!-- SCRIPT APPLICATION LOGIC -->
     <script>
-        // SYSTEM STATE
+        // DATA STATE SYSTEM
         let isStaffLoggedIn = false;
         let isMaintenance = false;
 
@@ -317,7 +319,7 @@
 
             document.getElementById(tabId).classList.remove('hidden');
             const activeNav = document.getElementById(`nav-${tabId}`);
-            if (tabId !== 'tab4') {
+            if(tabId !== 'tab4') {
                 activeNav.classList.add('bg-brand-neon', 'text-black', 'shadow-lg');
                 activeNav.classList.remove('text-gray-300');
             }
@@ -327,18 +329,22 @@
         function renderProducts() {
             const grid = document.getElementById('product-grid');
             grid.innerHTML = products.map(p => `
-                <div class="glass-panel rounded-2xl overflow-hidden hover:border-brand-neon transition flex flex-col justify-between shadow-lg">
-                    <img src="${p.img}" alt="${p.name}" class="w-full h-40 object-cover">
-                    <div class="p-4 flex-grow flex flex-col justify-between space-y-3">
+                <div class="glass-panel rounded-2xl overflow-hidden flex flex-col justify-between border border-gray-800 hover:border-brand-neon/50 transition-all duration-300 group">
+                    <div class="relative h-44 overflow-hidden">
+                        <img src="${p.img}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                        <span class="absolute top-2 right-2 bg-black/80 backdrop-blur-md text-brand-neon text-xs font-bold px-2.5 py-1 rounded-full border border-brand-neon/30">
+                            Stok: ${p.stock}
+                        </span>
+                    </div>
+                    <div class="p-4 flex-grow flex flex-col justify-between">
                         <div>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-brand-neon bg-brand-neon/10 px-2 py-0.5 rounded border border-brand-neon/20">${p.type}</span>
-                            <h4 class="font-bold text-white mt-1 leading-snug">${p.name}</h4>
-                            <p class="text-xs text-gray-400">Stok: ${p.stock} unit</p>
+                            <span class="text-xs text-brand-neon uppercase tracking-wider font-semibold">${p.type}</span>
+                            <h4 class="font-bold text-lg text-white mt-0.5">${p.name}</h4>
                         </div>
-                        <div>
-                            <div class="text-lg font-black text-emerald-400 mb-2">Rp ${p.price.toLocaleString('id-ID')}</div>
-                            <button onclick="buyProduct(${p.id})" class="w-full py-2 bg-brand-neon hover:bg-cyan-300 text-black font-extrabold rounded-xl text-xs uppercase transition shadow-md">
-                                <i class="fa-solid fa-cart-shopping mr-1"></i> Beli via QRIS
+                        <div class="mt-4 flex items-center justify-between">
+                            <span class="text-xl font-extrabold text-white">Rp ${p.price.toLocaleString('id-ID')}</span>
+                            <button onclick="buyProduct(${p.id})" ${p.stock === 0 ? 'disabled' : ''} class="px-3.5 py-2 ${p.stock === 0 ? 'bg-gray-700 cursor-not-allowed' : 'bg-brand-neon hover:bg-cyan-300'} text-black font-bold text-xs rounded-xl transition">
+                                ${p.stock === 0 ? 'Habis' : 'Bayar QRIS'}
                             </button>
                         </div>
                     </div>
@@ -346,128 +352,151 @@
             `).join('');
         }
 
-        // PURCHASE HANDLER
-        function buyProduct(id) {
-            if (isMaintenance) {
-                alert("Sistem sedang dalam Pemeliharaan.");
-                return;
-            }
-            const p = products.find(x => x.id === id);
-            if (p && p.stock > 0) {
-                p.stock--;
-                const txId = "TX-" + Math.floor(1000 + Math.random() * 9000);
-                const dateStr = new Date().toISOString().split('T')[0];
-                combinedTransactions.unshift({ id: txId, category: "Produk", item: p.name, date: dateStr, amount: p.price });
-                
+        // PROCESS BUY PRODUCT & AUDIO FEEDBACK
+        function buyProduct(productId) {
+            const product = products.find(p => p.id === productId);
+            if(product && product.stock > 0) {
+                product.stock--;
                 renderProducts();
+                
+                // Add Transaction
+                const txId = "TX-" + Math.floor(1000 + Math.random() * 9000);
+                const today = new Date().toISOString().split('T')[0];
+                combinedTransactions.unshift({
+                    id: txId,
+                    category: "Produk",
+                    item: product.name,
+                    date: today,
+                    amount: product.price
+                });
                 renderCombinedTransactions();
-                playPaymentAudio(p.price);
-            } else {
-                alert("Stok produk habis!");
+
+                // Play Text-To-Speech "Uang Masuk" Audio Feedback
+                playPaymentAudio(product.price);
             }
         }
 
-        // RENDER MEMBERS (TAB 2)
+        // VOICE SYNTHESIS ("UANG MASUK")
+        function playPaymentAudio(amount) {
+            if ('speechSynthesis' in window) {
+                const text = `Uang masuk sebesar ${amount.toLocaleString('id-ID')} rupiah`;
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'id-ID';
+                utterance.rate = 1.0;
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert(`[NOTIFIKASI SUARA] Uang Masuk: Rp ${amount.toLocaleString('id-ID')}`);
+            }
+        }
+
+        // RENDER MEMBERS & AUTO RED HIGHLIGHT (TAB 2)
         function renderMembers() {
             const tbody = document.getElementById('member-table-body');
-            const today = new Date().toISOString().split('T')[0];
+            const today = new Date("2026-07-31"); // Fixed reference date
             let totalIncome = 0;
 
             tbody.innerHTML = members.map(m => {
-                const isExpired = m.end < today;
                 totalIncome += m.fee;
+                const endDate = new Date(m.end);
+                const isExpired = endDate < today;
+
                 return `
-                    <tr class="${isExpired ? 'glass-panel-danger' : 'hover:bg-gray-800/50'} transition">
-                        <td class="p-4 font-bold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-user-circle text-gray-400"></i> ${m.name}
+                    <tr class="${isExpired ? 'glass-panel-danger font-bold text-red-200' : 'hover:bg-gray-800/50'} transition">
+                        <td class="p-4 flex items-center space-x-2">
+                            <i class="fa-solid fa-user-circle ${isExpired ? 'text-red-400' : 'text-brand-neon'} text-lg"></i>
+                            <span>${m.name}</span>
                         </td>
-                        <td class="p-4 text-xs">${m.gender}</td>
-                        <td class="p-4 text-xs text-gray-400">${m.start}</td>
-                        <td class="p-4 text-xs font-semibold ${isExpired ? 'text-red-400' : 'text-emerald-400'}">${m.end}</td>
-                        <td class="p-4 text-xs font-bold text-emerald-400">Rp ${m.fee.toLocaleString('id-ID')}</td>
+                        <td class="p-4">${m.gender}</td>
+                        <td class="p-4">${m.start}</td>
+                        <td class="p-4">${m.end}</td>
+                        <td class="p-4 font-semibold text-emerald-400">Rp ${m.fee.toLocaleString('id-ID')}</td>
                         <td class="p-4">
                             ${isExpired 
-                                ? '<span class="px-2.5 py-1 text-[10px] font-black uppercase bg-red-900/80 text-red-200 rounded border border-red-500/50"><i class="fa-solid fa-circle-xmark mr-1"></i> Kadaluarsa</span>' 
-                                : '<span class="px-2.5 py-1 text-[10px] font-black uppercase bg-emerald-900/80 text-emerald-200 rounded border border-emerald-500/50"><i class="fa-solid fa-circle-check mr-1"></i> Aktif</span>'}
+                                ? '<span class="bg-red-600 text-white text-xs px-2.5 py-1 rounded-full uppercase font-black tracking-wide">Kadaluarsa</span>' 
+                                : '<span class="bg-emerald-600/30 text-emerald-400 text-xs px-2.5 py-1 rounded-full border border-emerald-500/30">Aktif</span>'}
                         </td>
                     </tr>
                 `;
             }).join('');
 
-            document.getElementById('total-member-income').innerText = "Rp " + totalIncome.toLocaleString('id-ID');
+            document.getElementById('total-member-income').innerText = `Rp ${totalIncome.toLocaleString('id-ID')}`;
         }
 
-        // RENDER EVENTS (TAB 3)
+        // RENDER EVENTS GRID (TAB 3 - 3x4 GRID)
         function renderEvents() {
             const grid = document.getElementById('event-grid');
-            const events = [
-                { title: "Push Pull Legs Challenge", tag: "Kompetisi", desc: "Tantangan angkatan beban terbesar bulan ini berhadiah Suplemen Gratis 1 Tahun." },
-                { title: "Diskon Member Khusus Wanita", tag: "Promo", desc: "Potongan harga keanggotaan 30% khusus pendaftaran di bulan Agustus." },
-                { title: "Workshop Deadlift Form", tag: "Edukasi", desc: "Sesi edukasi perbaikan teknik deadlift gratis dibimbing Personal Trainer bersertifikat." },
-                { title: "Bench Press Championship", tag: "Event 1RM", desc: "Uji batas kemampuan maksimum bench press Anda setiap Sabtu malam minggu ke-3." },
-                { title: "Free Whey Protein Shake", tag: "Bonus", desc: "Setiap pembelian perpanjangan langganan 3 bulan berturut-turut." },
-                { title: "Calisthenics Meetup", tag: "Komunitas", desc: "Kumpul komunitas bodyweight training dan ajang saling berbagi variasi gerakan." },
-                { title: "Fat Loss 30 Days Program", tag: "Program", desc: "Panduan diet ketat dan latihan HIIT harian terbimbing untuk pembakaran kalori maksimal." },
-                { title: "Night Gym Rave & Beats", tag: "Special Event", desc: "Sesi latihan malam diiringi live DJ set untuk meningkatkan motivasi serta adrenalin." },
-                { title: "Arm Wrestling Open", tag: "Lomba", desc: "Turnamen panco antar member berhadiah uang tunai dan trophy IRONVAULT." },
-                { title: "Nutrition & Diet Seminar", tag: "Edukasi", desc: "Pelajari cara menghitung makronutrisi harian sesuai target bulking atau cutting." },
-                { title: "Student Discount Pass", tag: "Promo", desc: "Tunjukkan Kartu Tanda Mahasiswa / Pelajar dan dapatkan harga langganan hemat." },
-                { title: "Personal Trainer Showcase", tag: "Konsultasi", desc: "Sesi konsultasi target fitness dan body fat test gratis bersama tim trainer profesional." }
-            ];
-
-            grid.innerHTML = events.map((e, idx) => `
-                <div class="glass-panel p-5 rounded-2xl border border-gray-800 hover:border-brand-neon transition flex flex-col justify-between shadow-md">
-                    <div>
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-[10px] font-black uppercase tracking-wider text-brand-neon bg-brand-neon/10 px-2 py-0.5 rounded border border-brand-neon/20">Event #${idx+1}</span>
-                            <span class="text-[10px] font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">${e.tag}</span>
+            let eventsHtml = '';
+            for(let i = 1; i <= 12; i++) {
+                eventsHtml += `
+                    <div class="glass-panel rounded-2xl p-5 border border-gray-800 flex flex-col justify-between hover:border-brand-neon/40 transition">
+                        <div>
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="text-xs bg-brand-neon/20 text-brand-neon px-2.5 py-1 rounded-md font-bold uppercase">Event #${i}</span>
+                                <span class="text-xs text-gray-400"><i class="fa-regular fa-clock mr-1"></i> s/d 31 Agu 2026</span>
+                            </div>
+                            <h4 class="text-lg font-bold text-white mb-2">Gym Challenge & Promo Promo ${i}</h4>
+                            <p class="text-xs text-gray-400 mb-3"><strong class="text-gray-200">Syarat:</strong> Member aktif / Minimal transaksi Rp 100k</p>
                         </div>
-                        <h4 class="text-lg font-extrabold text-white mb-2 leading-snug">${e.title}</h4>
-                        <p class="text-xs text-gray-400 leading-relaxed">${e.desc}</p>
+                        <div class="bg-gray-900/60 p-3 rounded-xl border border-gray-800 text-xs">
+                            <span class="text-brand-neon font-bold block mb-1">Benefit:</span>
+                            <span class="text-gray-300">Gratis 1x Protein Shake & Voucher diskon sewa alat 20%.</span>
+                        </div>
                     </div>
-                    <div class="mt-4 pt-3 border-t border-gray-800 flex justify-between items-center">
-                        <span class="text-[11px] text-gray-500"><i class="fa-regular fa-clock mr-1"></i> Bulan Ini</span>
-                        <button onclick="alert('Informasi event telah dicatat!')" class="text-xs font-bold text-brand-neon hover:underline">Detail <i class="fa-solid fa-arrow-right ml-0.5"></i></button>
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }
+            grid.innerHTML = eventsHtml;
         }
 
-        // RENDER TRANSACTIONS (TAB 4)
+        // RENDER COMBINED TRANSACTIONS (TAB 4)
         function renderCombinedTransactions() {
             const tbody = document.getElementById('combined-transaction-tbody');
-            tbody.innerHTML = combinedTransactions.map(t => `
-                <tr class="hover:bg-gray-800/40 transition">
-                    <td class="p-3 font-mono text-xs text-brand-neon">${t.id}</td>
-                    <td class="p-3 text-xs"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${t.category === 'Member' ? 'bg-purple-900/60 text-purple-300' : 'bg-cyan-900/60 text-cyan-300'}">${t.category}</span></td>
-                    <td class="p-3 text-xs font-medium text-white">${t.item}</td>
-                    <td class="p-3 text-xs text-gray-400">${t.date}</td>
-                    <td class="p-3 text-xs font-bold text-emerald-400">Rp ${t.amount.toLocaleString('id-ID')}</td>
+            tbody.innerHTML = combinedTransactions.map(tx => `
+                <tr class="hover:bg-gray-800/40 border-b border-gray-800/50">
+                    <td class="p-3 font-mono text-brand-neon text-xs">${tx.id}</td>
+                    <td class="p-3"><span class="px-2 py-0.5 text-xs rounded bg-gray-800 text-gray-300">${tx.category}</span></td>
+                    <td class="p-3 font-semibold text-white">${tx.item}</td>
+                    <td class="p-3 text-gray-400 text-xs">${tx.date}</td>
+                    <td class="p-3 text-emerald-400 font-bold">Rp ${tx.amount.toLocaleString('id-ID')}</td>
                 </tr>
             `).join('');
         }
 
-        // STAFF MODAL & AUTH
+        // EXPORT TO CSV (FOR GOOGLE DRIVE INTEGRATION)
+        function exportToCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,ID,Kategori,Item,Tanggal,Jumlah\n";
+            combinedTransactions.forEach(row => {
+                csvContent += `${row.id},${row.category},${row.item},${row.date},${row.amount}\n`;
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Laporan_Kasir_IRONVAULT_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // STAFF AUTHENTICATION SYSTEM
         function openStaffModal() {
             if (isStaffLoggedIn) {
                 switchTab('tab4');
-                return;
+            } else {
+                document.getElementById('staff-auth-modal').classList.remove('hidden');
             }
-            document.getElementById('staff-auth-modal').classList.remove('hidden');
-            document.getElementById('staff-pin-input').value = '';
-            document.getElementById('pin-error-msg').classList.add('hidden');
         }
 
         function closeStaffModal() {
             document.getElementById('staff-auth-modal').classList.add('hidden');
+            document.getElementById('pin-error-msg').classList.add('hidden');
+            document.getElementById('staff-pin-input').value = '';
         }
 
         function verifyStaffPIN() {
             const pin = document.getElementById('staff-pin-input').value;
-            if (pin === '1234') {
+            if (pin === "1234") { // Default PIN
                 isStaffLoggedIn = true;
                 closeStaffModal();
-                document.getElementById('staff-status-badge').innerText = "Aktif";
+                document.getElementById('staff-status-badge').innerText = "Terverifikasi";
                 document.getElementById('staff-status-badge').className = "ml-1 text-xs bg-emerald-900 text-emerald-200 px-1.5 py-0.5 rounded";
                 switchTab('tab4');
             } else {
@@ -482,54 +511,7 @@
             switchTab('tab1');
         }
 
-        // MAINTENANCE TOGGLE
-        function toggleMaintenance() {
-            isMaintenance = !isMaintenance;
-            const btn = document.getElementById('btn-maintenance');
-            if (isMaintenance) {
-                btn.innerText = "Mode Pemeliharaan (Aktif)";
-                btn.className = "w-full bg-red-900/50 border border-red-500/50 text-red-300 py-2 rounded-lg font-bold text-xs transition animate-pulse";
-            } else {
-                btn.innerText = "Mode Operasional Normal";
-                btn.className = "w-full bg-emerald-900/40 border border-emerald-500/50 text-emerald-300 py-2 rounded-lg font-bold text-xs transition";
-            }
-        }
-
-        // RESET SHORTFALL
-        function resetShortfall() {
-            alert("Penyesuaian selisih kas telah berhasil diperbarui dan disinkronkan.");
-        }
-
-        // AUDIO ANNOUNCEMENT (Web Speech API)
-        function playPaymentAudio(amount) {
-            if ('speechSynthesis' in window) {
-                const text = `Pembayaran QRIS berhasil diterima sebesar ${amount.toLocaleString('id-ID')} rupiah. Terima kasih.`;
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'id-ID';
-                utterance.rate = 0.95;
-                window.speechSynthesis.speak(utterance);
-            } else {
-                alert(`[QRIS Voice] Uang Masuk: Rp ${amount.toLocaleString('id-ID')}`);
-            }
-        }
-
-        // CSV EXPORT FOR DRIVE / EXCEL
-        function exportToCSV() {
-            let csvContent = "data:text/csv;charset=utf-8,ID Transaksi,Kategori,Keterangan,Tanggal,Jumlah (Rp)\n";
-            combinedTransactions.forEach(t => {
-                csvContent += `${t.id},${t.category},"${t.item}",${t.date},${t.amount}\n`;
-            });
-
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `IRONVAULT_Rekap_${new Date().toISOString().split('T')[0]}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        // CHART.JS INITIALIZATION
+        // CHART.JS INITIALIZATION & RESET
         function initChart() {
             const ctx = document.getElementById('salesChart').getContext('2d');
             salesChartInstance = new Chart(ctx, {
@@ -543,29 +525,38 @@
                         backgroundColor: 'rgba(102, 252, 241, 0.1)',
                         borderWidth: 3,
                         fill: true,
-                        tension: 0.3,
-                        pointBackgroundColor: '#FFD700',
-                        pointRadius: 5
+                        tension: 0.4
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: { labels: { color: '#D1D5DB', font: { weight: 'bold' } } }
-                    },
+                    plugins: { legend: { display: false } },
                     scales: {
-                        x: { ticks: { color: '#9CA3AF' }, grid: { color: 'rgba(255, 255, 255, 0.05)' } },
-                        y: { 
-                            ticks: { 
-                                color: '#9CA3AF',
-                                callback: value => 'Rp ' + (value/1000) + 'k'
-                            }, 
-                            grid: { color: 'rgba(255, 255, 255, 0.05)' } 
-                        }
+                        x: { ticks: { color: '#9CA3AF' }, grid: { color: '#374151' } },
+                        y: { ticks: { color: '#9CA3AF' }, grid: { color: '#374151' } }
                     }
                 }
             });
+        }
+
+        function resetShortfall() {
+            dailySalesData = [0, 0, 0, 0, 0, 0, 0];
+            salesChartInstance.data.datasets[0].data = dailySalesData;
+            salesChartInstance.update();
+            alert("Grafik omset harian & penyesuaian kas telah di-reset!");
+        }
+
+        function toggleMaintenance() {
+            isMaintenance = !isMaintenance;
+            const btn = document.getElementById('btn-maintenance');
+            if(isMaintenance) {
+                btn.innerText = "Mode Maintenance AKTIF";
+                btn.className = "w-full bg-red-900/50 border border-red-500/50 text-red-200 py-2 rounded-lg font-bold text-xs transition";
+            } else {
+                btn.innerText = "Mode Operasional Normal";
+                btn.className = "w-full bg-emerald-900/40 border border-emerald-500/50 text-emerald-300 py-2 rounded-lg font-bold text-xs transition";
+            }
         }
     </script>
 </body>
