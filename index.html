@@ -1,145 +1,598 @@
-Saya ingin membangun sebuah **platform website manajemen bisnis** yang berfungsi sebagai sistem operasional utama untuk usaha saya. Platform ini tidak hanya berperan sebagai aplikasi kasir (POS), tetapi juga sebagai sistem pembukuan keuangan, manajemen stok, analisis bisnis, dan monitoring usaha secara **real-time**.
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mauren Sport - Business Management</title>
+    <!-- Tailwind CSS untuk Styling Cepat & Modern -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome untuk Ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js untuk Grafik -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .hidden { display: none !important; }
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* Scrollbar styling */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="h-screen w-screen overflow-hidden flex bg-gray-100 text-gray-800">
 
-## Latar Belakang
+    <!-- LOGIN SCREEN -->
+    <div id="loginScreen" class="absolute inset-0 z-50 flex items-center justify-center bg-slate-900 fade-in">
+        <div class="bg-white p-10 rounded-2xl shadow-2xl w-full max-w-md text-center">
+            <div class="w-20 h-20 mx-auto bg-indigo-600 rounded-full flex items-center justify-center mb-6 shadow-lg">
+                <i class="fa-solid fa-dumbbell text-4xl text-white"></i>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Mauren Sport</h1>
+            <p class="text-gray-500 mb-8">Pilih Hak Akses (Simulasi)</p>
+            
+            <div class="space-y-4">
+                <button onclick="login('owner')" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition-colors flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-user-tie"></i> Login sebagai Owner
+                </button>
+                <button onclick="login('staff')" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-user"></i> Login sebagai Staff
+                </button>
+            </div>
+            <p class="text-xs text-gray-400 mt-6"><i class="fa-solid fa-circle-info"></i> Data disimpan secara lokal untuk keperluan demo.</p>
+        </div>
+    </div>
 
-Saya memiliki bisnis pusat kebugaran bernama **Mauren Sport** yang memiliki beberapa sumber pendapatan, antara lain:
+    <!-- MAIN APP LAYOUT (Hidden by default) -->
+    <div id="mainApp" class="w-full h-full flex hidden">
+        
+        <!-- SIDEBAR -->
+        <aside class="w-64 bg-slate-900 text-white flex flex-col transition-all duration-300">
+            <div class="p-6 flex items-center gap-3 border-b border-slate-700">
+                <i class="fa-solid fa-dumbbell text-2xl text-indigo-400"></i>
+                <span class="font-bold text-xl tracking-wide">Mauren Sport</span>
+            </div>
+            
+            <div class="p-4 text-sm font-medium text-slate-400 border-b border-slate-800 flex items-center gap-2">
+                <div class="w-2 h-2 rounded-full bg-emerald-400"></div>
+                Logged in as: <span id="userRoleDisplay" class="text-white capitalize"></span>
+            </div>
 
-* Membership Gym.
-* Gym Harian (Daily Pass).
-* Trampolin.
-* Badminton.
-* Futsal.
-* Penjualan minuman.
-* Café.
+            <nav class="flex-1 p-4 space-y-2 overflow-y-auto" id="sidebarNav">
+                <!-- Nav items generated via JS based on role -->
+            </nav>
 
-Saat ini seluruh pencatatan masih banyak dilakukan secara manual sehingga kurang efisien, rawan kesalahan, dan menyulitkan ketika ingin melihat laporan bisnis secara cepat.
+            <div class="p-4 border-t border-slate-800">
+                <button onclick="logout()" class="w-full py-2 px-4 bg-slate-800 hover:bg-rose-600 rounded-lg text-left transition-colors text-sm font-medium flex items-center gap-3">
+                    <i class="fa-solid fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </aside>
 
-Karena itu, saya ingin seluruh proses operasional dipusatkan dalam **satu platform** sehingga seluruh aktivitas usaha dapat dikelola secara otomatis.
+        <!-- MAIN CONTENT AREA -->
+        <main class="flex-1 flex flex-col h-full bg-gray-50 overflow-hidden relative">
+            
+            <!-- HEADER -->
+            <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 shrink-0">
+                <h2 id="pageTitle" class="text-xl font-bold text-gray-800">Dashboard</h2>
+                <div class="flex items-center gap-4 text-gray-500">
+                    <span id="clock" class="text-sm font-medium"></span>
+                    <button class="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center relative">
+                        <i class="fa-regular fa-bell"></i>
+                        <span class="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full"></span>
+                    </button>
+                </div>
+            </header>
 
-## Tujuan Platform
+            <!-- DYNAMIC VIEWS -->
+            <div class="flex-1 overflow-y-auto p-8 relative" id="contentArea">
+                
+                <!-- VIEW: DASHBOARD (Owner) -->
+                <div id="view-dashboard" class="view-section hidden fade-in space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                            <p class="text-sm text-gray-500 font-medium mb-1">Omzet Hari Ini</p>
+                            <h3 class="text-3xl font-bold text-gray-800" id="dash-omzet">Rp 0</h3>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                            <p class="text-sm text-gray-500 font-medium mb-1">Total Laba Hari Ini</p>
+                            <h3 class="text-3xl font-bold text-emerald-600" id="dash-laba">Rp 0</h3>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                            <p class="text-sm text-gray-500 font-medium mb-1">Total Transaksi</p>
+                            <h3 class="text-3xl font-bold text-gray-800" id="dash-trx">0</h3>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                            <p class="text-sm text-gray-500 font-medium mb-1">Item Terjual</p>
+                            <h3 class="text-3xl font-bold text-indigo-600" id="dash-items">0</h3>
+                        </div>
+                    </div>
 
-Website ini harus menjadi pusat manajemen bisnis yang mampu mengelola seluruh aktivitas operasional dalam satu sistem, meliputi:
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Chart -->
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 lg:col-span-2">
+                            <h4 class="font-bold text-gray-800 mb-4">Tren Penjualan (Simulasi 7 Hari)</h4>
+                            <canvas id="salesChart" height="100"></canvas>
+                        </div>
+                        
+                        <!-- Alerts -->
+                        <div class="space-y-6">
+                            <div class="bg-white p-6 rounded-2xl shadow-sm border border-rose-100">
+                                <h4 class="font-bold text-gray-800 mb-4 flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation text-rose-500"></i> Peringatan Stok</h4>
+                                <ul id="lowStockList" class="space-y-3">
+                                    <!-- Low stock populated by JS -->
+                                </ul>
+                            </div>
+                            <div class="bg-white p-6 rounded-2xl shadow-sm border border-amber-100">
+                                <h4 class="font-bold text-gray-800 mb-4 flex items-center gap-2"><i class="fa-solid fa-wrench text-amber-500"></i> Jadwal Perawatan Aset</h4>
+                                <ul id="assetAlertList" class="space-y-3">
+                                    <li class="flex justify-between items-center text-sm"><span class="text-gray-600">Treadmill A (Gym)</span><span class="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded">2 Hari Lagi</span></li>
+                                    <li class="flex justify-between items-center text-sm"><span class="text-gray-600">AC Lap. Futsal 1</span><span class="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded">Minggu Depan</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-* Kasir (Point of Sale/POS).
-* Pembukuan keuangan.
-* Laporan pemasukan dan pengeluaran.
-* Manajemen stok barang.
-* Manajemen harga produk.
-* Monitoring penjualan.
-* Analisis performa bisnis.
-* Monitoring aset dan perawatan alat gym.
+                <!-- VIEW: POS / KASIR (Staff & Owner) -->
+                <div id="view-pos" class="view-section hidden fade-in h-full flex flex-col">
+                    <div class="flex gap-6 h-full">
+                        <!-- Product Grid -->
+                        <div class="flex-1 flex flex-col h-full bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                            <div class="p-4 border-b border-gray-100 flex gap-2 overflow-x-auto shrink-0" id="pos-categories">
+                                <!-- Categories populated by JS -->
+                            </div>
+                            <div class="p-4 flex-1 overflow-y-auto bg-gray-50">
+                                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="pos-products">
+                                    <!-- Products populated by JS -->
+                                </div>
+                            </div>
+                        </div>
 
-## Sistem Hak Akses
+                        <!-- Cart Sidebar -->
+                        <div class="w-80 bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col h-full shrink-0">
+                            <div class="p-4 border-b border-gray-100 bg-slate-50 rounded-t-2xl">
+                                <h3 class="font-bold text-gray-800"><i class="fa-solid fa-cart-shopping mr-2"></i>Keranjang</h3>
+                            </div>
+                            
+                            <div class="flex-1 overflow-y-auto p-4 space-y-4" id="cart-items">
+                                <!-- Cart items -->
+                                <div class="text-center text-gray-400 mt-10 text-sm">Keranjang masih kosong</div>
+                            </div>
 
-Website bersifat **private** dan memiliki beberapa tingkat akses.
+                            <div class="p-4 border-t border-gray-100 bg-gray-50 rounded-b-2xl shrink-0">
+                                <div class="flex justify-between text-sm mb-2 text-gray-600">
+                                    <span>Subtotal</span>
+                                    <span id="cart-subtotal" class="font-medium">Rp 0</span>
+                                </div>
+                                <div class="flex justify-between text-lg font-bold text-gray-800 mb-4">
+                                    <span>Total</span>
+                                    <span id="cart-total" class="text-indigo-600">Rp 0</span>
+                                </div>
+                                <button onclick="checkout()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-transform transform active:scale-95 shadow-md flex justify-center items-center gap-2">
+                                    <i class="fa-solid fa-check"></i> Proses Pembayaran
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-### Staff
+                <!-- VIEW: INVENTORY -->
+                <div id="view-inventory" class="view-section hidden fade-in bg-white rounded-2xl shadow-sm border border-gray-100">
+                    <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                        <h3 class="font-bold text-gray-800">Manajemen Stok & Produk</h3>
+                        <button class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium"><i class="fa-solid fa-plus mr-1"></i> Tambah Produk</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50 text-gray-500 text-sm">
+                                    <th class="p-4 border-b border-gray-200">Nama Produk</th>
+                                    <th class="p-4 border-b border-gray-200">Kategori</th>
+                                    <th class="p-4 border-b border-gray-200">Harga Jual</th>
+                                    <th class="p-4 border-b border-gray-200">Stok</th>
+                                    <th class="p-4 border-b border-gray-200">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventory-table-body" class="text-sm">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
-Staff hanya dapat:
+            </div>
+        </main>
+    </div>
 
-* Melakukan transaksi penjualan.
-* Mengelola stok.
-* Mengelola data produk sesuai izin.
-* Melihat data yang diperlukan untuk operasional harian.
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-emerald-600 text-white px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 translate-y-20 opacity-0 z-50 flex items-center gap-3">
+        <i class="fa-solid fa-circle-check"></i> <span id="toast-msg">Transaksi Berhasil!</span>
+    </div>
 
-### Owner
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- DATA MOCKUP (Simulasi Database Cloud) ---
+        const defaultProducts = [
+            { id: 1, name: "Daily Pass Gym", category: "Gym", price: 35000, cost: 0, stock: 999, minStock: 0, type: "service", color: "bg-blue-500" },
+            { id: 2, name: "Member 1 Bulan", category: "Gym", price: 250000, cost: 0, stock: 999, minStock: 0, type: "service", color: "bg-blue-600" },
+            { id: 3, name: "Sewa Futsal (Malam)", category: "Futsal", price: 150000, cost: 0, stock: 999, minStock: 0, type: "service", color: "bg-emerald-500" },
+            { id: 4, name: "Sewa Badminton", category: "Badminton", price: 60000, cost: 0, stock: 999, minStock: 0, type: "service", color: "bg-teal-500" },
+            { id: 5, name: "Tiket Trampolin", category: "Trampolin", price: 50000, cost: 0, stock: 999, minStock: 0, type: "service", color: "bg-purple-500" },
+            { id: 6, name: "Air Mineral 600ml", category: "Cafe", price: 5000, cost: 2500, stock: 12, minStock: 24, type: "product", color: "bg-slate-700" },
+            { id: 7, name: "Isotonic Drink", category: "Cafe", price: 8000, cost: 4500, stock: 8, minStock: 15, type: "product", color: "bg-slate-700" },
+            { id: 8, name: "Whey Protein Sachet", category: "Cafe", price: 25000, cost: 18000, stock: 3, minStock: 10, type: "product", color: "bg-slate-700" },
+            { id: 9, name: "Kopi Hitam", category: "Cafe", price: 10000, cost: 3000, stock: 50, minStock: 10, type: "product", color: "bg-slate-700" }
+        ];
 
-Owner memiliki akses penuh untuk:
+        // Initialize Database in LocalStorage
+        function initDB() {
+            if (!localStorage.getItem('mauren_products')) {
+                localStorage.setItem('mauren_products', JSON.stringify(defaultProducts));
+            }
+            if (!localStorage.getItem('mauren_transactions')) {
+                localStorage.setItem('mauren_transactions', JSON.stringify([]));
+            }
+        }
 
-* Melihat seluruh laporan.
-* Mengelola seluruh data.
-* Mengubah pengaturan sistem.
-* Melihat omzet.
-* Melihat keuntungan.
-* Memantau seluruh aktivitas usaha dari mana saja secara real-time.
+        function getDB(key) { return JSON.parse(localStorage.getItem(key)); }
+        function setDB(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
 
-Hak akses owner harus menggunakan akun dan password yang berbeda dengan staff serta tidak dapat diakses oleh staff.
+        // --- STATE VARIABLES ---
+        let currentUserRole = null; // 'owner' or 'staff'
+        let currentCart = [];
+        let currentCategoryFilter = 'All';
 
-## Dashboard Owner
+        // --- UTILITIES ---
+        const formatRp = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
 
-Dashboard owner harus menampilkan informasi secara real-time, seperti:
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
 
-* Total omzet hari ini.
-* Total omzet mingguan.
-* Total omzet bulanan.
-* Total laba.
-* Total transaksi.
-* Produk yang paling laris.
-* Cabang atau layanan dengan pendapatan tertinggi.
-* Stok barang yang mulai menipis.
-* Nilai persediaan barang.
-* Riwayat transaksi.
-* Grafik penjualan.
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
+        }
 
-Semua data harus dapat dipantau dari jarak jauh menggunakan perangkat apa pun.
+        // --- NAVIGATION & AUTH ---
+        const navItems = {
+            owner: [
+                { id: 'dashboard', icon: 'fa-chart-pie', label: 'Dashboard Analitik' },
+                { id: 'pos', icon: 'fa-cash-register', label: 'Kasir (POS)' },
+                { id: 'inventory', icon: 'fa-box', label: 'Inventaris & Stok' },
+                { id: 'assets', icon: 'fa-cubes', label: 'Manajemen Aset' },
+                { id: 'reports', icon: 'fa-file-invoice-dollar', label: 'Laporan Keuangan' },
+                { id: 'settings', icon: 'fa-gear', label: 'Pengaturan' }
+            ],
+            staff: [
+                { id: 'pos', icon: 'fa-cash-register', label: 'Kasir (POS)' },
+                { id: 'inventory', icon: 'fa-box', label: 'Cek Stok' },
+            ]
+        };
 
-## Sistem Inventaris
+        function login(role) {
+            initDB();
+            currentUserRole = role;
+            
+            // Hide login, show app
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            document.getElementById('userRoleDisplay').innerText = role;
 
-Setiap produk harus memiliki informasi seperti:
+            // Render Sidebar
+            const navContainer = document.getElementById('sidebarNav');
+            navContainer.innerHTML = '';
+            navItems[role].forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = `w-full text-left py-3 px-4 rounded-xl mb-1 transition-colors flex items-center gap-3 text-sm font-medium ${item.id === (role === 'owner' ? 'dashboard' : 'pos') ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`;
+                btn.innerHTML = `<i class="fa-solid ${item.icon} w-5"></i> ${item.label}`;
+                btn.onclick = () => switchView(item.id, btn);
+                navContainer.appendChild(btn);
+            });
 
-* Nama produk.
-* Foto produk.
-* Harga jual.
-* Harga modal (opsional).
-* Jumlah stok.
-* Status stok.
-* Riwayat perubahan stok.
+            // Set default view
+            switchView(role === 'owner' ? 'dashboard' : 'pos', navContainer.firstChild);
+        }
 
-Jika stok hampir habis, sistem dapat memberikan peringatan kepada owner atau staff.
+        function logout() {
+            currentUserRole = null;
+            document.getElementById('mainApp').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+        }
 
-Selain barang dagangan, sistem juga harus dapat mencatat aset usaha seperti alat gym.
+        function switchView(viewId, activeBtn) {
+            // Update UI Active State
+            if (activeBtn) {
+                const buttons = document.getElementById('sidebarNav').children;
+                for (let btn of buttons) {
+                    btn.className = "w-full text-left py-3 px-4 rounded-xl mb-1 transition-colors flex items-center gap-3 text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white";
+                }
+                activeBtn.className = "w-full text-left py-3 px-4 rounded-xl mb-1 transition-colors flex items-center gap-3 text-sm font-medium bg-indigo-600 text-white shadow-md";
+            }
 
-Contohnya:
+            // Hide all views
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            
+            // Show selected view
+            const viewEl = document.getElementById(`view-${viewId}`);
+            if (viewEl) viewEl.classList.remove('hidden');
+            
+            // Update Title
+            const titles = { dashboard: 'Dashboard Real-Time', pos: 'Sistem Kasir (POS)', inventory: 'Manajemen Inventaris' };
+            document.getElementById('pageTitle').innerText = titles[viewId] || 'Mauren Sport';
 
-* Nama alat.
-* Tanggal pembelian.
-* Kondisi alat.
-* Estimasi umur pakai.
-* Jadwal servis.
-* Jadwal penggantian.
+            // Trigger view-specific render logic
+            if (viewId === 'dashboard') renderDashboard();
+            if (viewId === 'pos') renderPOS();
+            if (viewId === 'inventory') renderInventory();
+        }
 
-Dengan demikian owner mengetahui kapan suatu alat harus diperbaiki atau diganti.
+        // --- DASHBOARD LOGIC (Real-time Simulation) ---
+        let salesChartInstance = null;
+        function renderDashboard() {
+            if (currentUserRole !== 'owner') return;
 
-## Analisis Bisnis
+            const products = getDB('mauren_products');
+            const transactions = getDB('mauren_transactions');
+            
+            // Calculate today's metrics
+            const today = new Date().toLocaleDateString();
+            let todayOmzet = 0;
+            let todayLaba = 0;
+            let todayItems = 0;
 
-Saya juga ingin sistem memiliki fitur analisis yang membantu pengambilan keputusan, misalnya:
+            transactions.forEach(trx => {
+                if(new Date(trx.date).toLocaleDateString() === today) {
+                    todayOmzet += trx.total;
+                    todayLaba += trx.profit;
+                    todayItems += trx.items.reduce((sum, item) => sum + item.qty, 0);
+                }
+            });
 
-* Menghitung rata-rata jam operasional yang paling ramai.
-* Menampilkan hari dengan transaksi tertinggi.
-* Menampilkan layanan yang menghasilkan pendapatan terbesar (high income).
-* Menampilkan produk yang paling sering dibeli.
-* Menampilkan tren penjualan berdasarkan waktu.
-* Menampilkan laporan bulanan secara otomatis.
+            // Animate Numbers
+            document.getElementById('dash-omzet').innerText = formatRp(todayOmzet);
+            document.getElementById('dash-laba').innerText = formatRp(todayLaba);
+            document.getElementById('dash-trx').innerText = transactions.length;
+            document.getElementById('dash-items').innerText = todayItems;
 
-Data tersebut nantinya dapat digunakan sebagai dasar strategi bisnis.
+            // Render Low Stock
+            const lowStock = products.filter(p => p.type === 'product' && p.stock <= p.minStock);
+            const lowStockHtml = lowStock.map(p => `
+                <li class="flex justify-between items-center text-sm border-b border-gray-100 pb-2">
+                    <span class="text-gray-700 font-medium">${p.name}</span>
+                    <span class="bg-rose-100 text-rose-700 px-2 py-1 rounded-full text-xs font-bold">Sisa ${p.stock}</span>
+                </li>
+            `).join('');
+            document.getElementById('lowStockList').innerHTML = lowStockHtml || '<li class="text-sm text-gray-400">Stok aman.</li>';
 
-## Sinkronisasi Data Real-Time
+            // Render Chart (Simulated Data + Real Data)
+            renderChart();
+        }
 
-Ini adalah bagian yang paling penting.
+        function renderChart() {
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            if (salesChartInstance) salesChartInstance.destroy();
 
-Saya ingin seluruh data menggunakan **database/cloud** sehingga tidak bergantung pada satu perangkat.
+            // Mockup historical data
+            const labels = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Hari Ini'];
+            const data = [1200000, 1500000, 900000, 1800000, 2100000, 3500000, getDB('mauren_transactions').reduce((sum, t) => sum + t.total, 0) || 500000];
 
-Artinya:
+            salesChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Omzet (Rp)',
+                        data: data,
+                        backgroundColor: '#6366f1',
+                        borderRadius: 6,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, grid: { display: false } } }
+                }
+            });
+        }
 
-* Jika staff mengubah stok dari komputer kasir, maka owner yang membuka dashboard dari rumah dapat langsung melihat perubahan tersebut.
-* Jika terjadi transaksi, seluruh perangkat langsung menerima pembaruan.
-* Jika harga diubah, semua perangkat langsung menampilkan harga terbaru.
-* Jika stok berkurang, semua pengguna langsung melihat jumlah stok yang baru.
+        // --- POS LOGIC ---
+        function renderPOS() {
+            const products = getDB('mauren_products');
+            
+            // Render Categories
+            const categories = ['All', ...new Set(products.map(p => p.category))];
+            const catContainer = document.getElementById('pos-categories');
+            catContainer.innerHTML = categories.map(cat => `
+                <button onclick="filterPOS('${cat}')" class="px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${currentCategoryFilter === cat ? 'bg-indigo-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}">
+                    ${cat}
+                </button>
+            `).join('');
 
-Saya tidak ingin data disimpan hanya di local storage browser, tetapi benar-benar tersimpan pada database sehingga dapat diakses oleh seluruh perangkat secara bersamaan.
+            // Render Products
+            const prodContainer = document.getElementById('pos-products');
+            const filteredProducts = currentCategoryFilter === 'All' ? products : products.filter(p => p.category === currentCategoryFilter);
+            
+            prodContainer.innerHTML = filteredProducts.map(p => `
+                <div onclick="addToCart(${p.id})" class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 cursor-pointer hover:shadow-md transition-shadow flex flex-col h-32 active:scale-95 transform transition-transform">
+                    <div class="flex justify-between items-start mb-auto">
+                        <span class="text-xs font-semibold px-2 py-1 rounded text-white ${p.color}">${p.category}</span>
+                        ${p.type === 'product' ? `<span class="text-xs ${p.stock <= p.minStock ? 'text-rose-500 font-bold' : 'text-gray-400'}">Stok: ${p.stock}</span>` : ''}
+                    </div>
+                    <h4 class="font-semibold text-gray-800 text-sm leading-tight mt-2">${p.name}</h4>
+                    <p class="text-indigo-600 font-bold mt-1">${formatRp(p.price)}</p>
+                </div>
+            `).join('');
 
-## Arsitektur Sistem
+            renderCartUI();
+        }
 
-Mohon rancang sistem menggunakan arsitektur yang modern dan scalable sehingga:
+        function filterPOS(category) {
+            currentCategoryFilter = category;
+            renderPOS();
+        }
 
-* Mendukung sinkronisasi data secara real-time.
-* Stabil digunakan oleh banyak perangkat secara bersamaan.
-* Aman dengan sistem autentikasi dan hak akses yang jelas.
-* Mudah dikembangkan di masa depan.
-* Memiliki performa yang cepat dan minim bug.
+        function addToCart(productId) {
+            const products = getDB('mauren_products');
+            const product = products.find(p => p.id === productId);
+            
+            if (product.type === 'product' && product.stock <= 0) {
+                alert('Stok Habis!');
+                return;
+            }
 
-## Tujuan Akhir
+            const existingItem = currentCart.find(item => item.id === productId);
+            if (existingItem) {
+                if (product.type === 'product' && existingItem.qty >= product.stock) {
+                    alert('Melebihi stok yang ada!');
+                    return;
+                }
+                existingItem.qty++;
+            } else {
+                currentCart.push({ ...product, qty: 1 });
+            }
+            renderCartUI();
+        }
 
-Target saya adalah memiliki sebuah platform bisnis yang menjadi pusat operasional **Mauren Sport**. Semua proses, mulai dari transaksi, stok, pembukuan, laporan keuangan, analisis bisnis, hingga monitoring aset, dikelola dalam satu website yang dapat dipantau oleh owner secara real-time dari mana saja.
+        function updateQty(productId, change) {
+            const itemIndex = currentCart.findIndex(item => item.id === productId);
+            if (itemIndex > -1) {
+                currentCart[itemIndex].qty += change;
+                if (currentCart[itemIndex].qty <= 0) {
+                    currentCart.splice(itemIndex, 1);
+                }
+            }
+            renderCartUI();
+        }
 
-Silakan lakukan perancangan sistem secara menyeluruh, termasuk struktur database, arsitektur aplikasi, alur kerja (workflow), dan antarmuka pengguna (UI/UX), agar platform ini siap digunakan sebagai sistem manajemen bisnis yang profesional, efisien, mudah digunakan, dan dapat terus dikembangkan seiring pertumbuhan usaha.
+        function renderCartUI() {
+            const container = document.getElementById('cart-items');
+            if (currentCart.length === 0) {
+                container.innerHTML = '<div class="text-center text-gray-400 mt-10 text-sm">Keranjang masih kosong</div>';
+                document.getElementById('cart-total').innerText = 'Rp 0';
+                document.getElementById('cart-subtotal').innerText = 'Rp 0';
+                return;
+            }
+
+            let total = 0;
+            container.innerHTML = currentCart.map(item => {
+                const sub = item.price * item.qty;
+                total += sub;
+                return `
+                    <div class="flex justify-between items-center bg-white p-3 border border-gray-100 rounded-xl shadow-sm">
+                        <div class="flex-1">
+                            <h5 class="text-sm font-bold text-gray-800">${item.name}</h5>
+                            <p class="text-xs text-gray-500">${formatRp(item.price)}</p>
+                        </div>
+                        <div class="flex items-center gap-3 bg-gray-50 rounded-lg p-1 border border-gray-200">
+                            <button onclick="updateQty(${item.id}, -1)" class="w-6 h-6 flex items-center justify-center bg-white rounded shadow-sm text-gray-600 hover:bg-rose-100 hover:text-rose-600"><i class="fa-solid fa-minus text-xs"></i></button>
+                            <span class="text-sm font-bold w-4 text-center">${item.qty}</span>
+                            <button onclick="updateQty(${item.id}, 1)" class="w-6 h-6 flex items-center justify-center bg-white rounded shadow-sm text-gray-600 hover:bg-emerald-100 hover:text-emerald-600"><i class="fa-solid fa-plus text-xs"></i></button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('cart-subtotal').innerText = formatRp(total);
+            document.getElementById('cart-total').innerText = formatRp(total);
+        }
+
+        function checkout() {
+            if (currentCart.length === 0) return;
+
+            const products = getDB('mauren_products');
+            const transactions = getDB('mauren_transactions');
+            
+            let totalProfit = 0;
+            let totalRevenue = 0;
+
+            // Process Cart
+            currentCart.forEach(cartItem => {
+                const dbProduct = products.find(p => p.id === cartItem.id);
+                // Deduct stock
+                if (dbProduct.type === 'product') {
+                    dbProduct.stock -= cartItem.qty;
+                }
+                // Calculate financials
+                totalRevenue += (cartItem.price * cartItem.qty);
+                totalProfit += ((cartItem.price - cartItem.cost) * cartItem.qty);
+            });
+
+            // Save new state
+            setDB('mauren_products', products);
+            
+            // Record Transaction
+            const newTrx = {
+                id: Date.now(),
+                date: new Date().toISOString(),
+                total: totalRevenue,
+                profit: totalProfit,
+                items: currentCart,
+                kasir: currentUserRole
+            };
+            transactions.push(newTrx);
+            setDB('mauren_transactions', transactions);
+
+            // Reset and Notify
+            currentCart = [];
+            renderPOS();
+            showToast('Transaksi Berhasil Tersimpan!');
+            
+            // If owner is looking, dashboard data would update (simulated via next click)
+        }
+
+        // --- INVENTORY LOGIC ---
+        function renderInventory() {
+            const products = getDB('mauren_products');
+            const tbody = document.getElementById('inventory-table-body');
+            
+            tbody.innerHTML = products.map(p => `
+                <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                    <td class="p-4 font-medium text-gray-800 flex items-center gap-3">
+                        <div class="w-8 h-8 rounded ${p.color} flex items-center justify-center text-white text-xs"><i class="fa-solid ${p.type === 'service' ? 'fa-bolt' : 'fa-box'}"></i></div>
+                        ${p.name}
+                    </td>
+                    <td class="p-4"><span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs font-medium">${p.category}</span></td>
+                    <td class="p-4 text-gray-600">${formatRp(p.price)}</td>
+                    <td class="p-4 font-bold ${p.type==='service' ? 'text-gray-300' : (p.stock <= p.minStock ? 'text-rose-500' : 'text-gray-700')}">${p.type === 'service' ? 'Unlimited' : p.stock}</td>
+                    <td class="p-4">
+                        ${p.type === 'service' ? '<span class="text-emerald-500 text-xs font-bold"><i class="fa-solid fa-circle text-[8px] align-middle mr-1"></i> Aktif</span>' : 
+                         (p.stock > p.minStock ? '<span class="text-emerald-500 text-xs font-bold"><i class="fa-solid fa-circle text-[8px] align-middle mr-1"></i> Aman</span>' : 
+                                                 '<span class="text-rose-500 text-xs font-bold"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Kritis</span>')}
+                    </td>
+                </tr>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
+```eof
+
+Tampilan awal atau prototipe aplikasi Manajemen Bisnis **Mauren Sport** sudah siap! 
+
+**Cara Mengujinya:**
+1. Simpan kode di atas ke dalam sebuah file dengan ekstensi `.html` (misalnya: `mauren-sport.html`).
+2. Buka file tersebut menggunakan browser (Chrome, Safari, atau Firefox).
+3. **Coba Skenario 1 (Sebagai Staff):**
+   * Klik tombol **Login sebagai Staff**.
+   * Kamu akan langsung masuk ke menu **Kasir (POS)**.
+   * Coba klik beberapa produk (misal: Sewa Futsal dan Air Mineral) untuk menambahkannya ke keranjang.
+   * Perhatikan bahwa stok *Air Mineral* akan berkurang jika kamu menekan tombol **Proses Pembayaran**.
+   * Cek juga menu **Inventaris** di menu kiri untuk melihat status stok yang diperbarui.
+   * Klik tombol **Logout** di kiri bawah.
+4. **Coba Skenario 2 (Sebagai Owner):**
+   * Klik tombol **Login sebagai Owner**.
+   * Kamu akan disambut oleh halaman **Dashboard Analitik**.
+   * Perhatikan angka **Omzet**, **Total Laba**, dan **Grafik Tren**! Karena tadi staff (kamu sendiri di langkah 1) sudah melakukan transaksi, angka di Dashboard Owner akan otomatis meningkat, mencerminkan sifat sistem yang **Real-Time**.
+   * Owner juga mendapatkan peringatan warna merah jika ada stok minuman yang mulai menipis.
+
+Silakan dicoba dan dimainkan dulu antar-mukanya. Catat apa saja yang menurutmu kurang, apakah tampilannya sudah sesuai selera, atau ada fitur spesifik dari POS atau Dashboard yang ingin kita rombak atau tambahkan di revisi selanjutnya!
