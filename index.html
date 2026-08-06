@@ -12,8 +12,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- HTML5 QR Code Scanner CDN -->
-    <script src="https://unpkg.com/html5-qrcode"></script>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -96,9 +94,6 @@
                 <button onclick="switchTab('tab1')" id="nav-tab1" class="tab-btn px-4 py-2.5 rounded-xl font-extrabold text-xs uppercase tracking-wider transition-all duration-300 bg-gradient-to-r from-amber-400 to-amber-500 text-black shadow-lg shadow-amber-500/20">
                     <i class="fa-solid fa-store mr-1.5"></i> Katalog & POS
                 </button>
-                <button onclick="switchTab('tab-checkin')" id="nav-tab-checkin" class="tab-btn px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all duration-300 text-gray-300 hover:text-white hover:bg-gray-800/80">
-                    <i class="fa-solid fa-qrcode mr-1.5 text-amber-400"></i> Absensi Gym
-                </button>
                 <button onclick="switchTab('tab2')" id="nav-tab2" class="tab-btn px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all duration-300 text-gray-300 hover:text-white hover:bg-gray-800/80">
                     <i class="fa-solid fa-users mr-1.5"></i> Member
                 </button>
@@ -151,49 +146,6 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="product-grid"></div>
         </section>
 
-        <!-- TAB CHECK-IN / ABSENSI GYM (FITUR NO. 1) -->
-        <section id="tab-checkin" class="tab-content hidden space-y-6">
-            <div class="glass-panel-luxury p-6 rounded-3xl">
-                <div class="border-b border-gray-800 pb-4 mb-6 text-center">
-                    <h2 class="text-2xl font-black text-white uppercase tracking-wide flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-qrcode text-amber-400"></i> Presensi & Check-In Member
-                    </h2>
-                    <p class="text-xs text-gray-400 mt-1">Scan QR Code Member atau cari nama untuk konfirmasi izin latihan harian.</p>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Scanner & Input Manual -->
-                    <div class="bg-gray-950/80 p-5 rounded-2xl border border-gray-800 space-y-4">
-                        <h3 class="text-sm font-extrabold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-camera mr-2"></i> Kamera Scanner / Manual ID</h3>
-                        <div id="reader" class="w-full bg-black rounded-xl overflow-hidden min-h-[220px]"></div>
-                        
-                        <div class="pt-2">
-                            <label class="text-[10px] font-bold text-gray-400 uppercase block mb-1">Ketik ID / Nama Member Manual:</label>
-                            <div class="flex gap-2">
-                                <input type="text" id="manual-checkin-input" placeholder="Masukkan ID atau Nama Member..." class="flex-grow px-3 py-2 bg-gray-900 border border-gray-800 rounded-xl text-xs text-white focus:outline-none focus:border-amber-400">
-                                <button onclick="processManualCheckin()" class="px-4 py-2 bg-amber-400 hover:bg-amber-300 text-black font-extrabold text-xs uppercase rounded-xl">Check-In</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Panel Status Verifikasi -->
-                    <div class="bg-gray-950/80 p-5 rounded-2xl border border-gray-800 flex flex-col justify-between">
-                        <h3 class="text-sm font-extrabold text-amber-400 uppercase tracking-wider border-b border-gray-800 pb-3"><i class="fa-solid fa-shield-halved mr-2"></i> Hasil Verifikasi Akses</h3>
-                        
-                        <div id="checkin-result-box" class="my-auto py-8 text-center space-y-3">
-                            <i class="fa-solid fa-id-card text-5xl text-gray-700 animate-pulse"></i>
-                            <p class="text-xs text-gray-500 font-bold">Silakan scan QR Member atau ketik nama untuk memverifikasi keanggotaan.</p>
-                        </div>
-
-                        <div class="border-t border-gray-800 pt-3">
-                            <h4 class="text-[11px] font-bold text-gray-400 uppercase mb-2">Presensi Masuk Hari Ini</h4>
-                            <div class="max-h-36 overflow-y-auto space-y-1" id="today-attendance-list"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <!-- TAB 2: DAFTAR MEMBER (PUBLIK) -->
         <section id="tab2" class="tab-content hidden space-y-6">
             <div class="glass-panel-luxury p-8 rounded-3xl">
@@ -212,7 +164,7 @@
                                 <th class="p-4">Nama Member</th>
                                 <th class="p-4">Gender</th>
                                 <th class="p-4">Masa Aktif Berakhir</th>
-                                <th class="p-4 text-center">QR Akses</th>
+                                <th class="p-4">Status</th>
                             </tr>
                         </thead>
                         <tbody id="public-member-tbody" class="divide-y divide-gray-800/60"></tbody>
@@ -354,7 +306,7 @@
                                     <th class="p-3.5">Tgl Akhir</th>
                                     <th class="p-3.5">Biaya</th>
                                     <th class="p-3.5">Status</th>
-                                    <th class="p-3.5 text-center">Aksi</th>
+                                    <th class="p-3.5 text-center">Aksi Operasional</th>
                                 </tr>
                             </thead>
                             <tbody id="staff-member-tbody" class="divide-y divide-gray-800/60"></tbody>
@@ -441,7 +393,7 @@
         </div>
     </div>
 
-    <!-- MODAL REKAP CLOSE SHIFT KASIR (FITUR NO. 2) -->
+    <!-- MODAL REKAP CLOSE SHIFT KASIR -->
     <div id="close-shift-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center hidden p-4">
         <div class="glass-panel-luxury p-6 rounded-3xl max-w-md w-full border border-purple-500/40 shadow-2xl space-y-4">
             <div class="border-b border-gray-800 pb-3 text-center">
@@ -470,7 +422,7 @@
 
     <!-- PRINTABLE RECEIPT TEMPLATE -->
     <div id="printable-receipt" class="hidden"></div>
-    <!-- PRINTABLE MONTHLY REPORT TEMPLATE (FITUR NO. 3) -->
+    <!-- PRINTABLE MONTHLY REPORT TEMPLATE -->
     <div id="printable-report" class="hidden"></div>
 
     <!-- MODAL TAMBAH MEMBER -->
@@ -566,13 +518,11 @@
         let activeCategory = 'All';
         let cart = [];
         let salesChartInstance = null;
-        let html5QrcodeScanner = null;
 
         let products = [];
         let members = [];
         let events = [];
         let transactions = [];
-        let attendances = [];
         let mainQRIS = "https://i.imgur.com/Rycx2er.jpeg";
 
         // Real-Time Listeners
@@ -598,11 +548,6 @@
             updateChartData();
         });
 
-        onSnapshot(collection(db, "attendances"), (snapshot) => {
-            attendances = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            renderAttendanceToday();
-        });
-
         onSnapshot(doc(db, "settings", "qris"), (docSnap) => {
             if (docSnap.exists()) {
                 mainQRIS = docSnap.data().url || mainQRIS;
@@ -622,96 +567,9 @@
             if (tabId !== 'tab4' && activeNav) {
                 activeNav.classList.add('bg-gradient-to-r', 'from-amber-400', 'to-amber-500', 'text-black', 'shadow-lg');
             }
-
-            if (tabId === 'tab-checkin') initQRScanner();
-            else stopQRScanner();
         };
 
-        // QR Scanner Logic (Fitur No. 1)
-        function initQRScanner() {
-            if (html5QrcodeScanner) return;
-            html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 180 });
-            html5QrcodeScanner.render((decodedText) => {
-                executeMemberCheckin(decodedText);
-            }, () => {});
-        }
-
-        function stopQRScanner() {
-            if (html5QrcodeScanner) {
-                html5QrcodeScanner.clear().catch(() => {});
-                html5QrcodeScanner = null;
-            }
-        }
-
-        window.processManualCheckin = () => {
-            const query = document.getElementById('manual-checkin-input').value.trim();
-            if (query) executeMemberCheckin(query);
-        };
-
-        async function executeMemberCheckin(query) {
-            const todayStr = new Date().toISOString().split('T')[0];
-            const member = members.find(m => m.id.toLowerCase() === query.toLowerCase() || m.name.toLowerCase().includes(query.toLowerCase()));
-            const box = document.getElementById('checkin-result-box');
-
-            if (!member) {
-                box.innerHTML = `
-                    <div class="p-4 bg-red-950/80 border border-red-500/50 rounded-2xl space-y-2">
-                        <i class="fa-solid fa-circle-xmark text-4xl text-red-400"></i>
-                        <h4 class="text-sm font-black text-red-200 uppercase">MEMBER TIDAK DITEMUKAN</h4>
-                        <p class="text-[10px] text-red-300">ID / Nama "${query}" belum terdaftar di sistem.</p>
-                    </div>
-                `;
-                return;
-            }
-
-            const isExpired = member.end < todayStr;
-            if (isExpired) {
-                box.innerHTML = `
-                    <div class="p-4 bg-red-950/80 border border-red-500/50 rounded-2xl space-y-2">
-                        <i class="fa-solid fa-triangle-exclamation text-4xl text-red-400"></i>
-                        <h4 class="text-sm font-black text-red-200 uppercase">AKSES DITOLAK (KADALUARSA)</h4>
-                        <p class="text-xs font-bold text-white">${member.name}</p>
-                        <p class="text-[10px] text-red-300">Masa aktif berakhir pada: ${member.end}. Harap perpanjang.</p>
-                    </div>
-                `;
-            } else {
-                box.innerHTML = `
-                    <div class="p-4 bg-emerald-950/80 border border-emerald-500/50 rounded-2xl space-y-2">
-                        <i class="fa-solid fa-circle-check text-4xl text-emerald-400"></i>
-                        <h4 class="text-sm font-black text-emerald-200 uppercase">CHECK-IN BERHASIL</h4>
-                        <p class="text-sm font-black text-white">${member.name}</p>
-                        <p class="text-[10px] text-emerald-300">Masa Aktif s/d: ${member.end} (Aktif)</p>
-                    </div>
-                `;
-
-                await addDoc(collection(db, "attendances"), {
-                    memberId: member.id,
-                    memberName: member.name,
-                    date: todayStr,
-                    time: new Date().toLocaleTimeString('id-ID')
-                });
-
-                playChimeSound();
-            }
-        }
-
-        function renderAttendanceToday() {
-            const list = document.getElementById('today-attendance-list');
-            const todayStr = new Date().toISOString().split('T')[0];
-            const todayData = attendances.filter(a => a.date === todayStr);
-
-            if (!list) return;
-            list.innerHTML = todayData.length === 0 
-                ? `<p class="text-[10px] text-gray-500 italic">Belum ada member check-in hari ini.</p>`
-                : todayData.map(a => `
-                    <div class="flex justify-between items-center text-[11px] p-2 bg-gray-900 rounded-lg border border-gray-800">
-                        <span class="font-bold text-white"><i class="fa-solid fa-user-check text-emerald-400 mr-1.5"></i> ${a.memberName}</span>
-                        <span class="text-gray-400 font-mono">${a.time}</span>
-                    </div>
-                `).join('');
-        }
-
-        // Render Products
+        // Render Products (REVISI FITUR C: Visual Stok Habis & Auto Disable Button)
         window.renderProducts = () => {
             const grid = document.getElementById('product-grid');
             const searchVal = document.getElementById('product-search')?.value.toLowerCase() || '';
@@ -722,24 +580,29 @@
                 return matchCat && matchSearch;
             });
 
-            grid.innerHTML = filtered.map(p => `
-                <div class="glass-panel-luxury rounded-2xl overflow-hidden gold-glow-hover transition flex flex-col justify-between">
-                    <img src="${p.img || 'https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=400&auto=format&fit=crop'}" class="w-full h-40 object-cover">
-                    <div class="p-4 flex-grow flex flex-col justify-between space-y-3">
-                        <div>
-                            <span class="text-[9px] font-extrabold uppercase text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">${p.type}</span>
-                            <h4 class="font-extrabold text-white mt-1 text-sm">${p.name}</h4>
-                            <p class="text-xs text-gray-400">Stok: ${p.stock} unit</p>
-                        </div>
-                        <div>
-                            <div class="text-base font-black text-emerald-400 mb-2">Rp ${Number(p.price).toLocaleString('id-ID')}</div>
-                            <button onclick="addToCart('${p.id}')" class="w-full py-2 bg-amber-400 hover:bg-amber-300 text-black font-extrabold rounded-xl text-xs uppercase flex items-center justify-center gap-1">
-                                <i class="fa-solid fa-cart-plus"></i> Tambah Ke Keranjang
-                            </button>
+            grid.innerHTML = filtered.map(p => {
+                const isOutOfStock = Number(p.stock) <= 0;
+                return `
+                    <div class="glass-panel-luxury rounded-2xl overflow-hidden gold-glow-hover transition flex flex-col justify-between ${isOutOfStock ? 'opacity-50' : ''}">
+                        <img src="${p.img || 'https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=400&auto=format&fit=crop'}" class="w-full h-40 object-cover">
+                        <div class="p-4 flex-grow flex flex-col justify-between space-y-3">
+                            <div>
+                                <span class="text-[9px] font-extrabold uppercase text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">${p.type}</span>
+                                <h4 class="font-extrabold text-white mt-1 text-sm">${p.name}</h4>
+                                <p class="text-xs ${isOutOfStock ? 'text-red-400 font-extrabold' : 'text-gray-400'}">
+                                    ${isOutOfStock ? '<i class="fa-solid fa-circle-exclamation mr-1"></i> STOK HABIS' : 'Stok: ' + p.stock + ' unit'}
+                                </p>
+                            </div>
+                            <div>
+                                <div class="text-base font-black text-emerald-400 mb-2">Rp ${Number(p.price).toLocaleString('id-ID')}</div>
+                                <button onclick="addToCart('${p.id}')" ${isOutOfStock ? 'disabled' : ''} class="w-full py-2 ${isOutOfStock ? 'bg-gray-800 text-gray-500 border border-gray-700 cursor-not-allowed' : 'bg-amber-400 hover:bg-amber-300 text-black'} font-extrabold rounded-xl text-xs uppercase flex items-center justify-center gap-1 transition">
+                                    <i class="fa-solid ${isOutOfStock ? 'fa-ban' : 'fa-cart-plus'}"></i> ${isOutOfStock ? 'Stok Habis' : 'Tambah Ke Keranjang'}
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         };
 
         window.filterCategory = (cat) => {
@@ -754,12 +617,12 @@
         // Multi-Item Cart Logic
         window.addToCart = (id) => {
             const p = products.find(item => item.id === id);
-            if (!p || p.stock <= 0) return alert("Stok produk tidak mencukupi!");
+            if (!p || Number(p.stock) <= 0) return alert("Stok produk tidak mencukupi / habis!");
 
             const exist = cart.find(c => c.id === id);
             if (exist) {
                 if (exist.qty < p.stock) exist.qty++;
-                else alert("Mencapai batas stok!");
+                else alert("Mencapai batas stok yang tersedia!");
             } else {
                 cart.push({ ...p, qty: 1 });
             }
@@ -879,7 +742,7 @@
             }
         };
 
-        // Close Shift Logic (Fitur No. 2)
+        // Close Shift Logic
         window.openCloseShiftModal = () => {
             const todayStr = new Date().toISOString().split('T')[0];
             const todayTx = transactions.filter(t => t.date === todayStr);
@@ -926,7 +789,7 @@
 
         window.closeShiftModal = () => document.getElementById('close-shift-modal').classList.add('hidden');
 
-        // Printable Monthly Report Engine (Fitur No. 3)
+        // Printable Monthly Report Engine
         window.printMonthlyReport = () => {
             const report = document.getElementById('printable-report');
             const totalOmset = transactions.reduce((a, b) => a + Number(b.total), 0);
@@ -940,7 +803,7 @@
                     <h3>1. Ringkasan Finansial</h3>
                     <p><b>Total Omset Terdaftar:</b> Rp ${totalOmset.toLocaleString('id-ID')}</p>
                     <p><b>Total Transaksi:</b> ${transactions.length} Transaksi</p>
-                    <p><b>Total Member Aktif:</b> ${members.length} Orang</p>
+                    <p><b>Total Member Terdaftar:</b> ${members.length} Orang</p>
                     
                     <h3>2. Detail Transaksi</h3>
                     <table border="1" cellpadding="6" cellspacing="0" style="width:100%; font-size:11px; text-align:left;">
@@ -1028,37 +891,84 @@
         function renderMembers() {
             const publicTb = document.getElementById('public-member-tbody');
             const staffTb = document.getElementById('staff-member-tbody');
+            const todayStr = new Date().toISOString().split('T')[0];
             
             if (publicTb) {
-                publicTb.innerHTML = members.map((m) => `
-                    <tr>
-                        <td class="p-4 font-mono text-amber-400 text-xs font-bold">${m.id.slice(0,6)}</td>
-                        <td class="p-4 font-bold text-white">${m.name}</td>
-                        <td class="p-4 text-xs">${m.gender}</td>
-                        <td class="p-4 text-xs text-amber-400 font-bold">${m.end}</td>
-                        <td class="p-4 text-center">
-                            <span class="px-2 py-1 bg-amber-500/10 text-amber-300 rounded border border-amber-500/20 font-mono text-[10px] font-bold"><i class="fa-solid fa-qrcode mr-1"></i> QR Ready</span>
-                        </td>
-                    </tr>
-                `).join('');
+                publicTb.innerHTML = members.map((m) => {
+                    const isExpired = m.end < todayStr;
+                    return `
+                        <tr>
+                            <td class="p-4 font-mono text-amber-400 text-xs font-bold">${m.id.slice(0,6)}</td>
+                            <td class="p-4 font-bold text-white">${m.name}</td>
+                            <td class="p-4 text-xs">${m.gender}</td>
+                            <td class="p-4 text-xs font-bold ${isExpired ? 'text-red-400' : 'text-emerald-400'}">${m.end}</td>
+                            <td class="p-4">
+                                ${isExpired 
+                                    ? '<span class="px-2 py-0.5 text-[10px] font-black uppercase bg-red-900/80 text-red-200 rounded border border-red-500/50">Kadaluarsa</span>' 
+                                    : '<span class="px-2 py-0.5 text-[10px] font-black uppercase bg-emerald-900/80 text-emerald-200 rounded border border-emerald-500/50">Aktif</span>'}
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
             }
 
             if (staffTb) {
-                staffTb.innerHTML = members.map(m => `
-                    <tr>
-                        <td class="p-3.5 font-bold">${m.name}</td>
-                        <td class="p-3.5 text-xs">${m.gender}</td>
-                        <td class="p-3.5 text-xs">${m.start}</td>
-                        <td class="p-3.5 text-xs text-emerald-400">${m.end}</td>
-                        <td class="p-3.5 text-xs font-bold text-emerald-400">Rp ${Number(m.fee).toLocaleString('id-ID')}</td>
-                        <td class="p-3.5"><span class="px-2 py-0.5 text-[10px] bg-emerald-900/80 text-emerald-200 rounded">Aktif</span></td>
-                        <td class="p-3.5 text-center">
-                            <button onclick="deleteMember('${m.id}')" class="text-red-400"><i class="fa-solid fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `).join('');
+                staffTb.innerHTML = members.map(m => {
+                    const isExpired = m.end < todayStr;
+                    return `
+                        <tr>
+                            <td class="p-3.5 font-bold">${m.name}</td>
+                            <td class="p-3.5 text-xs">${m.gender}</td>
+                            <td class="p-3.5 text-xs">${m.start}</td>
+                            <td class="p-3.5 text-xs font-bold ${isExpired ? 'text-red-400' : 'text-emerald-400'}">${m.end}</td>
+                            <td class="p-3.5 text-xs font-bold text-emerald-400">Rp ${Number(m.fee).toLocaleString('id-ID')}</td>
+                            <td class="p-3.5">
+                                ${isExpired 
+                                    ? '<span class="px-2 py-0.5 text-[10px] font-black uppercase bg-red-900/80 text-red-200 rounded">Kadaluarsa</span>' 
+                                    : '<span class="px-2 py-0.5 text-[10px] font-black uppercase bg-emerald-900/80 text-emerald-200 rounded">Aktif</span>'}
+                            </td>
+                            <td class="p-3.5 text-center flex items-center justify-center gap-1">
+                                <!-- REVISI FITUR A: Tombol Perpanjang Member +1 Bulan -->
+                                <button onclick="renewMember('${m.id}', '${m.end}')" class="px-2.5 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 rounded-lg transition text-[11px] font-extrabold flex items-center gap-1 shadow-sm">
+                                    <i class="fa-solid fa-rotate-right"></i> +1 Bln
+                                </button>
+                                <button onclick="deleteMember('${m.id}')" class="p-1 bg-red-800/60 hover:bg-red-600 text-white rounded-lg transition text-xs">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
             }
         }
+
+        // FITUR A ENGINE: Perpanjangan Member (+1 Bulan)
+        window.renewMember = async (id, currentEnd) => {
+            const todayStr = new Date().toISOString().split('T')[0];
+            let startDate = new Date(currentEnd < todayStr ? todayStr : currentEnd);
+            startDate.setMonth(startDate.getMonth() + 1);
+            const newEndStr = startDate.toISOString().split('T')[0];
+            const fee = 350000;
+
+            const member = members.find(m => m.id === id);
+            const memberName = member ? member.name : "Member";
+
+            if (confirm(`Perpanjang membership ${memberName} selama +1 Bulan hingga ${newEndStr}?`)) {
+                try {
+                    await updateDoc(doc(db, "members", id), { end: newEndStr });
+                    await addDoc(collection(db, "transactions"), {
+                        type: "Membership",
+                        method: "Direct",
+                        items: `Perpanjangan Member ${memberName} (+1 Bulan)`,
+                        date: new Date().toISOString().split('T')[0],
+                        total: fee
+                    });
+                    alert(`Membership ${memberName} berhasil diperpanjang hingga ${newEndStr}!`);
+                } catch (err) {
+                    alert("Gagal memperpanjang member: " + err.message);
+                }
+            }
+        };
 
         window.saveMember = async (e) => {
             e.preventDefault();
@@ -1169,8 +1079,8 @@
                 salesMap[t.date] = (salesMap[t.date] || 0) + Number(t.total);
             });
 
-            const labels = Object.keys(salesMap).slice(-7);
-            const data = Object.values(salesMap).slice(-7);
+            const labels = Object.keys(salesMap).sort().slice(-7);
+            const data = labels.map(lbl => salesMap[lbl]);
 
             if (salesChartInstance) salesChartInstance.destroy();
             salesChartInstance = new Chart(ctx, {
