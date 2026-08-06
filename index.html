@@ -164,7 +164,7 @@
                                 <th class="p-4">Nama Member</th>
                                 <th class="p-4">Gender</th>
                                 <th class="p-4">Masa Aktif Berakhir</th>
-                                <th class="p-4">Status</th>
+                                <th class="p-4 text-center">Aksi QR</th>
                             </tr>
                         </thead>
                         <tbody id="public-member-tbody" class="divide-y divide-gray-800/60"></tbody>
@@ -197,7 +197,6 @@
                         <p class="text-xs text-gray-400 mt-1">Kelola QRIS, Produk Firestore, Member, dan Laporan Omset Real-time.</p>
                     </div>
                     <div class="flex flex-wrap gap-2">
-                        <!-- Fitur Close Shift & Report -->
                         <button onclick="openCloseShiftModal()" class="px-4 py-2.5 bg-purple-600 hover:bg-purple-500 text-white rounded-xl font-extrabold text-xs uppercase tracking-wider transition flex items-center shadow-lg shadow-purple-900/30">
                             <i class="fa-solid fa-cash-register mr-2"></i> Tutup Shift Kasir
                         </button>
@@ -306,7 +305,7 @@
                                     <th class="p-3.5">Tgl Akhir</th>
                                     <th class="p-3.5">Biaya</th>
                                     <th class="p-3.5">Status</th>
-                                    <th class="p-3.5 text-center">Aksi Operasional</th>
+                                    <th class="p-3.5 text-center">Aksi Kelola</th>
                                 </tr>
                             </thead>
                             <tbody id="staff-member-tbody" class="divide-y divide-gray-800/60"></tbody>
@@ -379,12 +378,12 @@
         </div>
     </div>
 
-    <!-- MODAL FINAL CHECKOUT (QRIS & CASH) -->
+    <!-- MODAL FINAL CHECKOUT (QRIS, CASH & QR MEMBER DISPLAY) -->
     <div id="checkout-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center hidden p-4 overflow-y-auto">
         <div class="glass-panel-luxury p-7 rounded-3xl max-w-md w-full border border-amber-500/50 shadow-2xl space-y-4 my-auto">
             <div class="flex justify-between items-center border-b border-gray-800 pb-3">
                 <h3 class="text-lg font-black text-white uppercase flex items-center gap-2">
-                    <i class="fa-solid fa-cash-register text-amber-400"></i> Finalisasi Pembayaran
+                    <i class="fa-solid fa-cash-register text-amber-400"></i> Informasi System
                 </h3>
                 <button onclick="closeCheckoutModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
@@ -569,7 +568,7 @@
             }
         };
 
-        // Render Products (REVISI FITUR C: Visual Stok Habis & Auto Disable Button)
+        // Render Products dengan Fitur C (Visual Stok Habis)
         window.renderProducts = () => {
             const grid = document.getElementById('product-grid');
             const searchVal = document.getElementById('product-search')?.value.toLowerCase() || '';
@@ -583,19 +582,22 @@
             grid.innerHTML = filtered.map(p => {
                 const isOutOfStock = Number(p.stock) <= 0;
                 return `
-                    <div class="glass-panel-luxury rounded-2xl overflow-hidden gold-glow-hover transition flex flex-col justify-between ${isOutOfStock ? 'opacity-50' : ''}">
-                        <img src="${p.img || 'https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=400&auto=format&fit=crop'}" class="w-full h-40 object-cover">
+                    <div class="glass-panel-luxury rounded-2xl overflow-hidden gold-glow-hover transition flex flex-col justify-between ${isOutOfStock ? 'opacity-60' : ''}">
+                        <div class="relative">
+                            <img src="${p.img || 'https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=400&auto=format&fit=crop'}" class="w-full h-40 object-cover">
+                            ${isOutOfStock ? '<span class="absolute top-2 right-2 bg-red-600 text-white font-black text-[9px] uppercase px-2 py-0.5 rounded shadow">STOK HABIS</span>' : ''}
+                        </div>
                         <div class="p-4 flex-grow flex flex-col justify-between space-y-3">
                             <div>
                                 <span class="text-[9px] font-extrabold uppercase text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">${p.type}</span>
                                 <h4 class="font-extrabold text-white mt-1 text-sm">${p.name}</h4>
-                                <p class="text-xs ${isOutOfStock ? 'text-red-400 font-extrabold' : 'text-gray-400'}">
-                                    ${isOutOfStock ? '<i class="fa-solid fa-circle-exclamation mr-1"></i> STOK HABIS' : 'Stok: ' + p.stock + ' unit'}
+                                <p class="text-xs ${isOutOfStock ? 'text-red-400 font-bold' : 'text-gray-400'}">
+                                    ${isOutOfStock ? 'Stok Tidak Tersedia' : 'Stok: ' + p.stock + ' unit'}
                                 </p>
                             </div>
                             <div>
                                 <div class="text-base font-black text-emerald-400 mb-2">Rp ${Number(p.price).toLocaleString('id-ID')}</div>
-                                <button onclick="addToCart('${p.id}')" ${isOutOfStock ? 'disabled' : ''} class="w-full py-2 ${isOutOfStock ? 'bg-gray-800 text-gray-500 border border-gray-700 cursor-not-allowed' : 'bg-amber-400 hover:bg-amber-300 text-black'} font-extrabold rounded-xl text-xs uppercase flex items-center justify-center gap-1 transition">
+                                <button onclick="addToCart('${p.id}')" ${isOutOfStock ? 'disabled' : ''} class="w-full py-2 ${isOutOfStock ? 'bg-gray-800 text-gray-500 cursor-not-allowed border border-gray-700' : 'bg-amber-400 hover:bg-amber-300 text-black'} font-extrabold rounded-xl text-xs uppercase flex items-center justify-center gap-1">
                                     <i class="fa-solid ${isOutOfStock ? 'fa-ban' : 'fa-cart-plus'}"></i> ${isOutOfStock ? 'Stok Habis' : 'Tambah Ke Keranjang'}
                                 </button>
                             </div>
@@ -617,12 +619,12 @@
         // Multi-Item Cart Logic
         window.addToCart = (id) => {
             const p = products.find(item => item.id === id);
-            if (!p || Number(p.stock) <= 0) return alert("Stok produk tidak mencukupi / habis!");
+            if (!p || p.stock <= 0) return alert("Stok produk tidak mencukupi!");
 
             const exist = cart.find(c => c.id === id);
             if (exist) {
                 if (exist.qty < p.stock) exist.qty++;
-                else alert("Mencapai batas stok yang tersedia!");
+                else alert("Mencapai batas stok!");
             } else {
                 cart.push({ ...p, qty: 1 });
             }
@@ -803,7 +805,7 @@
                     <h3>1. Ringkasan Finansial</h3>
                     <p><b>Total Omset Terdaftar:</b> Rp ${totalOmset.toLocaleString('id-ID')}</p>
                     <p><b>Total Transaksi:</b> ${transactions.length} Transaksi</p>
-                    <p><b>Total Member Terdaftar:</b> ${members.length} Orang</p>
+                    <p><b>Total Member Aktif:</b> ${members.length} Orang</p>
                     
                     <h3>2. Detail Transaksi</h3>
                     <table border="1" cellpadding="6" cellspacing="0" style="width:100%; font-size:11px; text-align:left;">
@@ -868,7 +870,7 @@
                     <td class="p-3 font-bold">${p.name}</td>
                     <td class="p-3 text-xs">${p.type}</td>
                     <td class="p-3 font-bold text-emerald-400">Rp ${p.price.toLocaleString('id-ID')}</td>
-                    <td class="p-3 font-bold text-amber-300">${p.stock}</td>
+                    <td class="p-3 font-bold ${p.stock <= 0 ? 'text-red-400' : 'text-amber-300'}">${p.stock}</td>
                     <td class="p-3 text-center">
                         <button onclick="deleteProduct('${p.id}')" class="text-red-400 hover:text-red-200"><i class="fa-solid fa-trash"></i></button>
                     </td>
@@ -887,52 +889,51 @@
             alert("QRIS Utama Berhasil Diperbarui!");
         };
 
-        // Members & Transactions Renderers
+        // Members Renderers + Fitur A (Renewal & QR Display)
         function renderMembers() {
             const publicTb = document.getElementById('public-member-tbody');
             const staffTb = document.getElementById('staff-member-tbody');
             const todayStr = new Date().toISOString().split('T')[0];
             
             if (publicTb) {
-                publicTb.innerHTML = members.map((m) => {
-                    const isExpired = m.end < todayStr;
-                    return `
-                        <tr>
-                            <td class="p-4 font-mono text-amber-400 text-xs font-bold">${m.id.slice(0,6)}</td>
-                            <td class="p-4 font-bold text-white">${m.name}</td>
-                            <td class="p-4 text-xs">${m.gender}</td>
-                            <td class="p-4 text-xs font-bold ${isExpired ? 'text-red-400' : 'text-emerald-400'}">${m.end}</td>
-                            <td class="p-4">
-                                ${isExpired 
-                                    ? '<span class="px-2 py-0.5 text-[10px] font-black uppercase bg-red-900/80 text-red-200 rounded border border-red-500/50">Kadaluarsa</span>' 
-                                    : '<span class="px-2 py-0.5 text-[10px] font-black uppercase bg-emerald-900/80 text-emerald-200 rounded border border-emerald-500/50">Aktif</span>'}
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
+                publicTb.innerHTML = members.map((m) => `
+                    <tr>
+                        <td class="p-4 font-mono text-amber-400 text-xs font-bold">${m.id.slice(0,6)}</td>
+                        <td class="p-4 font-bold text-white">${m.name}</td>
+                        <td class="p-4 text-xs">${m.gender}</td>
+                        <td class="p-4 text-xs ${m.end < todayStr ? 'text-red-400 font-bold' : 'text-emerald-400 font-bold'}">${m.end}</td>
+                        <td class="p-4 text-center">
+                            <button onclick="showMemberQR('${m.id}', '${m.name}')" class="px-2 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 rounded border border-amber-500/30 font-mono text-[10px] font-bold transition">
+                                <i class="fa-solid fa-qrcode mr-1"></i> Lihat QR
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
             }
 
             if (staffTb) {
                 staffTb.innerHTML = members.map(m => {
                     const isExpired = m.end < todayStr;
                     return `
-                        <tr>
+                        <tr class="${isExpired ? 'bg-red-950/20' : ''}">
                             <td class="p-3.5 font-bold">${m.name}</td>
                             <td class="p-3.5 text-xs">${m.gender}</td>
-                            <td class="p-3.5 text-xs">${m.start}</td>
+                            <td class="p-3.5 text-xs text-gray-400">${m.start}</td>
                             <td class="p-3.5 text-xs font-bold ${isExpired ? 'text-red-400' : 'text-emerald-400'}">${m.end}</td>
-                            <td class="p-3.5 text-xs font-bold text-emerald-400">Rp ${Number(m.fee).toLocaleString('id-ID')}</td>
+                            <td class="p-3.5 text-xs font-bold text-emerald-400">Rp ${Number(m.fee || 350000).toLocaleString('id-ID')}</td>
                             <td class="p-3.5">
-                                ${isExpired 
-                                    ? '<span class="px-2 py-0.5 text-[10px] font-black uppercase bg-red-900/80 text-red-200 rounded">Kadaluarsa</span>' 
-                                    : '<span class="px-2 py-0.5 text-[10px] font-black uppercase bg-emerald-900/80 text-emerald-200 rounded">Aktif</span>'}
+                                <span class="px-2 py-0.5 text-[10px] font-bold rounded ${isExpired ? 'bg-red-900/80 text-red-200' : 'bg-emerald-900/80 text-emerald-200'}">
+                                    ${isExpired ? 'Kadaluarsa' : 'Aktif'}
+                                </span>
                             </td>
-                            <td class="p-3.5 text-center flex items-center justify-center gap-1">
-                                <!-- REVISI FITUR A: Tombol Perpanjang Member +1 Bulan -->
-                                <button onclick="renewMember('${m.id}', '${m.end}')" class="px-2.5 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 rounded-lg transition text-[11px] font-extrabold flex items-center gap-1 shadow-sm">
-                                    <i class="fa-solid fa-rotate-right"></i> +1 Bln
+                            <td class="p-3.5 text-center flex justify-center gap-1.5">
+                                <button onclick="renewMember('${m.id}', '${m.end}')" title="Perpanjang 1 Bulan" class="px-2 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-[10px] font-extrabold transition">
+                                    <i class="fa-solid fa-rotate-right mr-1"></i> +1 Bln
                                 </button>
-                                <button onclick="deleteMember('${m.id}')" class="p-1 bg-red-800/60 hover:bg-red-600 text-white rounded-lg transition text-xs">
+                                <button onclick="showMemberQR('${m.id}', '${m.name}')" title="Lihat QR Code" class="px-2 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 rounded border border-amber-500/30 text-[10px] font-bold transition">
+                                    <i class="fa-solid fa-qrcode"></i>
+                                </button>
+                                <button onclick="deleteMember('${m.id}')" title="Hapus Member" class="p-1 text-red-400 hover:text-red-200 transition">
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
                             </td>
@@ -942,32 +943,48 @@
             }
         }
 
-        // FITUR A ENGINE: Perpanjangan Member (+1 Bulan)
-        window.renewMember = async (id, currentEnd) => {
+        // Fitur A: Perpanjang Member Automatically +1 Month
+        window.renewMember = async (memberId, currentEndDate) => {
             const todayStr = new Date().toISOString().split('T')[0];
-            let startDate = new Date(currentEnd < todayStr ? todayStr : currentEnd);
-            startDate.setMonth(startDate.getMonth() + 1);
-            const newEndStr = startDate.toISOString().split('T')[0];
-            const fee = 350000;
+            const baseDate = new Date(currentEndDate < todayStr ? todayStr : currentEndDate);
+            baseDate.setMonth(baseDate.getMonth() + 1);
+            const newEndStr = baseDate.toISOString().split('T')[0];
 
-            const member = members.find(m => m.id === id);
-            const memberName = member ? member.name : "Member";
+            const renewalFee = 350000;
 
-            if (confirm(`Perpanjang membership ${memberName} selama +1 Bulan hingga ${newEndStr}?`)) {
+            if (confirm(`Perpanjang membership selama 1 bulan hingga ${newEndStr}?`)) {
                 try {
-                    await updateDoc(doc(db, "members", id), { end: newEndStr });
+                    await updateDoc(doc(db, "members", memberId), { end: newEndStr });
+                    const mObj = members.find(m => m.id === memberId);
                     await addDoc(collection(db, "transactions"), {
                         type: "Membership",
                         method: "Direct",
-                        items: `Perpanjangan Member ${memberName} (+1 Bulan)`,
-                        date: new Date().toISOString().split('T')[0],
-                        total: fee
+                        items: `Perpanjangan Member ${mObj ? mObj.name : ''} (+1 Bulan)`,
+                        date: todayStr,
+                        total: renewalFee
                     });
-                    alert(`Membership ${memberName} berhasil diperpanjang hingga ${newEndStr}!`);
+                    alert(`Membership berhasil diperpanjang hingga ${newEndStr}!`);
                 } catch (err) {
                     alert("Gagal memperpanjang member: " + err.message);
                 }
             }
+        };
+
+        // Fitur A: Show QR Code Modal
+        window.showMemberQR = (memberId, memberName) => {
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${memberId}`;
+            const modalBody = document.getElementById('checkout-payment-body');
+            modalBody.innerHTML = `
+                <div class="text-center space-y-3">
+                    <h4 class="text-base font-black text-white uppercase">${memberName}</h4>
+                    <p class="text-xs text-amber-400 font-mono">ID: ${memberId.slice(0, 8)}</p>
+                    <div class="bg-white p-3 rounded-2xl inline-block border-2 border-amber-400 shadow-xl">
+                        <img src="${qrUrl}" class="w-48 h-48 object-contain">
+                    </div>
+                    <p class="text-[10px] text-gray-400 block">Screenshot QR ini untuk disimpan oleh member.</p>
+                </div>
+            `;
+            document.getElementById('checkout-modal').classList.remove('hidden');
         };
 
         window.saveMember = async (e) => {
@@ -1079,8 +1096,9 @@
                 salesMap[t.date] = (salesMap[t.date] || 0) + Number(t.total);
             });
 
-            const labels = Object.keys(salesMap).sort().slice(-7);
-            const data = labels.map(lbl => salesMap[lbl]);
+            const sortedDates = Object.keys(salesMap).sort();
+            const labels = sortedDates.slice(-7);
+            const data = labels.map(d => salesMap[d]);
 
             if (salesChartInstance) salesChartInstance.destroy();
             salesChartInstance = new Chart(ctx, {
