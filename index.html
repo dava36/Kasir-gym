@@ -12,6 +12,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- HTML5 QR Code Scanner CDN -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -65,17 +67,6 @@
             border-radius: 1rem;
         }
 
-        .glass-panel-danger {
-            background: rgba(239, 68, 68, 0.12) !important;
-            border: 1px solid rgba(239, 68, 68, 0.35) !important;
-        }
-
-        .receipt-paper {
-            background: #FAFAFA;
-            color: #0F172A;
-            font-family: 'Courier New', Courier, monospace;
-        }
-
         .gold-glow-hover:hover {
             box-shadow: 0 0 25px rgba(255, 184, 0, 0.35);
             border-color: rgba(255, 184, 0, 0.6);
@@ -83,6 +74,8 @@
 
         @media print {
             body * { visibility: hidden; }
+            #printable-report, #printable-report * { visibility: visible; }
+            #printable-report { position: absolute; left: 0; top: 0; width: 100%; color: #000; background: #fff; padding: 20px; }
             #printable-receipt, #printable-receipt * { visibility: visible; }
             #printable-receipt { position: absolute; left: 0; top: 0; width: 58mm; font-size: 11px; }
         }
@@ -103,6 +96,9 @@
                 <button onclick="switchTab('tab1')" id="nav-tab1" class="tab-btn px-4 py-2.5 rounded-xl font-extrabold text-xs uppercase tracking-wider transition-all duration-300 bg-gradient-to-r from-amber-400 to-amber-500 text-black shadow-lg shadow-amber-500/20">
                     <i class="fa-solid fa-store mr-1.5"></i> Katalog & POS
                 </button>
+                <button onclick="switchTab('tab-checkin')" id="nav-tab-checkin" class="tab-btn px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all duration-300 text-gray-300 hover:text-white hover:bg-gray-800/80">
+                    <i class="fa-solid fa-qrcode mr-1.5 text-amber-400"></i> Absensi Gym
+                </button>
                 <button onclick="switchTab('tab2')" id="nav-tab2" class="tab-btn px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all duration-300 text-gray-300 hover:text-white hover:bg-gray-800/80">
                     <i class="fa-solid fa-users mr-1.5"></i> Member
                 </button>
@@ -113,7 +109,7 @@
                     <i class="fa-solid fa-lock mr-1.5"></i> Staff Only <span id="staff-status-badge" class="ml-1.5 text-[10px] bg-red-900/80 text-red-200 px-2 py-0.5 rounded-md font-bold uppercase">Terkunci</span>
                 </button>
                 
-                <!-- Floating Cart Button Indicator -->
+                <!-- Floating Cart Button -->
                 <button onclick="toggleCartDrawer()" class="relative px-3.5 py-2.5 bg-amber-500/20 border border-amber-500/40 text-amber-300 rounded-xl font-black text-xs uppercase hover:bg-amber-500/30 transition flex items-center gap-2">
                     <i class="fa-solid fa-cart-shopping text-base text-amber-400"></i>
                     <span id="cart-badge-count" class="bg-amber-400 text-black rounded-full px-2 py-0.5 font-black text-[10px]">0</span>
@@ -155,6 +151,49 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="product-grid"></div>
         </section>
 
+        <!-- TAB CHECK-IN / ABSENSI GYM (FITUR NO. 1) -->
+        <section id="tab-checkin" class="tab-content hidden space-y-6">
+            <div class="glass-panel-luxury p-6 rounded-3xl">
+                <div class="border-b border-gray-800 pb-4 mb-6 text-center">
+                    <h2 class="text-2xl font-black text-white uppercase tracking-wide flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-qrcode text-amber-400"></i> Presensi & Check-In Member
+                    </h2>
+                    <p class="text-xs text-gray-400 mt-1">Scan QR Code Member atau cari nama untuk konfirmasi izin latihan harian.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Scanner & Input Manual -->
+                    <div class="bg-gray-950/80 p-5 rounded-2xl border border-gray-800 space-y-4">
+                        <h3 class="text-sm font-extrabold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-camera mr-2"></i> Kamera Scanner / Manual ID</h3>
+                        <div id="reader" class="w-full bg-black rounded-xl overflow-hidden min-h-[220px]"></div>
+                        
+                        <div class="pt-2">
+                            <label class="text-[10px] font-bold text-gray-400 uppercase block mb-1">Ketik ID / Nama Member Manual:</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="manual-checkin-input" placeholder="Masukkan ID atau Nama Member..." class="flex-grow px-3 py-2 bg-gray-900 border border-gray-800 rounded-xl text-xs text-white focus:outline-none focus:border-amber-400">
+                                <button onclick="processManualCheckin()" class="px-4 py-2 bg-amber-400 hover:bg-amber-300 text-black font-extrabold text-xs uppercase rounded-xl">Check-In</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panel Status Verifikasi -->
+                    <div class="bg-gray-950/80 p-5 rounded-2xl border border-gray-800 flex flex-col justify-between">
+                        <h3 class="text-sm font-extrabold text-amber-400 uppercase tracking-wider border-b border-gray-800 pb-3"><i class="fa-solid fa-shield-halved mr-2"></i> Hasil Verifikasi Akses</h3>
+                        
+                        <div id="checkin-result-box" class="my-auto py-8 text-center space-y-3">
+                            <i class="fa-solid fa-id-card text-5xl text-gray-700 animate-pulse"></i>
+                            <p class="text-xs text-gray-500 font-bold">Silakan scan QR Member atau ketik nama untuk memverifikasi keanggotaan.</p>
+                        </div>
+
+                        <div class="border-t border-gray-800 pt-3">
+                            <h4 class="text-[11px] font-bold text-gray-400 uppercase mb-2">Presensi Masuk Hari Ini</h4>
+                            <div class="max-h-36 overflow-y-auto space-y-1" id="today-attendance-list"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- TAB 2: DAFTAR MEMBER (PUBLIK) -->
         <section id="tab2" class="tab-content hidden space-y-6">
             <div class="glass-panel-luxury p-8 rounded-3xl">
@@ -169,10 +208,11 @@
                     <table class="w-full text-left text-sm text-gray-200">
                         <thead class="bg-gradient-to-r from-gray-950 via-gray-900 to-gray-950 text-amber-400 uppercase text-xs font-extrabold tracking-wider border-b border-amber-500/20">
                             <tr>
-                                <th class="p-4">No</th>
+                                <th class="p-4">ID Member</th>
                                 <th class="p-4">Nama Member</th>
                                 <th class="p-4">Gender</th>
                                 <th class="p-4">Masa Aktif Berakhir</th>
+                                <th class="p-4 text-center">QR Akses</th>
                             </tr>
                         </thead>
                         <tbody id="public-member-tbody" class="divide-y divide-gray-800/60"></tbody>
@@ -205,8 +245,12 @@
                         <p class="text-xs text-gray-400 mt-1">Kelola QRIS, Produk Firestore, Member, dan Laporan Omset Real-time.</p>
                     </div>
                     <div class="flex flex-wrap gap-2">
-                        <button onclick="exportToCSV()" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-extrabold text-xs uppercase tracking-wider transition flex items-center shadow-lg shadow-emerald-900/30">
-                            <i class="fa-solid fa-file-excel mr-2"></i> Ekspor CSV
+                        <!-- Fitur Close Shift & Report -->
+                        <button onclick="openCloseShiftModal()" class="px-4 py-2.5 bg-purple-600 hover:bg-purple-500 text-white rounded-xl font-extrabold text-xs uppercase tracking-wider transition flex items-center shadow-lg shadow-purple-900/30">
+                            <i class="fa-solid fa-cash-register mr-2"></i> Tutup Shift Kasir
+                        </button>
+                        <button onclick="printMonthlyReport()" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-extrabold text-xs uppercase tracking-wider transition flex items-center shadow-lg shadow-emerald-900/30">
+                            <i class="fa-solid fa-file-pdf mr-2"></i> Laporan PDF
                         </button>
                         <button onclick="lockStaffTab()" class="px-4 py-2.5 bg-red-600/80 hover:bg-red-600 text-white rounded-xl font-extrabold text-xs uppercase tracking-wider transition">
                             <i class="fa-solid fa-right-from-bracket mr-1.5"></i> Kunci Sesi
@@ -397,8 +441,37 @@
         </div>
     </div>
 
-    <!-- PRINTABLE RECEIPT TEMPLATE (FOR THERMAL PRINTER) -->
+    <!-- MODAL REKAP CLOSE SHIFT KASIR (FITUR NO. 2) -->
+    <div id="close-shift-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center hidden p-4">
+        <div class="glass-panel-luxury p-6 rounded-3xl max-w-md w-full border border-purple-500/40 shadow-2xl space-y-4">
+            <div class="border-b border-gray-800 pb-3 text-center">
+                <h3 class="text-lg font-black text-purple-300 uppercase tracking-wide"><i class="fa-solid fa-cash-register mr-2"></i> Rekap Shift / Close Cashier</h3>
+                <p class="text-xs text-gray-400 mt-1">Ganti shift dan verifikasi fisik saldo laci kasir.</p>
+            </div>
+
+            <div class="space-y-2 text-xs bg-gray-950 p-4 rounded-2xl border border-gray-800">
+                <div class="flex justify-between text-gray-300"><span>Omset Tunai (Cash):</span><span id="shift-cash-total" class="font-bold text-emerald-400">Rp 0</span></div>
+                <div class="flex justify-between text-gray-300"><span>Omset Non-Tunai (QRIS):</span><span id="shift-qris-total" class="font-bold text-amber-400">Rp 0</span></div>
+                <div class="flex justify-between text-gray-300 border-t border-gray-800 pt-2 font-bold text-sm"><span>TOTAL OMSET SHIFT:</span><span id="shift-grand-total" class="text-purple-300">Rp 0</span></div>
+            </div>
+
+            <div>
+                <label class="text-xs font-bold text-gray-300 block mb-1 uppercase">Hitung Fisik Uang di Laci Kasir (Rp):</label>
+                <input type="number" id="physical-cash-input" oninput="calcShiftDiff()" placeholder="Contoh: 250000" class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-sm text-white focus:outline-none focus:border-purple-400">
+                <p class="text-xs mt-2 font-bold">Selisih Fisik Kasir: <span id="shift-diff-display" class="text-gray-400">Rp 0</span></p>
+            </div>
+
+            <div class="flex gap-2 pt-2">
+                <button onclick="closeShiftModal()" class="w-1/2 py-2.5 bg-gray-800 text-gray-300 font-bold rounded-xl text-xs uppercase">Batal</button>
+                <button onclick="confirmCloseShift()" class="w-1/2 py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-extrabold rounded-xl text-xs uppercase shadow-lg">Selesai & Simpan Shift</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRINTABLE RECEIPT TEMPLATE -->
     <div id="printable-receipt" class="hidden"></div>
+    <!-- PRINTABLE MONTHLY REPORT TEMPLATE (FITUR NO. 3) -->
+    <div id="printable-report" class="hidden"></div>
 
     <!-- MODAL TAMBAH MEMBER -->
     <div id="add-member-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center hidden">
@@ -493,11 +566,13 @@
         let activeCategory = 'All';
         let cart = [];
         let salesChartInstance = null;
+        let html5QrcodeScanner = null;
 
         let products = [];
         let members = [];
         let events = [];
         let transactions = [];
+        let attendances = [];
         let mainQRIS = "https://i.imgur.com/Rycx2er.jpeg";
 
         // Real-Time Listeners
@@ -523,6 +598,11 @@
             updateChartData();
         });
 
+        onSnapshot(collection(db, "attendances"), (snapshot) => {
+            attendances = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            renderAttendanceToday();
+        });
+
         onSnapshot(doc(db, "settings", "qris"), (docSnap) => {
             if (docSnap.exists()) {
                 mainQRIS = docSnap.data().url || mainQRIS;
@@ -542,7 +622,94 @@
             if (tabId !== 'tab4' && activeNav) {
                 activeNav.classList.add('bg-gradient-to-r', 'from-amber-400', 'to-amber-500', 'text-black', 'shadow-lg');
             }
+
+            if (tabId === 'tab-checkin') initQRScanner();
+            else stopQRScanner();
         };
+
+        // QR Scanner Logic (Fitur No. 1)
+        function initQRScanner() {
+            if (html5QrcodeScanner) return;
+            html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 180 });
+            html5QrcodeScanner.render((decodedText) => {
+                executeMemberCheckin(decodedText);
+            }, () => {});
+        }
+
+        function stopQRScanner() {
+            if (html5QrcodeScanner) {
+                html5QrcodeScanner.clear().catch(() => {});
+                html5QrcodeScanner = null;
+            }
+        }
+
+        window.processManualCheckin = () => {
+            const query = document.getElementById('manual-checkin-input').value.trim();
+            if (query) executeMemberCheckin(query);
+        };
+
+        async function executeMemberCheckin(query) {
+            const todayStr = new Date().toISOString().split('T')[0];
+            const member = members.find(m => m.id.toLowerCase() === query.toLowerCase() || m.name.toLowerCase().includes(query.toLowerCase()));
+            const box = document.getElementById('checkin-result-box');
+
+            if (!member) {
+                box.innerHTML = `
+                    <div class="p-4 bg-red-950/80 border border-red-500/50 rounded-2xl space-y-2">
+                        <i class="fa-solid fa-circle-xmark text-4xl text-red-400"></i>
+                        <h4 class="text-sm font-black text-red-200 uppercase">MEMBER TIDAK DITEMUKAN</h4>
+                        <p class="text-[10px] text-red-300">ID / Nama "${query}" belum terdaftar di sistem.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const isExpired = member.end < todayStr;
+            if (isExpired) {
+                box.innerHTML = `
+                    <div class="p-4 bg-red-950/80 border border-red-500/50 rounded-2xl space-y-2">
+                        <i class="fa-solid fa-triangle-exclamation text-4xl text-red-400"></i>
+                        <h4 class="text-sm font-black text-red-200 uppercase">AKSES DITOLAK (KADALUARSA)</h4>
+                        <p class="text-xs font-bold text-white">${member.name}</p>
+                        <p class="text-[10px] text-red-300">Masa aktif berakhir pada: ${member.end}. Harap perpanjang.</p>
+                    </div>
+                `;
+            } else {
+                box.innerHTML = `
+                    <div class="p-4 bg-emerald-950/80 border border-emerald-500/50 rounded-2xl space-y-2">
+                        <i class="fa-solid fa-circle-check text-4xl text-emerald-400"></i>
+                        <h4 class="text-sm font-black text-emerald-200 uppercase">CHECK-IN BERHASIL</h4>
+                        <p class="text-sm font-black text-white">${member.name}</p>
+                        <p class="text-[10px] text-emerald-300">Masa Aktif s/d: ${member.end} (Aktif)</p>
+                    </div>
+                `;
+
+                await addDoc(collection(db, "attendances"), {
+                    memberId: member.id,
+                    memberName: member.name,
+                    date: todayStr,
+                    time: new Date().toLocaleTimeString('id-ID')
+                });
+
+                playChimeSound();
+            }
+        }
+
+        function renderAttendanceToday() {
+            const list = document.getElementById('today-attendance-list');
+            const todayStr = new Date().toISOString().split('T')[0];
+            const todayData = attendances.filter(a => a.date === todayStr);
+
+            if (!list) return;
+            list.innerHTML = todayData.length === 0 
+                ? `<p class="text-[10px] text-gray-500 italic">Belum ada member check-in hari ini.</p>`
+                : todayData.map(a => `
+                    <div class="flex justify-between items-center text-[11px] p-2 bg-gray-900 rounded-lg border border-gray-800">
+                        <span class="font-bold text-white"><i class="fa-solid fa-user-check text-emerald-400 mr-1.5"></i> ${a.memberName}</span>
+                        <span class="text-gray-400 font-mono">${a.time}</span>
+                    </div>
+                `).join('');
+        }
 
         // Render Products
         window.renderProducts = () => {
@@ -681,7 +848,6 @@
 
         window.processFinalPayment = async (method, total) => {
             try {
-                // Deduct stocks
                 for (let c of cart) {
                     const p = products.find(x => x.id === c.id);
                     if (p) {
@@ -691,7 +857,6 @@
                     }
                 }
 
-                // Add Transaction Log
                 const txData = {
                     type: "Produk POS",
                     method: method,
@@ -712,6 +877,91 @@
             } catch (err) {
                 alert("Gagal memproses transaksi: " + err.message);
             }
+        };
+
+        // Close Shift Logic (Fitur No. 2)
+        window.openCloseShiftModal = () => {
+            const todayStr = new Date().toISOString().split('T')[0];
+            const todayTx = transactions.filter(t => t.date === todayStr);
+
+            const cashTotal = todayTx.filter(t => t.method === 'Cash').reduce((acc, t) => acc + Number(t.total), 0);
+            const qrisTotal = todayTx.filter(t => t.method !== 'Cash').reduce((acc, t) => acc + Number(t.total), 0);
+            const grandTotal = cashTotal + qrisTotal;
+
+            document.getElementById('shift-cash-total').innerText = "Rp " + cashTotal.toLocaleString('id-ID');
+            document.getElementById('shift-qris-total').innerText = "Rp " + qrisTotal.toLocaleString('id-ID');
+            document.getElementById('shift-grand-total').innerText = "Rp " + grandTotal.toLocaleString('id-ID');
+
+            window.currentShiftCash = cashTotal;
+            document.getElementById('close-shift-modal').classList.remove('hidden');
+        };
+
+        window.calcShiftDiff = () => {
+            const input = Number(document.getElementById('physical-cash-input').value) || 0;
+            const diff = input - (window.currentShiftCash || 0);
+            const display = document.getElementById('shift-diff-display');
+            
+            if (diff === 0) display.className = "text-emerald-400 font-bold";
+            else if (diff < 0) display.className = "text-red-400 font-bold";
+            else display.className = "text-amber-400 font-bold";
+
+            display.innerText = "Rp " + diff.toLocaleString('id-ID');
+        };
+
+        window.confirmCloseShift = async () => {
+            const input = Number(document.getElementById('physical-cash-input').value) || 0;
+            const diff = input - (window.currentShiftCash || 0);
+
+            await addDoc(collection(db, "shift_reports"), {
+                date: new Date().toISOString().split('T')[0],
+                cashExpected: window.currentShiftCash || 0,
+                cashPhysical: input,
+                difference: diff,
+                closedAt: new Date().toLocaleTimeString('id-ID')
+            });
+
+            alert("Rekap Shift Kasir Berhasil Disimpan!");
+            closeShiftModal();
+        };
+
+        window.closeShiftModal = () => document.getElementById('close-shift-modal').classList.add('hidden');
+
+        // Printable Monthly Report Engine (Fitur No. 3)
+        window.printMonthlyReport = () => {
+            const report = document.getElementById('printable-report');
+            const totalOmset = transactions.reduce((a, b) => a + Number(b.total), 0);
+            const todayStr = new Date().toISOString().split('T')[0];
+
+            report.innerHTML = `
+                <div style="font-family:sans-serif;">
+                    <h2 style="text-align:center; text-transform:uppercase;">Laporan Keuangan & Operasional - MAUREN SPORT</h2>
+                    <p style="text-align:center; font-size:12px; color:#555;">Dicetak Pada: ${todayStr}</p>
+                    <hr>
+                    <h3>1. Ringkasan Finansial</h3>
+                    <p><b>Total Omset Terdaftar:</b> Rp ${totalOmset.toLocaleString('id-ID')}</p>
+                    <p><b>Total Transaksi:</b> ${transactions.length} Transaksi</p>
+                    <p><b>Total Member Aktif:</b> ${members.length} Orang</p>
+                    
+                    <h3>2. Detail Transaksi</h3>
+                    <table border="1" cellpadding="6" cellspacing="0" style="width:100%; font-size:11px; text-align:left;">
+                        <thead>
+                            <tr><th>Tipe</th><th>Metode</th><th>Items</th><th>Tanggal</th><th>Total</th></tr>
+                        </thead>
+                        <tbody>
+                            ${transactions.map(t => `
+                                <tr>
+                                    <td>${t.type}</td>
+                                    <td>${t.method || 'QRIS'}</td>
+                                    <td>${t.items}</td>
+                                    <td>${t.date}</td>
+                                    <td>Rp ${Number(t.total).toLocaleString('id-ID')}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            window.print();
         };
 
         window.printThermalReceipt = (tx, cartItems, total) => {
@@ -780,12 +1030,15 @@
             const staffTb = document.getElementById('staff-member-tbody');
             
             if (publicTb) {
-                publicTb.innerHTML = members.map((m, i) => `
+                publicTb.innerHTML = members.map((m) => `
                     <tr>
-                        <td class="p-4 font-mono text-gray-500 text-xs">${i+1}</td>
+                        <td class="p-4 font-mono text-amber-400 text-xs font-bold">${m.id.slice(0,6)}</td>
                         <td class="p-4 font-bold text-white">${m.name}</td>
                         <td class="p-4 text-xs">${m.gender}</td>
-                        <td class="p-4 text-xs text-amber-400">${m.end}</td>
+                        <td class="p-4 text-xs text-amber-400 font-bold">${m.end}</td>
+                        <td class="p-4 text-center">
+                            <span class="px-2 py-1 bg-amber-500/10 text-amber-300 rounded border border-amber-500/20 font-mono text-[10px] font-bold"><i class="fa-solid fa-qrcode mr-1"></i> QR Ready</span>
+                        </td>
                     </tr>
                 `).join('');
             }
