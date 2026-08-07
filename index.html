@@ -75,14 +75,6 @@
             color: #0F172A;
             font-family: 'Courier New', Courier, monospace;
         }
-
-        @media print {
-            body * { visibility: hidden; }
-            #printable-report, #printable-report * { visibility: visible; }
-            #printable-report { position: absolute; left: 0; top: 0; width: 100%; color: #000; background: #fff; padding: 20px; }
-            #printable-receipt, #printable-receipt * { visibility: visible; }
-            #printable-receipt { position: absolute; left: 0; top: 0; width: 58mm; font-size: 11px; }
-        }
     </style>
 </head>
 <body class="text-gray-100 font-sans antialiased min-h-screen flex flex-col justify-between selection:bg-brand-neonGold selection:text-black">
@@ -212,13 +204,20 @@
                     </div>
                 </div>
 
-                <!-- SEKSI REKAP LAPORAN PDF DENGAN RENTANG TANGGAL (FITUR NO. 2) -->
+                <!-- SEKSI REKAP LAPORAN PDF DENGAN RENTANG TANGGAL (KHUSUS STAFF ONLY) -->
                 <div class="bg-gradient-to-r from-emerald-950/40 via-gray-950 to-gray-950 p-6 rounded-2xl border border-emerald-500/30 mb-6 space-y-4 shadow-xl">
-                    <div class="border-b border-gray-800 pb-3">
-                        <h3 class="text-lg font-black text-emerald-400 uppercase tracking-wide flex items-center gap-2">
-                            <i class="fa-solid fa-file-pdf"></i> Ekspor Laporan PDF Periode
-                        </h3>
-                        <p class="text-xs text-gray-400">Pilih rentang tanggal untuk merekap omset, rincian produk terjual, & log transaksi.</p>
+                    <div class="border-b border-gray-800 pb-3 flex flex-col md:flex-row justify-between md:items-center gap-2">
+                        <div>
+                            <h3 class="text-lg font-black text-emerald-400 uppercase tracking-wide flex items-center gap-2">
+                                <i class="fa-solid fa-file-pdf"></i> Ekspor Laporan PDF Rekap Bisnis
+                            </h3>
+                            <p class="text-xs text-gray-400">Pilih rentang tanggal aktual untuk mencetak atau mengunduh laporan PDF resmi.</p>
+                        </div>
+                        <div class="flex gap-1.5">
+                            <button onclick="setReportDatePreset('today')" class="px-2.5 py-1 bg-gray-800 hover:bg-gray-700 text-emerald-300 font-bold text-[10px] rounded-lg border border-emerald-500/30">Hari Ini</button>
+                            <button onclick="setReportDatePreset('week')" class="px-2.5 py-1 bg-gray-800 hover:bg-gray-700 text-emerald-300 font-bold text-[10px] rounded-lg border border-emerald-500/30">7 Hari Terakhir</button>
+                            <button onclick="setReportDatePreset('month')" class="px-2.5 py-1 bg-gray-800 hover:bg-gray-700 text-emerald-300 font-bold text-[10px] rounded-lg border border-emerald-500/30">Bulan Ini</button>
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
@@ -231,8 +230,8 @@
                             <input type="date" id="report-end-date" class="w-full px-3 py-2 bg-gray-900 border border-gray-800 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-400">
                         </div>
                         <div>
-                            <button onclick="printFilteredMonthlyReport()" class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold rounded-xl text-xs uppercase tracking-wider transition shadow-lg flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-print"></i> Cetak / Unduh PDF
+                            <button onclick="generateAndExportPDFReport()" class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold rounded-xl text-xs uppercase tracking-wider transition shadow-lg flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-file-export"></i> Ekspor PDF Laporan Periode
                             </button>
                         </div>
                     </div>
@@ -342,7 +341,7 @@
                     </div>
                 </div>
 
-                <!-- GRAFIK OMSET -->
+                <!-- GRAFIK OMSET REAL-TIME -->
                 <div class="bg-gray-950/80 p-6 rounded-2xl border border-gray-800/80 mb-6">
                     <h3 class="text-lg font-black text-white uppercase tracking-wide mb-4 flex items-center gap-2">
                         <i class="fa-solid fa-chart-line text-amber-400"></i> Real-Time Sales Chart
@@ -352,21 +351,28 @@
                     </div>
                 </div>
 
-                <!-- RIWAYAT TRANSAKSI GABUNGAN -->
+                <!-- RIWAYAT TRANSAKSI GABUNGAN & PENGELOLAAN LOG (FITUR NO. 3 & 4) -->
                 <div class="space-y-3">
-                    <h3 class="text-lg font-black text-white uppercase tracking-wide flex items-center gap-2">
-                        <i class="fa-solid fa-table text-amber-400"></i> Log Riwayat Transaksi Firestore
-                    </h3>
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <h3 class="text-lg font-black text-white uppercase tracking-wide flex items-center gap-2">
+                            <i class="fa-solid fa-table text-amber-400"></i> Log Riwayat Transaksi Firestore
+                        </h3>
+                        <button onclick="purgeFilteredTransactions()" class="px-3.5 py-2 bg-red-900/60 hover:bg-red-800 border border-red-500/40 text-red-200 font-extrabold rounded-xl text-xs uppercase tracking-wider transition flex items-center gap-1.5 shadow-md">
+                            <i class="fa-solid fa-trash-can"></i> Hapus Riwayat Sesuai Filter Tanggal
+                        </button>
+                    </div>
+
                     <div class="table-container-luxury overflow-x-auto">
                         <table class="w-full text-left text-sm text-gray-200">
                             <thead class="bg-gradient-to-r from-gray-950 via-gray-900 to-gray-950 text-gray-400 uppercase text-xs font-extrabold border-b border-gray-800">
                                 <tr>
-                                    <th class="p-3.5">ID TX</th>
+                                    <th class="p-3.5">ID Invoice</th>
                                     <th class="p-3.5">Tipe</th>
                                     <th class="p-3.5">Metode</th>
                                     <th class="p-3.5">Detail Item</th>
                                     <th class="p-3.5">Tanggal/Waktu</th>
                                     <th class="p-3.5">Total</th>
+                                    <th class="p-3.5 text-center">Aksi Hapus</th>
                                 </tr>
                             </thead>
                             <tbody id="combined-transaction-tbody" class="divide-y divide-gray-800/60"></tbody>
@@ -407,7 +413,7 @@
         </div>
     </div>
 
-    <!-- MODAL FINAL CHECKOUT & STRUK BUKTI DIGITAL (FITUR NO. 1) -->
+    <!-- MODAL FINAL CHECKOUT & STRUK BUKTI DIGITAL (BEBAS DARI KODE CETAK/PDF PELANGGAN) -->
     <div id="checkout-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center hidden p-4 overflow-y-auto">
         <div class="glass-panel-luxury p-7 rounded-3xl max-w-md w-full border border-amber-500/50 shadow-2xl space-y-4 my-auto">
             <div class="flex justify-between items-center border-b border-gray-800 pb-3">
@@ -447,11 +453,6 @@
             </div>
         </div>
     </div>
-
-    <!-- PRINTABLE RECEIPT TEMPLATE -->
-    <div id="printable-receipt" class="hidden"></div>
-    <!-- PRINTABLE MONTHLY REPORT TEMPLATE -->
-    <div id="printable-report" class="hidden"></div>
 
     <!-- MODAL TAMBAH MEMBER -->
     <div id="add-member-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center hidden">
@@ -553,7 +554,7 @@
         let transactions = [];
         let mainQRIS = "https://i.imgur.com/Rycx2er.jpeg";
 
-        // Setup Date Inputs Default (Staff Report)
+        // Setup Date Inputs Default
         document.addEventListener('DOMContentLoaded', () => {
             const today = new Date().toISOString().split('T')[0];
             const startMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
@@ -752,14 +753,13 @@
             document.getElementById('cash-change').innerText = "Rp " + (change > 0 ? change.toLocaleString('id-ID') : 0);
         };
 
-        // FITUR NO. 1: GENERATE BUKTI STRUK TRANSAKSI SEBELUM DISERAHKAN STAFF
+        // KETENTUAN 1: TAMPILAN STRUK BUKTI DIGITAL DI PELANGGAN (TANPA OTOMATISASI / CETAK PDF)
         window.generateDigitalReceipt = (method, total) => {
             const invoiceId = "INV-" + Math.floor(100000 + Math.random() * 900000);
             const now = new Date();
             const dateStr = now.toISOString().split('T')[0];
             const timeStr = now.toLocaleTimeString('id-ID');
 
-            // Simpan sementara objek transaksi aktif
             window.pendingTx = {
                 invoiceId,
                 dateStr,
@@ -775,7 +775,7 @@
                     <div class="receipt-paper p-4 rounded-2xl shadow-inner space-y-2 text-xs">
                         <div class="text-center font-bold border-b border-dashed border-gray-400 pb-2">
                             <p class="text-sm uppercase tracking-wider font-extrabold">MAUREN SPORT ELITE GYM</p>
-                            <p class="text-[10px] text-gray-600 font-sans">BUKTI TRANSAKSI PEMBAYARAN</p>
+                            <p class="text-[10px] text-gray-600 font-sans">BUKTI STRUK TRANSAKSI DIGITAL</p>
                         </div>
                         
                         <div class="space-y-1 text-[11px] py-1">
@@ -804,22 +804,21 @@
                     </div>
 
                     <div class="bg-gray-950 p-3 rounded-xl border border-gray-800 space-y-2">
-                        <p class="text-[11px] text-gray-400 text-center">Khusus Staff Kasir: Cocokkan mutasi pembayaran lalu selesaikan transaksi.</p>
+                        <p class="text-[11px] text-gray-400 text-center">Tindakan Staff: Verifikasi mutasi pembayaran lalu klik tombol di bawah.</p>
                         <button onclick="confirmAndFinalizeTransaction()" class="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold rounded-xl text-xs uppercase shadow-lg flex items-center justify-center gap-1.5">
-                            <i class="fa-solid fa-circle-check text-sm"></i> Verifikasi & Serahkan Barang
+                            <i class="fa-solid fa-circle-check text-sm"></i> Verifikasi Pembayaran & Selesai
                         </button>
                     </div>
                 </div>
             `;
         };
 
-        // Eksekusi Pemotongan Stok & Simpan Firestore Setelah Diverifikasi Staf
+        // Verifikasi Staff -> Potong Stok & Simpan Firestore (Bebas dari PDF)
         window.confirmAndFinalizeTransaction = async () => {
             if (!window.pendingTx) return;
             const { invoiceId, dateStr, timeStr, method, total, cartSnapshot } = window.pendingTx;
 
             try {
-                // Potong Stok
                 for (let c of cartSnapshot) {
                     const p = products.find(x => x.id === c.id);
                     if (p) {
@@ -829,7 +828,6 @@
                     }
                 }
 
-                // Simpan Log Firestore
                 const txData = {
                     invoiceId: invoiceId,
                     type: "Produk POS",
@@ -843,8 +841,7 @@
 
                 await addDoc(collection(db, "transactions"), txData);
 
-                alert("Transaksi Berhasil Diverifikasi! Stok telah diperbarui.");
-                printThermalReceipt(txData, cartSnapshot, total);
+                alert("Pembayaran Berhasil Diverifikasi! Barang dapat diserahkan kepada pelanggan.");
                 
                 cart = [];
                 window.pendingTx = null;
@@ -904,20 +901,39 @@
 
         window.closeShiftModal = () => document.getElementById('close-shift-modal').classList.add('hidden');
 
-        // FITUR NO. 2: PRINT FILTERED MONTHLY/PERIODE REPORT PDF ENGINE
-        window.printFilteredMonthlyReport = () => {
+        // KETENTUAN 2: FITUR EKSPOR LAPORAN PDF BERDASARKAN PERIODE (STAFF ONLY)
+        window.setReportDatePreset = (preset) => {
+            const today = new Date();
+            const todayStr = today.toISOString().split('T')[0];
+
+            if (preset === 'today') {
+                document.getElementById('report-start-date').value = todayStr;
+                document.getElementById('report-end-date').value = todayStr;
+            } else if (preset === 'week') {
+                const pastWeek = new Date(today);
+                pastWeek.setDate(today.getDate() - 6);
+                document.getElementById('report-start-date').value = pastWeek.toISOString().split('T')[0];
+                document.getElementById('report-end-date').value = todayStr;
+            } else if (preset === 'month') {
+                const startMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+                document.getElementById('report-start-date').value = startMonth.toISOString().split('T')[0];
+                document.getElementById('report-end-date').value = todayStr;
+            }
+        };
+
+        window.generateAndExportPDFReport = () => {
             const startDate = document.getElementById('report-start-date').value;
             const endDate = document.getElementById('report-end-date').value;
 
             if (!startDate || !endDate) return alert("Pilih tanggal mulai dan tanggal selesai terlebih dahulu!");
 
-            // Filter transaksi berdasarkan rentang tanggal
+            // Filter data aktual dari database
             const filteredTx = transactions.filter(t => t.date >= startDate && t.date <= endDate);
             
-            // Kalkulasi Total Pendapatan
+            // Kalkulasi Akurat Total Pendapatan
             const totalOmset = filteredTx.reduce((a, b) => a + Number(b.total), 0);
 
-            // Rekapitulasi Produk Terjual (Stok Berkurang)
+            // Rekapitulasi Produk Terjual & Pengurangan Stok
             const soldProductsMap = {};
             filteredTx.forEach(t => {
                 if (t.cartDetail && Array.isArray(t.cartDetail)) {
@@ -931,35 +947,60 @@
                 }
             });
 
-            const report = document.getElementById('printable-report');
-            report.innerHTML = `
-                <div style="font-family:sans-serif; color:#000;">
-                    <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:10px; margin-bottom:15px;">
-                        <h2 style="text-transform:uppercase; margin:0;">MAUREN SPORT ELITE GYM</h2>
-                        <p style="font-size:12px; margin:3px 0;">LAPORAN REKAPITULASI PENJUALAN & OPERASIONAL</p>
-                        <p style="font-size:11px; font-weight:bold; margin:0;">Periode: ${startDate} s/d ${endDate}</p>
+            // Ekspor dengan membuka Jendela Pratinjau Cetak/PDF Khusus Staff
+            const pdfWindow = window.open('', '_blank', 'width=900,height=700');
+            pdfWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Laporan_Rekap_Bisnis_${startDate}_s/d_${endDate}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; color: #111; padding: 25px; line-height: 1.4; }
+                        .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 12px; margin-bottom: 20px; }
+                        .header h2 { margin: 0; font-size: 20px; text-transform: uppercase; letter-spacing: 1px; }
+                        .header p { margin: 4px 0; font-size: 12px; color: #444; }
+                        .summary-box { background: #f8f9fa; border: 1px solid #ddd; padding: 12px; border-radius: 6px; margin-bottom: 20px; }
+                        .summary-box table { width: 100%; border: none; font-size: 12px; }
+                        .section-title { font-size: 14px; font-weight: bold; border-left: 4px solid #10b981; padding-left: 8px; margin: 18px 0 8px 0; text-transform: uppercase; }
+                        table.data-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 20px; }
+                        table.data-table th, table.data-table td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+                        table.data-table th { background-color: #f1f5f9; font-weight: bold; }
+                        .footer-note { text-align: right; font-size: 10px; color: #666; margin-top: 30px; border-top: 1px solid #eee; padding-top: 8px; }
+                        @media print {
+                            body { padding: 0; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h2>MAUREN SPORT ELITE GYM</h2>
+                        <p>Laporan Rekapitulasi Operasional & Omset Bisnis</p>
+                        <p><b>Periode Laporan:</b> ${startDate} s/d ${endDate}</p>
                     </div>
 
-                    <h3 style="font-size:14px; margin-bottom:5px;">1. RINGKASAN FINANSIAL</h3>
-                    <table border="1" cellpadding="6" cellspacing="0" style="width:100%; font-size:11px; text-align:left; border-collapse:collapse; margin-bottom:15px;">
-                        <tr><td style="width:50%;"><b>Total Omset Pendapatan:</b></td><td><b>Rp ${totalOmset.toLocaleString('id-ID')}</b></td></tr>
-                        <tr><td><b>Total Transaksi Berhasil:</b></td><td>${filteredTx.length} Transaksi</td></tr>
-                    </table>
+                    <div class="summary-box">
+                        <table>
+                            <tr>
+                                <td><b>Total Omset Pendapatan:</b> <span style="font-size:16px; color:#047857; font-weight:bold;">Rp ${totalOmset.toLocaleString('id-ID')}</span></td>
+                                <td><b>Total Transaksi Berhasil:</b> <span style="font-size:14px; font-weight:bold;">${filteredTx.length} Transaksi</span></td>
+                            </tr>
+                        </table>
+                    </div>
 
-                    <h3 style="font-size:14px; margin-bottom:5px;">2. REKAPITULASI PRODUK TERJUAL (STOK BERKURANG)</h3>
-                    <table border="1" cellpadding="6" cellspacing="0" style="width:100%; font-size:11px; text-align:left; border-collapse:collapse; margin-bottom:15px;">
+                    <div class="section-title">1. Rekapitasi Produk Terjual & Pengurangan Stok</div>
+                    <table class="data-table">
                         <thead>
-                            <tr style="background-color:#f0f0f0;">
+                            <tr>
                                 <th>Nama Produk</th>
-                                <th>Jumlah Terjual (Qty)</th>
+                                <th>Jumlah Terjual (Qty / Stok Berkurang)</th>
                                 <th>Total Nilai Penjualan (Rp)</th>
                             </tr>
                         </thead>
                         <tbody>
-                            ${Object.keys(soldProductsMap).length === 0 ? '<tr><td colspan="3" style="text-align:center;">Tidak ada detail produk terjual pada periode ini.</td></tr>' :
+                            ${Object.keys(soldProductsMap).length === 0 ? '<tr><td colspan="3" style="text-align:center; color:#888;">Tidak ada data produk terjual pada periode ini.</td></tr>' :
                             Object.keys(soldProductsMap).map(pName => `
                                 <tr>
-                                    <td>${pName}</td>
+                                    <td><b>${pName}</b></td>
                                     <td>${soldProductsMap[pName].qty} Unit</td>
                                     <td>Rp ${soldProductsMap[pName].totalSales.toLocaleString('id-ID')}</td>
                                 </tr>
@@ -967,23 +1008,23 @@
                         </tbody>
                     </table>
 
-                    <h3 style="font-size:14px; margin-bottom:5px;">3. LOG DETAIL DATA TRANSAKSI</h3>
-                    <table border="1" cellpadding="6" cellspacing="0" style="width:100%; font-size:10px; text-align:left; border-collapse:collapse;">
+                    <div class="section-title">2. Log Riwayat Detail Transaksi Aktual</div>
+                    <table class="data-table">
                         <thead>
-                            <tr style="background-color:#f0f0f0;">
+                            <tr>
                                 <th>ID Invoice</th>
                                 <th>Tanggal / Waktu</th>
                                 <th>Tipe</th>
                                 <th>Metode</th>
-                                <th>Item Terjual</th>
-                                <th>Total (Rp)</th>
+                                <th>Rincian Item</th>
+                                <th>Total Nominal</th>
                             </tr>
                         </thead>
                         <tbody>
-                            ${filteredTx.length === 0 ? '<tr><td colspan="6" style="text-align:center;">Tidak ada transaksi ditemukan.</td></tr>' :
+                            ${filteredTx.length === 0 ? '<tr><td colspan="6" style="text-align:center; color:#888;">Tidak ada transaksi pada periode ini.</td></tr>' :
                             filteredTx.map(t => `
                                 <tr>
-                                    <td style="font-family:monospace;">${t.invoiceId || t.id.slice(0,8)}</td>
+                                    <td style="font-family:monospace; font-weight:bold;">${t.invoiceId || t.id.slice(0,8)}</td>
                                     <td>${t.timestamp || t.date}</td>
                                     <td>${t.type}</td>
                                     <td>${t.method || 'QRIS'}</td>
@@ -993,26 +1034,20 @@
                             `).join('')}
                         </tbody>
                     </table>
-                </div>
-            `;
-            window.print();
-        };
 
-        window.printThermalReceipt = (tx, cartItems, total) => {
-            const receipt = document.getElementById('printable-receipt');
-            receipt.innerHTML = `
-                <div style="text-align:center; font-family:monospace;">
-                    <h4>MAUREN SPORT GYM</h4>
-                    <p>No: ${tx.invoiceId || tx.id}</p>
-                    <p>========================</p>
-                    ${cartItems.map(i => `<p>${i.name} x${i.qty} = ${i.price * i.qty}</p>`).join('')}
-                    <p>------------------------</p>
-                    <p>TOTAL: Rp ${total.toLocaleString('id-ID')}</p>
-                    <p>Metode: ${tx.method}</p>
-                    <p>========================</p>
-                </div>
-            `;
-            window.print();
+                    <div class="footer-note">
+                        Dicetak Otomatis dari Cloud Database Engine MAUREN SPORT POS pada: ${new Date().toLocaleString('id-ID')}
+                    </div>
+
+                    <script>
+                        window.onload = function() {
+                            window.print();
+                        }
+                    <\/script>
+                </body>
+                </html>
+            `);
+            pdfWindow.document.close();
         };
 
         window.closeCheckoutModal = () => {
@@ -1201,20 +1236,68 @@
             `).join('');
         }
 
+        // KETENTUAN 3 & 4: RENDER TRANSAKSI DENGAN FITUR PENGELOLAAN / PENGHAPUSAN LOG RIWAYAT
         function renderTransactions() {
             const tbody = document.getElementById('combined-transaction-tbody');
             if (!tbody) return;
             tbody.innerHTML = transactions.map(t => `
                 <tr>
-                    <td class="p-3 font-mono text-xs text-amber-400">${t.invoiceId || t.id.slice(0,6)}</td>
+                    <td class="p-3 font-mono text-xs text-amber-400 font-bold">${t.invoiceId || t.id.slice(0,6)}</td>
                     <td class="p-3 text-xs"><span class="px-2 py-0.5 bg-cyan-900/60 text-cyan-300 rounded">${t.type}</span></td>
                     <td class="p-3 text-xs font-bold text-gray-300">${t.method || 'QRIS'}</td>
                     <td class="p-3 text-xs font-semibold text-white">${t.items}</td>
                     <td class="p-3 text-xs text-gray-400">${t.timestamp || t.date}</td>
                     <td class="p-3 text-xs font-black text-emerald-400">Rp ${Number(t.total).toLocaleString('id-ID')}</td>
+                    <td class="p-3 text-center">
+                        <button onclick="deleteSingleTransaction('${t.id}')" title="Hapus Transaksi" class="p-1.5 bg-red-900/40 hover:bg-red-600 text-red-300 hover:text-white rounded-lg transition text-xs">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
                 </tr>
             `).join('');
         }
+
+        // Fitur Hapus Transaksi Individual (Akurat & Aman)
+        window.deleteSingleTransaction = async (txId) => {
+            const targetTx = transactions.find(t => t.id === txId);
+            if (!targetTx) return;
+
+            const confirmMsg = `PERINGATAN: Menghapus transaksi [${targetTx.invoiceId || txId}] senilai Rp ${Number(targetTx.total).toLocaleString('id-ID')} akan mempengaruhi omset laporan!\n\nApakah Anda yakin ingin menghapus data ini?`;
+            
+            if (confirm(confirmMsg)) {
+                try {
+                    await deleteDoc(doc(db, "transactions", txId));
+                    alert("Transaksi berhasil dihapus. Omset dan riwayat telah diperbarui.");
+                } catch (err) {
+                    alert("Gagal menghapus transaksi: " + err.message);
+                }
+            }
+        };
+
+        // Fitur Hapus Transaksi Massal Berdasarkan Periode Filter
+        window.purgeFilteredTransactions = async () => {
+            const startDate = document.getElementById('report-start-date').value;
+            const endDate = document.getElementById('report-end-date').value;
+
+            if (!startDate || !endDate) return alert("Pilih tanggal mulai dan selesai pada filter di atas terlebih dahulu!");
+
+            const filteredToPurge = transactions.filter(t => t.date >= startDate && t.date <= endDate);
+
+            if (filteredToPurge.length === 0) return alert("Tidak ada data transaksi yang ditemukan pada rentang tanggal tersebut.");
+
+            const confirmMsg = `KONFIRMASI PENGHAPUSAN MASSAL:\n\nAnda akan menghapus ${filteredToPurge.length} transaksi dari tanggal ${startDate} s/d ${endDate}.\n\nTindakan ini TIDAK DAPAT DIBATALKAN. Lanjutkan?`;
+
+            if (confirm(confirmMsg)) {
+                try {
+                    for (let t of filteredToPurge) {
+                        await deleteDoc(doc(db, "transactions", t.id));
+                    }
+                    alert(`${filteredToPurge.length} riwayat transaksi berhasil dihapus.`);
+                } catch (err) {
+                    alert("Gagal menghapus transaksi massal: " + err.message);
+                }
+            }
+        };
 
         // Authentication & Helpers
         window.openStaffModal = () => {
@@ -1262,6 +1345,7 @@
             } catch (e) {}
         }
 
+        // KETENTUAN 4: PENGHITUNGAN OMSET AKURAT & REAL-TIME
         function updateChartData() {
             const ctx = document.getElementById('salesChart')?.getContext('2d');
             if (!ctx) return;
