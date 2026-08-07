@@ -70,14 +70,15 @@
             border-color: rgba(255, 184, 0, 0.6);
         }
 
-        .receipt-paper {
-            background: #FAFAFA;
-            color: #0F172A;
+        .receipt-paper-luxury {
+            background: linear-gradient(180deg, #121722 0%, #0a0d14 100%);
+            color: #f8fafc;
+            border: 1px dashed rgba(255, 215, 0, 0.4);
             font-family: 'Courier New', Courier, monospace;
         }
     </style>
 </head>
-<body class="text-gray-100 font-sans antialiased min-h-screen flex flex-col justify-between selection:bg-brand-neonGold selection:text-black">
+<body class="text-gray-100 font-sans antialiased min-h-screen flex flex-col justify-between selection:bg-brand-neonGold selection:text-black pb-20 md:pb-0">
 
     <!-- HEADER / NAVIGATION BAR -->
     <header class="sticky top-0 z-40 glass-panel-luxury border-b border-amber-500/20 px-4 py-3 shadow-2xl">
@@ -102,7 +103,7 @@
                     <i class="fa-solid fa-lock mr-1.5"></i> Staff Only <span id="staff-status-badge" class="ml-1.5 text-[10px] bg-red-900/80 text-red-200 px-2 py-0.5 rounded-md font-bold uppercase">Terkunci</span>
                 </button>
                 
-                <!-- Floating Cart Button -->
+                <!-- Floating Cart Button (Header) -->
                 <button onclick="toggleCartDrawer()" class="relative px-3.5 py-2.5 bg-amber-500/20 border border-amber-500/40 text-amber-300 rounded-xl font-black text-xs uppercase hover:bg-amber-500/30 transition flex items-center gap-2">
                     <i class="fa-solid fa-cart-shopping text-base text-amber-400"></i>
                     <span id="cart-badge-count" class="bg-amber-400 text-black rounded-full px-2 py-0.5 font-black text-[10px]">0</span>
@@ -127,17 +128,17 @@
                 </div>
             </div>
 
-            <!-- BAR PENCARIAN & FILTER PRODUK -->
+            <!-- BAR PENCARIAN & FILTER PRODUK DENGAN IKON VISUAL -->
             <div class="flex flex-col md:flex-row justify-between items-center gap-4 bg-gray-950/80 p-4 rounded-2xl border border-gray-800">
                 <div class="relative w-full md:w-80">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-gray-500 text-xs"></i>
-                    <input type="text" id="product-search" oninput="renderProducts()" placeholder="Cari nama produk..." class="w-full pl-9 pr-4 py-2 bg-gray-900 border border-gray-800 rounded-xl text-xs text-white focus:outline-none focus:border-amber-400">
+                    <input type="text" id="product-search" oninput="renderProducts()" placeholder="Cari suplemen, minuman, daily pass..." class="w-full pl-9 pr-4 py-2 bg-gray-900 border border-gray-800 rounded-xl text-xs text-white focus:outline-none focus:border-amber-400">
                 </div>
                 <div class="flex gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
-                    <button onclick="filterCategory('All')" class="cat-filter-btn active px-3 py-1.5 bg-amber-400 text-black font-extrabold text-[11px] rounded-lg uppercase">Semua</button>
-                    <button onclick="filterCategory('Minuman')" class="cat-filter-btn px-3 py-1.5 bg-gray-900 text-gray-300 font-bold text-[11px] rounded-lg uppercase hover:text-amber-400">Minuman</button>
-                    <button onclick="filterCategory('Sewa Alat')" class="cat-filter-btn px-3 py-1.5 bg-gray-900 text-gray-300 font-bold text-[11px] rounded-lg uppercase hover:text-amber-400">Sewa Alat</button>
-                    <button onclick="filterCategory('Suplemen')" class="cat-filter-btn px-3 py-1.5 bg-gray-900 text-gray-300 font-bold text-[11px] rounded-lg uppercase hover:text-amber-400">Suplemen</button>
+                    <button onclick="filterCategory('All')" class="cat-filter-btn active px-3.5 py-1.5 bg-amber-400 text-black font-extrabold text-[11px] rounded-xl uppercase flex items-center gap-1.5"><i class="fa-solid fa-border-all"></i> Semua</button>
+                    <button onclick="filterCategory('Minuman')" class="cat-filter-btn px-3.5 py-1.5 bg-gray-900 text-gray-300 font-bold text-[11px] rounded-xl uppercase hover:text-amber-400 flex items-center gap-1.5"><i class="fa-solid fa-bottle-water text-cyan-400"></i> Minuman</button>
+                    <button onclick="filterCategory('Sewa Alat')" class="cat-filter-btn px-3.5 py-1.5 bg-gray-900 text-gray-300 font-bold text-[11px] rounded-xl uppercase hover:text-amber-400 flex items-center gap-1.5"><i class="fa-solid fa-dumbbell text-amber-400"></i> Sewa Alat</button>
+                    <button onclick="filterCategory('Suplemen')" class="cat-filter-btn px-3.5 py-1.5 bg-gray-900 text-gray-300 font-bold text-[11px] rounded-xl uppercase hover:text-amber-400 flex items-center gap-1.5"><i class="fa-solid fa-capsules text-purple-400"></i> Suplemen</button>
                 </div>
             </div>
 
@@ -204,7 +205,38 @@
                     </div>
                 </div>
 
-                <!-- SEKSI REKAP LAPORAN PDF DENGAN RENTANG TANGGAL (KHUSUS STAFF ONLY) -->
+                <!-- SEKSI DASHBOARD EXECUTIVE SUMMARY (KPI CARDS RINGKAS) -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-gray-950/80 p-5 rounded-2xl border border-amber-500/30 flex items-center justify-between shadow-lg">
+                        <div>
+                            <span class="text-[10px] text-gray-400 font-extrabold uppercase tracking-widest block mb-1">Omset Hari Ini</span>
+                            <span id="dash-today-income" class="text-xl font-black text-emerald-400 font-mono">Rp 0</span>
+                        </div>
+                        <div class="w-12 h-12 bg-emerald-500/10 text-emerald-400 rounded-2xl flex items-center justify-center text-xl border border-emerald-500/20">
+                            <i class="fa-solid fa-wallet"></i>
+                        </div>
+                    </div>
+                    <div class="bg-gray-950/80 p-5 rounded-2xl border border-amber-500/30 flex items-center justify-between shadow-lg">
+                        <div>
+                            <span class="text-[10px] text-gray-400 font-extrabold uppercase tracking-widest block mb-1">Transaksi Hari Ini</span>
+                            <span id="dash-today-count" class="text-xl font-black text-amber-400 font-mono">0 TX</span>
+                        </div>
+                        <div class="w-12 h-12 bg-amber-500/10 text-amber-400 rounded-2xl flex items-center justify-center text-xl border border-amber-500/20">
+                            <i class="fa-solid fa-receipt"></i>
+                        </div>
+                    </div>
+                    <div class="bg-gray-950/80 p-5 rounded-2xl border border-amber-500/30 flex items-center justify-between shadow-lg">
+                        <div>
+                            <span class="text-[10px] text-gray-400 font-extrabold uppercase tracking-widest block mb-1">Member Aktif</span>
+                            <span id="dash-active-members" class="text-xl font-black text-cyan-400 font-mono">0 Member</span>
+                        </div>
+                        <div class="w-12 h-12 bg-cyan-500/10 text-cyan-400 rounded-2xl flex items-center justify-center text-xl border border-cyan-500/20">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEKSI REKAP LAPORAN PDF DENGAN RENTANG TANGGAL -->
                 <div class="bg-gradient-to-r from-emerald-950/40 via-gray-950 to-gray-950 p-6 rounded-2xl border border-emerald-500/30 mb-6 space-y-4 shadow-xl">
                     <div class="border-b border-gray-800 pb-3 flex flex-col md:flex-row justify-between md:items-center gap-2">
                         <div>
@@ -351,7 +383,7 @@
                     </div>
                 </div>
 
-                <!-- RIWAYAT TRANSAKSI GABUNGAN & PENGELOLAAN LOG (FITUR NO. 3 & 4) -->
+                <!-- RIWAYAT TRANSAKSI GABUNGAN & PENGELOLAAN LOG -->
                 <div class="space-y-3">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <h3 class="text-lg font-black text-white uppercase tracking-wide flex items-center gap-2">
@@ -385,7 +417,23 @@
 
     </main>
 
-    <!-- DRAWER / MODAL KERANJANG POS -->
+    <!-- BOTTOM FLOATING CART BAR (RESPONSIVE MOBILE USER FRIENDLY) -->
+    <div id="floating-cart-bar" class="fixed bottom-4 left-4 right-4 z-40 bg-gradient-to-r from-amber-500 to-yellow-400 text-black p-3.5 rounded-2xl shadow-2xl flex justify-between items-center hidden border border-amber-300">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-black text-amber-400 rounded-xl flex items-center justify-center font-black">
+                <i class="fa-solid fa-cart-shopping text-base"></i>
+            </div>
+            <div>
+                <span id="floating-cart-count" class="text-xs font-black block uppercase tracking-wider">0 Item di Keranjang</span>
+                <span id="floating-cart-subtotal" class="text-sm font-black font-mono">Rp 0</span>
+            </div>
+        </div>
+        <button onclick="toggleCartDrawer()" class="px-4 py-2 bg-black hover:bg-gray-900 text-amber-400 font-extrabold text-xs uppercase rounded-xl transition shadow-md flex items-center gap-1.5">
+            Buka POS <i class="fa-solid fa-arrow-right"></i>
+        </button>
+    </div>
+
+    <!-- DRAWER / MODAL KERANJANG POS (DENGAN FITUR DISKON MANUAL) -->
     <div id="cart-drawer" class="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-gray-950 border-l border-amber-500/30 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col justify-between">
         <div class="p-5 border-b border-gray-800 flex justify-between items-center bg-gray-900/50">
             <h3 class="text-lg font-black text-amber-400 uppercase flex items-center gap-2">
@@ -396,13 +444,19 @@
 
         <div id="cart-items-container" class="p-5 flex-grow overflow-y-auto space-y-3 divide-y divide-gray-800/50"></div>
 
-        <div class="p-5 bg-gray-900/80 border-t border-gray-800 space-y-4">
-            <div class="flex justify-between items-center text-sm font-black">
-                <span class="text-gray-300 uppercase">Total Belanja:</span>
+        <div class="p-5 bg-gray-900/80 border-t border-gray-800 space-y-3">
+            <!-- Input Diskon Manual -->
+            <div class="flex justify-between items-center gap-2">
+                <label class="text-[10px] font-extrabold text-gray-400 uppercase">Potongan Diskon (Rp):</label>
+                <input type="number" id="cart-discount-input" oninput="updateCartUI()" placeholder="0" class="w-32 px-3 py-1 bg-gray-950 border border-gray-800 rounded-lg text-xs font-mono font-bold text-amber-400 focus:outline-none focus:border-amber-400 text-right">
+            </div>
+
+            <div class="flex justify-between items-center text-sm font-black pt-1 border-t border-gray-800">
+                <span class="text-gray-300 uppercase">Total Akhir:</span>
                 <span id="cart-total-amount" class="text-xl text-emerald-400 font-mono">Rp 0</span>
             </div>
             
-            <div class="grid grid-cols-2 gap-2">
+            <div class="grid grid-cols-2 gap-2 pt-1">
                 <button onclick="openCheckoutModal('QRIS')" class="py-3 bg-amber-400 hover:bg-amber-300 text-black font-extrabold rounded-xl text-xs uppercase flex items-center justify-center gap-1">
                     <i class="fa-solid fa-qrcode"></i> Bayar QRIS
                 </button>
@@ -413,7 +467,7 @@
         </div>
     </div>
 
-    <!-- MODAL FINAL CHECKOUT & STRUK BUKTI DIGITAL (BEBAS DARI KODE CETAK/PDF PELANGGAN) -->
+    <!-- MODAL FINAL CHECKOUT & STRUK BUKTI DIGITAL CYBER GOLD -->
     <div id="checkout-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center hidden p-4 overflow-y-auto">
         <div class="glass-panel-luxury p-7 rounded-3xl max-w-md w-full border border-amber-500/50 shadow-2xl space-y-4 my-auto">
             <div class="flex justify-between items-center border-b border-gray-800 pb-3">
@@ -565,6 +619,19 @@
         // Real-Time Listeners
         onSnapshot(collection(db, "products"), (snapshot) => {
             products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            
+            // Tambahkan Preset "Daily Pass Latihan Harian" jika belum ada di database
+            if (!products.some(p => p.name.includes("Daily Pass"))) {
+                products.unshift({
+                    id: "preset-daily-pass",
+                    name: "Daily Pass Latihan Harian",
+                    price: 30000,
+                    stock: 999,
+                    type: "Sewa Alat",
+                    img: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=400&auto=format&fit=crop"
+                });
+            }
+
             renderProducts();
             renderStaffProducts();
         });
@@ -572,6 +639,7 @@
         onSnapshot(collection(db, "members"), (snapshot) => {
             members = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             renderMembers();
+            updateDashboardSummary();
         });
 
         onSnapshot(collection(db, "events"), (snapshot) => {
@@ -583,6 +651,7 @@
             transactions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             renderTransactions();
             updateChartData();
+            updateDashboardSummary();
         });
 
         onSnapshot(doc(db, "settings", "qris"), (docSnap) => {
@@ -605,6 +674,25 @@
                 activeNav.classList.add('bg-gradient-to-r', 'from-amber-400', 'to-amber-500', 'text-black', 'shadow-lg');
             }
         };
+
+        // Render Dashboard KPI Cards (Executive Summary Staff)
+        function updateDashboardSummary() {
+            const todayStr = new Date().toISOString().split('T')[0];
+            const todayTx = transactions.filter(t => t.date === todayStr);
+            
+            const todayIncome = todayTx.reduce((acc, t) => acc + Number(t.total), 0);
+            const activeMembersCount = members.filter(m => m.end >= todayStr).length;
+
+            if (document.getElementById('dash-today-income')) {
+                document.getElementById('dash-today-income').innerText = "Rp " + todayIncome.toLocaleString('id-ID');
+            }
+            if (document.getElementById('dash-today-count')) {
+                document.getElementById('dash-today-count').innerText = todayTx.length + " TX";
+            }
+            if (document.getElementById('dash-active-members')) {
+                document.getElementById('dash-active-members').innerText = activeMembersCount + " Member";
+            }
+        }
 
         // Render Products dengan Fitur Visual Stok Habis
         window.renderProducts = () => {
@@ -648,9 +736,9 @@
         window.filterCategory = (cat) => {
             activeCategory = cat;
             document.querySelectorAll('.cat-filter-btn').forEach(b => {
-                b.className = 'cat-filter-btn px-3 py-1.5 bg-gray-900 text-gray-300 font-bold text-[11px] rounded-lg uppercase hover:text-amber-400';
+                b.className = 'cat-filter-btn px-3.5 py-1.5 bg-gray-900 text-gray-300 font-bold text-[11px] rounded-xl uppercase hover:text-amber-400 flex items-center gap-1.5';
             });
-            event.target.className = 'cat-filter-btn active px-3 py-1.5 bg-amber-400 text-black font-extrabold text-[11px] rounded-lg uppercase';
+            event.currentTarget.className = 'cat-filter-btn active px-3.5 py-1.5 bg-amber-400 text-black font-extrabold text-[11px] rounded-xl uppercase flex items-center gap-1.5';
             renderProducts();
         };
 
@@ -672,12 +760,13 @@
 
         window.updateCartUI = () => {
             const container = document.getElementById('cart-items-container');
-            let total = 0;
+            const discountInput = Number(document.getElementById('cart-discount-input')?.value) || 0;
+            let rawSubtotal = 0;
             let totalQty = 0;
 
             container.innerHTML = cart.map((c, i) => {
                 const sub = c.price * c.qty;
-                total += sub;
+                rawSubtotal += sub;
                 totalQty += c.qty;
                 return `
                     <div class="flex justify-between items-center pt-2">
@@ -694,8 +783,20 @@
                 `;
             }).join('');
 
+            const finalTotal = Math.max(0, rawSubtotal - discountInput);
+
             document.getElementById('cart-badge-count').innerText = totalQty;
-            document.getElementById('cart-total-amount').innerText = "Rp " + total.toLocaleString('id-ID');
+            document.getElementById('cart-total-amount').innerText = "Rp " + finalTotal.toLocaleString('id-ID');
+
+            // Bottom Floating Bar update
+            const floatBar = document.getElementById('floating-cart-bar');
+            if (totalQty > 0) {
+                floatBar.classList.remove('hidden');
+                document.getElementById('floating-cart-count').innerText = `${totalQty} Item di Keranjang`;
+                document.getElementById('floating-cart-subtotal').innerText = "Rp " + finalTotal.toLocaleString('id-ID');
+            } else {
+                floatBar.classList.add('hidden');
+            }
         };
 
         window.changeCartQty = (idx, delta) => {
@@ -715,7 +816,10 @@
         window.openCheckoutModal = (type) => {
             if (cart.length === 0) return alert("Keranjang kosong!");
             
-            const total = cart.reduce((acc, x) => acc + (x.price * x.qty), 0);
+            const discountInput = Number(document.getElementById('cart-discount-input')?.value) || 0;
+            const rawSubtotal = cart.reduce((acc, x) => acc + (x.price * x.qty), 0);
+            const total = Math.max(0, rawSubtotal - discountInput);
+
             const modalBody = document.getElementById('checkout-payment-body');
 
             if (type === 'QRIS') {
@@ -753,7 +857,7 @@
             document.getElementById('cash-change').innerText = "Rp " + (change > 0 ? change.toLocaleString('id-ID') : 0);
         };
 
-        // KETENTUAN 1: TAMPILAN STRUK BUKTI DIGITAL DI PELANGGAN (TANPA OTOMATISASI / CETAK PDF)
+        // STRUK BUKTI DIGITAL CYBER GOLD (TANPA PENUANG/PDF PELANGGAN)
         window.generateDigitalReceipt = (method, total) => {
             const invoiceId = "INV-" + Math.floor(100000 + Math.random() * 900000);
             const now = new Date();
@@ -772,21 +876,21 @@
             const modalBody = document.getElementById('checkout-payment-body');
             modalBody.innerHTML = `
                 <div class="space-y-3">
-                    <div class="receipt-paper p-4 rounded-2xl shadow-inner space-y-2 text-xs">
-                        <div class="text-center font-bold border-b border-dashed border-gray-400 pb-2">
-                            <p class="text-sm uppercase tracking-wider font-extrabold">MAUREN SPORT ELITE GYM</p>
-                            <p class="text-[10px] text-gray-600 font-sans">BUKTI STRUK TRANSAKSI DIGITAL</p>
+                    <div class="receipt-paper-luxury p-5 rounded-2xl shadow-2xl space-y-2 text-xs">
+                        <div class="text-center font-bold border-b border-dashed border-amber-500/40 pb-3">
+                            <p class="text-sm uppercase tracking-wider font-extrabold text-amber-400">MAUREN SPORT ELITE GYM</p>
+                            <p class="text-[10px] text-gray-400 font-sans">BUKTI STRUK TRANSAKSI DIGITAL</p>
                         </div>
                         
-                        <div class="space-y-1 text-[11px] py-1">
-                            <div class="flex justify-between"><span>No. Invoice:</span><span class="font-bold font-mono">${invoiceId}</span></div>
+                        <div class="space-y-1 text-[11px] py-1 text-gray-300">
+                            <div class="flex justify-between"><span>No. Invoice:</span><span class="font-bold font-mono text-amber-400">${invoiceId}</span></div>
                             <div class="flex justify-between"><span>Waktu:</span><span>${dateStr} ${timeStr}</span></div>
-                            <div class="flex justify-between"><span>Metode:</span><span class="font-bold">${method}</span></div>
+                            <div class="flex justify-between"><span>Metode:</span><span class="font-bold text-white">${method}</span></div>
                         </div>
 
-                        <div class="border-t border-b border-dashed border-gray-400 py-2 my-1 space-y-1.5">
+                        <div class="border-t border-b border-dashed border-amber-500/40 py-2 my-1 space-y-1.5">
                             ${cart.map(item => `
-                                <div class="flex justify-between">
+                                <div class="flex justify-between text-gray-200">
                                     <span>${item.name} x${item.qty}</span>
                                     <span>Rp ${(item.price * item.qty).toLocaleString('id-ID')}</span>
                                 </div>
@@ -795,16 +899,16 @@
 
                         <div class="flex justify-between items-center font-black text-sm pt-1">
                             <span>TOTAL BAYAR:</span>
-                            <span class="text-emerald-700">Rp ${total.toLocaleString('id-ID')}</span>
+                            <span class="text-emerald-400 font-mono text-base">Rp ${total.toLocaleString('id-ID')}</span>
                         </div>
 
-                        <div class="bg-amber-100 border border-amber-400 p-2 rounded text-center text-[10px] text-amber-900 font-bold mt-2">
-                            <i class="fa-solid fa-triangle-exclamation mr-1"></i> TUNJUKKAN STRUK INI KEPADA STAFF KASIR SEBELUM MENGAMBIL BARANG
+                        <div class="bg-amber-500/10 border border-amber-500/30 p-2 rounded-xl text-center text-[10px] text-amber-300 font-bold mt-3">
+                            <i class="fa-solid fa-triangle-exclamation mr-1"></i> PERLIHATKAN STRUK INI KEPADA STAFF KASIR UNTUK PENGAMBILAN BARANG
                         </div>
                     </div>
 
                     <div class="bg-gray-950 p-3 rounded-xl border border-gray-800 space-y-2">
-                        <p class="text-[11px] text-gray-400 text-center">Tindakan Staff: Verifikasi mutasi pembayaran lalu klik tombol di bawah.</p>
+                        <p class="text-[11px] text-gray-400 text-center">Aksi Kasir Staff: Cocokkan mutasi masuk lalu konfirmasi.</p>
                         <button onclick="confirmAndFinalizeTransaction()" class="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold rounded-xl text-xs uppercase shadow-lg flex items-center justify-center gap-1.5">
                             <i class="fa-solid fa-circle-check text-sm"></i> Verifikasi Pembayaran & Selesai
                         </button>
@@ -821,7 +925,7 @@
             try {
                 for (let c of cartSnapshot) {
                     const p = products.find(x => x.id === c.id);
-                    if (p) {
+                    if (p && p.id !== 'preset-daily-pass') {
                         await updateDoc(doc(db, "products", c.id), {
                             stock: Math.max(0, p.stock - c.qty)
                         });
@@ -845,6 +949,7 @@
                 
                 cart = [];
                 window.pendingTx = null;
+                if (document.getElementById('cart-discount-input')) document.getElementById('cart-discount-input').value = '';
                 updateCartUI();
                 closeCheckoutModal();
                 toggleCartDrawer();
@@ -901,7 +1006,7 @@
 
         window.closeShiftModal = () => document.getElementById('close-shift-modal').classList.add('hidden');
 
-        // KETENTUAN 2: FITUR EKSPOR LAPORAN PDF BERDASARKAN PERIODE (STAFF ONLY)
+        // FITUR EKSPOR LAPORAN PDF BERDASARKAN PERIODE (STAFF ONLY ENGINE)
         window.setReportDatePreset = (preset) => {
             const today = new Date();
             const todayStr = today.toISOString().split('T')[0];
@@ -927,13 +1032,9 @@
 
             if (!startDate || !endDate) return alert("Pilih tanggal mulai dan tanggal selesai terlebih dahulu!");
 
-            // Filter data aktual dari database
             const filteredTx = transactions.filter(t => t.date >= startDate && t.date <= endDate);
-            
-            // Kalkulasi Akurat Total Pendapatan
             const totalOmset = filteredTx.reduce((a, b) => a + Number(b.total), 0);
 
-            // Rekapitulasi Produk Terjual & Pengurangan Stok
             const soldProductsMap = {};
             filteredTx.forEach(t => {
                 if (t.cartDetail && Array.isArray(t.cartDetail)) {
@@ -947,7 +1048,6 @@
                 }
             });
 
-            // Ekspor dengan membuka Jendela Pratinjau Cetak/PDF Khusus Staff
             const pdfWindow = window.open('', '_blank', 'width=900,height=700');
             pdfWindow.document.write(`
                 <!DOCTYPE html>
@@ -966,9 +1066,7 @@
                         table.data-table th, table.data-table td { border: 1px solid #ccc; padding: 8px; text-align: left; }
                         table.data-table th { background-color: #f1f5f9; font-weight: bold; }
                         .footer-note { text-align: right; font-size: 10px; color: #666; margin-top: 30px; border-top: 1px solid #eee; padding-top: 8px; }
-                        @media print {
-                            body { padding: 0; }
-                        }
+                        @media print { body { padding: 0; } }
                     </style>
                 </head>
                 <body>
@@ -1040,9 +1138,7 @@
                     </div>
 
                     <script>
-                        window.onload = function() {
-                            window.print();
-                        }
+                        window.onload = function() { window.print(); }
                     <\/script>
                 </body>
                 </html>
@@ -1087,6 +1183,7 @@
         }
 
         window.deleteProduct = async (id) => {
+            if (id === 'preset-daily-pass') return alert("Preset Daily Pass tidak dapat dihapus!");
             if (confirm("Hapus produk ini?")) await deleteDoc(doc(db, "products", id));
         };
 
@@ -1236,7 +1333,7 @@
             `).join('');
         }
 
-        // KETENTUAN 3 & 4: RENDER TRANSAKSI DENGAN FITUR PENGELOLAAN / PENGHAPUSAN LOG RIWAYAT
+        // RENDER TRANSAKSI DENGAN PENGELOLAAN LOG RIWAYAT & HAPUS
         function renderTransactions() {
             const tbody = document.getElementById('combined-transaction-tbody');
             if (!tbody) return;
@@ -1257,7 +1354,7 @@
             `).join('');
         }
 
-        // Fitur Hapus Transaksi Individual (Akurat & Aman)
+        // Fitur Hapus Transaksi Individual
         window.deleteSingleTransaction = async (txId) => {
             const targetTx = transactions.find(t => t.id === txId);
             if (!targetTx) return;
@@ -1274,7 +1371,7 @@
             }
         };
 
-        // Fitur Hapus Transaksi Massal Berdasarkan Periode Filter
+        // Fitur Hapus Transaksi Massal
         window.purgeFilteredTransactions = async () => {
             const startDate = document.getElementById('report-start-date').value;
             const endDate = document.getElementById('report-end-date').value;
@@ -1345,7 +1442,7 @@
             } catch (e) {}
         }
 
-        // KETENTUAN 4: PENGHITUNGAN OMSET AKURAT & REAL-TIME
+        // PENGHITUNGAN OMSET AKURAT & REAL-TIME
         function updateChartData() {
             const ctx = document.getElementById('salesChart')?.getContext('2d');
             if (!ctx) return;
