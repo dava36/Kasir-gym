@@ -128,7 +128,7 @@
                 </div>
             </div>
 
-            <!-- BAR PENCARIAN & FILTER PRODUK DENGAN IKON VISUAL -->
+            <!-- BAR PENCARIAN & FILTER PRODUK -->
             <div class="flex flex-col md:flex-row justify-between items-center gap-4 bg-gray-950/80 p-4 rounded-2xl border border-gray-800">
                 <div class="relative w-full md:w-80">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-gray-500 text-xs"></i>
@@ -336,7 +336,7 @@
                                     <th class="p-3.5">Kategori</th>
                                     <th class="p-3.5">Harga (Rp)</th>
                                     <th class="p-3.5">Stok Unit</th>
-                                    <th class="p-3.5 text-center">Aksi</th>
+                                    <th class="p-3.5 text-center">Aksi Kelola</th>
                                 </tr>
                             </thead>
                             <tbody id="staff-product-tbody" class="divide-y divide-gray-800/60"></tbody>
@@ -363,7 +363,7 @@
                                     <th class="p-3.5">Gender</th>
                                     <th class="p-3.5">Tgl Mulai</th>
                                     <th class="p-3.5">Tgl Akhir</th>
-                                    <th class="p-3.5">Biaya</th>
+                                    <th class="p-3.5">Biaya (Rp)</th>
                                     <th class="p-3.5">Status</th>
                                     <th class="p-3.5 text-center">Aksi Kelola</th>
                                 </tr>
@@ -417,7 +417,7 @@
 
     </main>
 
-    <!-- BOTTOM FLOATING CART BAR (RESPONSIVE MOBILE USER FRIENDLY) -->
+    <!-- BOTTOM FLOATING CART BAR -->
     <div id="floating-cart-bar" class="fixed bottom-4 left-4 right-4 z-40 bg-gradient-to-r from-amber-500 to-yellow-400 text-black p-3.5 rounded-2xl shadow-2xl flex justify-between items-center hidden border border-amber-300">
         <div class="flex items-center gap-3">
             <div class="w-10 h-10 bg-black text-amber-400 rounded-xl flex items-center justify-center font-black">
@@ -433,7 +433,7 @@
         </button>
     </div>
 
-    <!-- DRAWER / MODAL KERANJANG POS (DENGAN FITUR DISKON MANUAL) -->
+    <!-- DRAWER / MODAL KERANJANG POS -->
     <div id="cart-drawer" class="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-gray-950 border-l border-amber-500/30 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col justify-between">
         <div class="p-5 border-b border-gray-800 flex justify-between items-center bg-gray-900/50">
             <h3 class="text-lg font-black text-amber-400 uppercase flex items-center gap-2">
@@ -445,7 +445,6 @@
         <div id="cart-items-container" class="p-5 flex-grow overflow-y-auto space-y-3 divide-y divide-gray-800/50"></div>
 
         <div class="p-5 bg-gray-900/80 border-t border-gray-800 space-y-3">
-            <!-- Input Diskon Manual -->
             <div class="flex justify-between items-center gap-2">
                 <label class="text-[10px] font-extrabold text-gray-400 uppercase">Potongan Diskon (Rp):</label>
                 <input type="number" id="cart-discount-input" oninput="updateCartUI()" placeholder="0" class="w-32 px-3 py-1 bg-gray-950 border border-gray-800 rounded-lg text-xs font-mono font-bold text-amber-400 focus:outline-none focus:border-amber-400 text-right">
@@ -464,6 +463,94 @@
                     <i class="fa-solid fa-money-bill-wave"></i> Bayar Cash
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- MODAL EDIT PRODUK (BARU) -->
+    <div id="edit-product-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center hidden">
+        <div class="glass-panel-luxury p-7 rounded-3xl max-w-md w-full mx-4 border border-amber-500/50 shadow-2xl space-y-4">
+            <div class="text-center border-b border-gray-800 pb-3">
+                <h3 class="text-xl font-black text-white uppercase"><i class="fa-solid fa-pen-to-square text-amber-400 mr-2"></i> Edit Data Produk</h3>
+            </div>
+
+            <form id="edit-product-form" onsubmit="saveProductEdit(event)" class="space-y-3">
+                <input type="hidden" id="ep-id">
+                <div>
+                    <label class="text-xs font-bold text-gray-300 block mb-1 uppercase">Nama Produk</label>
+                    <input type="text" id="ep-name" required class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-sm text-white focus:outline-none focus:border-amber-400">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs font-bold text-gray-300 block mb-1 uppercase">Harga (Rp)</label>
+                        <input type="number" id="ep-price" required class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-sm text-white focus:outline-none focus:border-amber-400">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-gray-300 block mb-1 uppercase">Stok Unit</label>
+                        <input type="number" id="ep-stock" required class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-sm text-white focus:outline-none focus:border-amber-400">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-300 block mb-1 uppercase">Kategori / Tipe</label>
+                    <select id="ep-type" class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-sm text-white focus:outline-none">
+                        <option value="Minuman">Minuman</option>
+                        <option value="Camilan">Camilan</option>
+                        <option value="Sewa Alat">Sewa Alat</option>
+                        <option value="Suplemen">Suplemen</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-amber-400 block mb-1 uppercase">URL Foto Produk</label>
+                    <input type="text" id="ep-image" class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-sm text-white focus:outline-none focus:border-amber-400">
+                </div>
+
+                <div class="flex gap-3 pt-3">
+                    <button type="button" onclick="closeEditProductModal()" class="w-1/2 py-3 bg-gray-800 text-gray-300 font-bold rounded-xl text-xs uppercase">Batal</button>
+                    <button type="submit" class="w-1/2 py-3 bg-amber-400 text-black font-extrabold rounded-xl text-xs uppercase">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL EDIT MEMBER & BIAYA (BARU) -->
+    <div id="edit-member-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center hidden">
+        <div class="glass-panel-luxury p-7 rounded-3xl max-w-md w-full mx-4 border border-amber-500/50 shadow-2xl space-y-4">
+            <div class="text-center border-b border-gray-800 pb-3">
+                <h3 class="text-xl font-black text-white uppercase"><i class="fa-solid fa-user-pen text-amber-400 mr-2"></i> Edit Data & Biaya Member</h3>
+            </div>
+
+            <form id="edit-member-form" onsubmit="saveMemberEdit(event)" class="space-y-3">
+                <input type="hidden" id="em-id">
+                <div>
+                    <label class="text-xs font-bold text-gray-300 block mb-1 uppercase">Nama Lengkap</label>
+                    <input type="text" id="em-name" required class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-sm text-white focus:outline-none focus:border-amber-400">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-300 block mb-1 uppercase">Gender</label>
+                    <select id="em-gender" class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-sm text-white focus:outline-none">
+                        <option value="Pria">Pria</option>
+                        <option value="Wanita">Wanita</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs font-bold text-gray-300 block mb-1 uppercase">Tgl Mulai</label>
+                        <input type="date" id="em-start" required class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-sm text-white focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-gray-300 block mb-1 uppercase">Tgl Akhir</label>
+                        <input type="date" id="em-end" required class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-sm text-white focus:outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-emerald-400 block mb-1 uppercase">Biaya Langganan (Rp)</label>
+                    <input type="number" id="em-fee" required class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-sm text-white focus:outline-none focus:border-amber-400">
+                </div>
+
+                <div class="flex gap-3 pt-3">
+                    <button type="button" onclick="closeEditMemberModal()" class="w-1/2 py-3 bg-gray-800 text-gray-300 font-bold rounded-xl text-xs uppercase">Batal</button>
+                    <button type="submit" class="w-1/2 py-3 bg-amber-400 text-black font-extrabold rounded-xl text-xs uppercase">Simpan Perubahan</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -620,7 +707,7 @@
         onSnapshot(collection(db, "products"), (snapshot) => {
             products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             
-            // Tambahkan Preset "Daily Pass Latihan Harian" jika belum ada di database
+            // Preset Daily Pass
             if (!products.some(p => p.name.includes("Daily Pass"))) {
                 products.unshift({
                     id: "preset-daily-pass",
@@ -675,7 +762,7 @@
             }
         };
 
-        // Render Dashboard KPI Cards (Executive Summary Staff)
+        // Dashboard Executive Summary Calculations
         function updateDashboardSummary() {
             const todayStr = new Date().toISOString().split('T')[0];
             const todayTx = transactions.filter(t => t.date === todayStr);
@@ -694,7 +781,7 @@
             }
         }
 
-        // Render Products dengan Fitur Visual Stok Habis
+        // Render Products
         window.renderProducts = () => {
             const grid = document.getElementById('product-grid');
             const searchVal = document.getElementById('product-search')?.value.toLowerCase() || '';
@@ -788,7 +875,7 @@
             document.getElementById('cart-badge-count').innerText = totalQty;
             document.getElementById('cart-total-amount').innerText = "Rp " + finalTotal.toLocaleString('id-ID');
 
-            // Bottom Floating Bar update
+            // Floating Bottom Bar logic
             const floatBar = document.getElementById('floating-cart-bar');
             if (totalQty > 0) {
                 floatBar.classList.remove('hidden');
@@ -812,7 +899,7 @@
             document.getElementById('cart-drawer').classList.toggle('translate-x-full');
         };
 
-        // Modal Pembayaran & Tampilan QRIS/Cash
+        // Modal Pembayaran
         window.openCheckoutModal = (type) => {
             if (cart.length === 0) return alert("Keranjang kosong!");
             
@@ -857,7 +944,7 @@
             document.getElementById('cash-change').innerText = "Rp " + (change > 0 ? change.toLocaleString('id-ID') : 0);
         };
 
-        // STRUK BUKTI DIGITAL CYBER GOLD (TANPA PENUANG/PDF PELANGGAN)
+        // STRUK BUKTI DIGITAL CYBER GOLD
         window.generateDigitalReceipt = (method, total) => {
             const invoiceId = "INV-" + Math.floor(100000 + Math.random() * 900000);
             const now = new Date();
@@ -917,7 +1004,7 @@
             `;
         };
 
-        // Verifikasi Staff -> Potong Stok & Simpan Firestore (Bebas dari PDF)
+        // Verifikasi Staff -> Potong Stok & Simpan Firestore
         window.confirmAndFinalizeTransaction = async () => {
             if (!window.pendingTx) return;
             const { invoiceId, dateStr, timeStr, method, total, cartSnapshot } = window.pendingTx;
@@ -1006,7 +1093,7 @@
 
         window.closeShiftModal = () => document.getElementById('close-shift-modal').classList.add('hidden');
 
-        // FITUR EKSPOR LAPORAN PDF BERDASARKAN PERIODE (STAFF ONLY ENGINE)
+        // FITUR EKSPOR LAPORAN PDF BERDASARKAN PERIODE
         window.setReportDatePreset = (preset) => {
             const today = new Date();
             const todayStr = today.toISOString().split('T')[0];
@@ -1151,7 +1238,7 @@
             window.pendingTx = null;
         };
 
-        // Admin/Staff Firestore Actions
+        // KETENTUAN 1: TAMBAH PRODUK & FITUR EDIT PRODUK LENGKAP (STAFF ONLY)
         window.addNewProduct = async (e) => {
             e.preventDefault();
             const name = document.getElementById('np-name').value;
@@ -1162,7 +1249,7 @@
 
             await addDoc(collection(db, "products"), { name, price, stock, type, img });
             e.target.reset();
-            alert("Produk berhasil ditambahkan!");
+            alert("Produk baru berhasil ditambahkan ke Cloud Firestore!");
         };
 
         function renderStaffProducts() {
@@ -1170,17 +1257,68 @@
             if (!tbody) return;
             tbody.innerHTML = products.map(p => `
                 <tr>
-                    <td class="p-3"><img src="${p.img}" class="w-10 h-10 rounded object-cover"></td>
+                    <td class="p-3"><img src="${p.img}" class="w-10 h-10 rounded object-cover border border-gray-800"></td>
                     <td class="p-3 font-bold">${p.name}</td>
                     <td class="p-3 text-xs">${p.type}</td>
-                    <td class="p-3 font-bold text-emerald-400">Rp ${p.price.toLocaleString('id-ID')}</td>
+                    <td class="p-3 font-bold text-emerald-400">Rp ${Number(p.price).toLocaleString('id-ID')}</td>
                     <td class="p-3 font-bold ${p.stock <= 0 ? 'text-red-400' : 'text-amber-300'}">${p.stock}</td>
-                    <td class="p-3 text-center">
-                        <button onclick="deleteProduct('${p.id}')" class="text-red-400 hover:text-red-200"><i class="fa-solid fa-trash"></i></button>
+                    <td class="p-3 text-center flex justify-center gap-1.5">
+                        <button onclick="openEditProductModal('${p.id}')" title="Edit Produk" class="px-2 py-1 bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 rounded border border-amber-500/30 text-xs font-bold transition">
+                            <i class="fa-solid fa-pen-to-square mr-1"></i> Edit
+                        </button>
+                        <button onclick="deleteProduct('${p.id}')" title="Hapus Produk" class="p-1.5 text-red-400 hover:text-red-200 transition">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
                     </td>
                 </tr>
             `).join('');
         }
+
+        window.openEditProductModal = (id) => {
+            const p = products.find(x => x.id === id);
+            if (!p) return;
+
+            document.getElementById('ep-id').value = p.id;
+            document.getElementById('ep-name').value = p.name;
+            document.getElementById('ep-price').value = p.price;
+            document.getElementById('ep-stock').value = p.stock;
+            document.getElementById('ep-type').value = p.type;
+            document.getElementById('ep-image').value = p.img || '';
+
+            document.getElementById('edit-product-modal').classList.remove('hidden');
+        };
+
+        window.closeEditProductModal = () => {
+            document.getElementById('edit-product-modal').classList.add('hidden');
+        };
+
+        window.saveProductEdit = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('ep-id').value;
+            const name = document.getElementById('ep-name').value;
+            const price = Number(document.getElementById('ep-price').value);
+            const stock = Number(document.getElementById('ep-stock').value);
+            const type = document.getElementById('ep-type').value;
+            const img = document.getElementById('ep-image').value || "https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=400&auto=format&fit=crop";
+
+            try {
+                if (id === 'preset-daily-pass') {
+                    // Update state lokal untuk preset
+                    const pIndex = products.findIndex(x => x.id === id);
+                    if (pIndex !== -1) {
+                        products[pIndex] = { id, name, price, stock, type, img };
+                        renderProducts();
+                        renderStaffProducts();
+                    }
+                } else {
+                    await updateDoc(doc(db, "products", id), { name, price, stock, type, img });
+                }
+                alert("Data produk berhasil diperbarui!");
+                closeEditProductModal();
+            } catch (err) {
+                alert("Gagal memperbarui produk: " + err.message);
+            }
+        };
 
         window.deleteProduct = async (id) => {
             if (id === 'preset-daily-pass') return alert("Preset Daily Pass tidak dapat dihapus!");
@@ -1194,7 +1332,7 @@
             alert("QRIS Utama Berhasil Diperbarui!");
         };
 
-        // Members Renderers + Fitur Renewal & QR Display
+        // KETENTUAN 2: RENDER MEMBER & FITUR EDIT DATA + EDIT BIAYA MEMBER (STAFF ONLY)
         function renderMembers() {
             const publicTb = document.getElementById('public-member-tbody');
             const staffTb = document.getElementById('staff-member-tbody');
@@ -1232,6 +1370,9 @@
                                 </span>
                             </td>
                             <td class="p-3.5 text-center flex justify-center gap-1.5">
+                                <button onclick="openEditMemberModal('${m.id}')" title="Edit Data & Biaya" class="px-2 py-1 bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 rounded border border-amber-500/30 text-[10px] font-bold transition">
+                                    <i class="fa-solid fa-user-pen mr-1"></i> Edit / Biaya
+                                </button>
                                 <button onclick="renewMember('${m.id}', '${m.end}')" title="Perpanjang 1 Bulan" class="px-2 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-[10px] font-extrabold transition">
                                     <i class="fa-solid fa-rotate-right mr-1"></i> +1 Bln
                                 </button>
@@ -1248,18 +1389,54 @@
             }
         }
 
+        window.openEditMemberModal = (id) => {
+            const m = members.find(x => x.id === id);
+            if (!m) return;
+
+            document.getElementById('em-id').value = m.id;
+            document.getElementById('em-name').value = m.name;
+            document.getElementById('em-gender').value = m.gender;
+            document.getElementById('em-start').value = m.start;
+            document.getElementById('em-end').value = m.end;
+            document.getElementById('em-fee').value = m.fee || 350000;
+
+            document.getElementById('edit-member-modal').classList.remove('hidden');
+        };
+
+        window.closeEditMemberModal = () => {
+            document.getElementById('edit-member-modal').classList.add('hidden');
+        };
+
+        window.saveMemberEdit = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('em-id').value;
+            const name = document.getElementById('em-name').value;
+            const gender = document.getElementById('em-gender').value;
+            const start = document.getElementById('em-start').value;
+            const end = document.getElementById('em-end').value;
+            const fee = Number(document.getElementById('em-fee').value);
+
+            try {
+                await updateDoc(doc(db, "members", id), { name, gender, start, end, fee });
+                alert("Data & Biaya member berhasil diperbarui!");
+                closeEditMemberModal();
+            } catch (err) {
+                alert("Gagal memperbarui data member: " + err.message);
+            }
+        };
+
         window.renewMember = async (memberId, currentEndDate) => {
+            const mObj = members.find(m => m.id === memberId);
+            const renewalFee = Number(mObj?.fee) || 350000; // Menggunakan biaya aktual terbaru yang tersimpan
+
             const todayStr = new Date().toISOString().split('T')[0];
             const baseDate = new Date(currentEndDate < todayStr ? todayStr : currentEndDate);
             baseDate.setMonth(baseDate.getMonth() + 1);
             const newEndStr = baseDate.toISOString().split('T')[0];
 
-            const renewalFee = 350000;
-
-            if (confirm(`Perpanjang membership selama 1 bulan hingga ${newEndStr}?`)) {
+            if (confirm(`Perpanjang membership selama 1 bulan hingga ${newEndStr} dengan tarif Rp ${renewalFee.toLocaleString('id-ID')}?`)) {
                 try {
                     await updateDoc(doc(db, "members", memberId), { end: newEndStr });
-                    const mObj = members.find(m => m.id === memberId);
                     await addDoc(collection(db, "transactions"), {
                         invoiceId: "INV-" + Math.floor(100000 + Math.random() * 900000),
                         type: "Membership",
@@ -1333,7 +1510,7 @@
             `).join('');
         }
 
-        // RENDER TRANSAKSI DENGAN PENGELOLAAN LOG RIWAYAT & HAPUS
+        // RENDER TRANSAKSI & LOG
         function renderTransactions() {
             const tbody = document.getElementById('combined-transaction-tbody');
             if (!tbody) return;
@@ -1354,7 +1531,6 @@
             `).join('');
         }
 
-        // Fitur Hapus Transaksi Individual
         window.deleteSingleTransaction = async (txId) => {
             const targetTx = transactions.find(t => t.id === txId);
             if (!targetTx) return;
@@ -1371,7 +1547,6 @@
             }
         };
 
-        // Fitur Hapus Transaksi Massal
         window.purgeFilteredTransactions = async () => {
             const startDate = document.getElementById('report-start-date').value;
             const endDate = document.getElementById('report-end-date').value;
@@ -1442,7 +1617,7 @@
             } catch (e) {}
         }
 
-        // PENGHITUNGAN OMSET AKURAT & REAL-TIME
+        // CHART & OMSET CALCULATIONS
         function updateChartData() {
             const ctx = document.getElementById('salesChart')?.getContext('2d');
             if (!ctx) return;
