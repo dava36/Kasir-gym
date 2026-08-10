@@ -154,7 +154,7 @@
                 </div>
             </div>
 
-            <!-- BAR PENCARIAN & FILTER PRODUK (SCROLL HORISONTAL DI HP) -->
+            <!-- BAR PENCARIAN & FILTER PRODUK -->
             <div class="flex flex-col md:flex-row justify-between items-center gap-3 bg-gray-950/80 p-3 md:p-4 rounded-2xl border border-gray-800">
                 <div class="relative w-full md:w-80">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-gray-500 text-xs"></i>
@@ -168,7 +168,7 @@
                 </div>
             </div>
 
-            <!-- GRID PRODUK: 2 KOLOM PADA HP, 4 KOLOM PADA LAPTOP -->
+            <!-- GRID PRODUK -->
             <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6" id="product-grid"></div>
         </section>
 
@@ -674,7 +674,7 @@
             </div>
 
             <div>
-                <input type="password" id="staff-pin-input" placeholder="PIN (Default: 1234)" class="w-full px-4 py-2.5 md:py-3 bg-gray-950 border border-gray-800 rounded-xl text-center text-lg md:text-xl font-bold tracking-widest text-amber-400 focus:outline-none">
+                <input type="password" id="staff-pin-input" placeholder="Masukkan PIN Staf" class="w-full px-4 py-2.5 md:py-3 bg-gray-950 border border-gray-800 rounded-xl text-center text-lg md:text-xl font-bold tracking-widest text-amber-400 focus:outline-none">
                 <p id="pin-error-msg" class="text-xs text-red-500 text-center mt-2 hidden font-bold">PIN Salah!</p>
             </div>
 
@@ -1613,7 +1613,7 @@
         window.closeStaffModal = () => document.getElementById('staff-auth-modal').classList.add('hidden');
 
         window.verifyStaffPIN = () => {
-            if (document.getElementById('staff-pin-input').value === '1234') {
+            if (document.getElementById('staff-pin-input').value === '363636') {
                 isStaffLoggedIn = true;
                 closeStaffModal();
                 document.getElementById('staff-status-badge').innerText = "Aktif";
