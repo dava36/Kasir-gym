@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SolusiKampus - Asisten Jasa & Barang Mahasiswa</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- React & ReactDOM CDN -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <!-- Babel CDN -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased selection:bg-blue-500 selection:text-white">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Data awal default jika belum ada di LocalStorage
+        const INITIAL_SERVICES = [
+            {
+                id: 1,
+                title: "Bordir & Sablon Baju",
+                category: "Konveksi",
+                icon: "fa-shirt",
+                desc: "Bordir komputer & sablon DTF/Manual untuk kemeja korsa, PDH, kaos panitia, atau jacket levis.",
+                cities: ["Surabaya", "Jember"],
+                popular: true
+            },
+            {
+                id: 2,
+                title: "Pembuatan Jersey Custom",
+                category: "Konveksi",
+                icon: "fa-vest",
+                desc: "Jersey futsal, basket, esport full printing. Bebas custom desain tanpa minimal order ketat.",
+                cities: ["Surabaya", "Jember"],
+                popular: true
+            },
+            {
+                id: 3,
+                title: "Potong Rambut & Grooming",
+                category: "Grooming",
+                icon: "fa-scissors",
+                desc: "Rekomendasi barbershop mitra terbaik atau panggilan tukang cukur langsung ke kosan.",
+                cities: ["Surabaya", "Jember"],
+                popular: false
+            },
+            {
+                id: 4,
+                title: "Cetak Stiker, Banner & Print",
+                category: "Percetakan",
+                icon: "fa-note-sticky",
+                desc: "Cetak stiker vinyl, die-cut, banner proker kampus, hingga print hardcover skripsi/tugas akhir.",
+                cities: ["Surabaya", "Jember"],
+                popular: true
+            },
+            {
+                id: 5,
+                title: "Travel & Jasa Angkut Barang",
+                category: "Transportasi",
+                icon: "fa-truck-ramps",
+                desc: "Carter mobil Surabaya-Jember, antar jemput stasiun/bandara, dan pickup pindahan kosan.",
+                cities: ["Surabaya", "Jember"],
+                popular: true
+            }
+        ];
+
+        function App() {
+            // State Utama
+            const [services, setServices] = useState(() => {
+                const saved = localStorage.getItem('sk_services');
+                return saved ? JSON.parse(saved) : INITIAL_SERVICES;
+            });
+            const [adminPhone, setAdminPhone] = useState(() => {
+                return localStorage.getItem('sk_admin_phone') || "6281234567890";
+            });
+            const [selectedCity, setSelectedCity] = useState("Semua");
+            const [searchQuery, setSearchQuery] = useState("");
+            const [selectedCategory, setSelectedCategory] = useState("Semua");
+            const [customRequest, setCustomRequest] = useState("");
+
+            // State Admin
+            const [isAdmin, setIsAdmin] = useState(false);
+            const [showLoginModal, setShowLoginModal] = useState(false);
+            const [passInput, setPassInput] = useState("");
+            const [loginError, setLoginError] = useState("");
+            const [showFormModal, setShowFormModal] = useState(false);
+            const [editingService, setEditingService] = useState(null);
+            const [showPhoneModal, setShowPhoneModal] = useState(false);
+            const [newPhoneInput, setNewPhoneInput] = useState(adminPhone);
+
+            // Form Data State (Tambah / Edit)
+            const [formData, setFormData] = useState({
+                title: "",
+                category: "Konveksi",
+                icon: "fa-tag",
+                desc: "",
+                cities: ["Surabaya", "Jember"],
+                popular: false
+            });
+
+            // Simpan ke LocalStorage saat data berubah
+            useEffect(() => {
+                localStorage.setItem('sk_services', JSON.stringify(services));
+            }, [services]);
+
+            useEffect(() => {
+                localStorage.setItem('sk_admin_phone', adminPhone);
+            }, [adminPhone]);
+
+            // Handle Order WA
+            const handleOrderWA = (serviceTitle) => {
+                const cityText = selectedCity !== "Semua" ? `di area *${selectedCity}*` : "";
+                const msg = `Halo Admin SolusiKampus! Saya mau tanya/pesan jasa *${serviceTitle}* ${cityText}.\n\nMohon informasi harga dan rekomendasinya ya!`;
+                window.open(`https://wa.me/${adminPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+            };
+
+            const handleCustomRequestWA = (e) => {
+                e.preventDefault();
+                if (!customRequest.trim()) return;
+                const cityText = selectedCity !== "Semua" ? `di *${selectedCity}*` : "";
+                const msg = `Halo Admin SolusiKampus! Saya punya kebutuhan khusus ${cityText}:\n\n"${customRequest}"\n\nApakah ada mitra/solusi untuk ini?`;
+                window.open(`https://wa.me/${adminPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+            };
+
+            // Login Rahasia (Sandi: 363636)
+            const handleAdminLogin = (e) => {
+                e.preventDefault();
+                if (passInput === "363636") {
+                    setIsAdmin(true);
+                    setShowLoginModal(false);
+                    setPassInput("");
+                    setLoginError("");
+                } else {
+                    setLoginError("Kode kata sandi salah!");
+                }
+            };
+
+            // Operation CRUD
+            const handleOpenAddForm = () => {
+                setEditingService(null);
+                setFormData({
+                    title: "",
+                    category: "Konveksi",
+                    icon: "fa-tag",
+                    desc: "",
+                    cities: ["Surabaya", "Jember"],
+                    popular: false
+                });
+                setShowFormModal(true);
+            };
+
+            const handleOpenEditForm = (srv) => {
+                setEditingService(srv);
+                setFormData({
+                    title: srv.title,
+                    category: srv.category,
+                    icon: srv.icon,
+                    desc: srv.desc,
+                    cities: srv.cities || ["Surabaya", "Jember"],
+                    popular: srv.popular || false
+                });
+                setShowFormModal(true);
+            };
+
+            const handleSaveService = (e) => {
+                e.preventDefault();
+                if (!formData.title || !formData.desc) return;
+
+                if (editingService) {
+                    setServices(services.map(s => s.id === editingService.id ? { ...s, ...formData } : s));
+                } else {
+                    const newSrv = {
+                        id: Date.now(),
+                        ...formData
+                    };
+                    setServices([newSrv, ...services]);
+                }
+                setShowFormModal(false);
+            };
+
+            const handleDeleteService = (id) => {
+                if (confirm("Apakah kamu yakin ingin menghapus jasa ini?")) {
+                    setServices(services.filter(s => s.id !== id));
+                }
+            };
+
+            const handleSavePhone = (e) => {
+                e.preventDefault();
+                let cleaned = newPhoneInput.replace(/[^0-9]/g, '');
+                if (cleaned.startsWith('0')) {
+                    cleaned = '62' + cleaned.slice(1);
+                }
+                setAdminPhone(cleaned);
+                setShowPhoneModal(false);
+            };
+
+            // Filter logic
+            const categories = ["Semua", ...new Set(services.map(s => s.category))];
+
+            const filteredServices = services.filter(s => {
+                const matchCity = selectedCity === "Semua" || (s.cities && s.cities.includes(selectedCity));
+                const matchCategory = selectedCategory === "Semua" || s.category === selectedCategory;
+                const matchSearch = s.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                    s.desc.toLowerCase().includes(searchQuery.toLowerCase());
+                return matchCity && matchCategory && matchSearch;
+            });
+
+            return (
+                <div className="min-h-screen pb-16 flex flex-col items-center">
+                    
+                    {/* Floating Admin Status Bar */}
+                    {isAdmin && (
+                        <div className="w-full bg-amber-500 text-slate-950 px-4 py-2 text-xs font-bold flex justify-between items-center sticky top-0 z-50 shadow-md">
+                            <div className="flex items-center gap-2">
+                                <i className="fa-solid fa-user-shield text-sm"></i>
+                                <span>MODE ADMIN AKTIF (Akses Penuh Kelola Data)</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <button 
+                                    onClick={() => setShowPhoneModal(true)} 
+                                    className="bg-slate-900 text-white px-2.5 py-1 rounded-md hover:bg-slate-800 transition text-[11px]"
+                                >
+                                    <i className="fa-solid fa-phone mr-1"></i> WA Admin ({adminPhone})
+                                </button>
+                                <button 
+                                    onClick={() => setIsAdmin(false)} 
+                                    className="bg-red-700 text-white px-2.5 py-1 rounded-md hover:bg-red-800 transition text-[11px]"
+                                >
+                                    Keluar Admin
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* App Container */}
+                    <div className="w-full max-w-md bg-white min-h-screen shadow-xl border-x border-slate-100 relative flex flex-col">
+                        
+                        {/* Header Navbar */}
+                        <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-100 px-4 py-3 flex items-center justify-between">
+                            <div className="flex items-center gap-2.5">
+                                <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center text-white font-extrabold text-base shadow-sm shadow-blue-200">
+                                    SK
+                                </div>
+                                <div>
+                                    <h1 className="font-bold text-slate-900 text-sm leading-none">SolusiKampus</h1>
+                                    <p className="text-[10px] text-slate-500 font-medium mt-0.5">Asisten Jasa & Barang Praktis</p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                                {/* Secret Admin Login Trigger */}
+                                <button 
+                                    onClick={() => isAdmin ? setIsAdmin(false) : setShowLoginModal(true)}
+                                    className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg text-xs"
+                                    title="Akses Pengelola"
+                                >
+                                    <i className={`fa-solid ${isAdmin ? 'fa-lock-open text-amber-500' : 'fa-lock'}`}></i>
+                                </button>
+                            </div>
+                        </header>
+
+                        {/* City Location Picker & Hero */}
+                        <div className="p-4 space-y-4">
+                            
+                            {/* City Switcher */}
+                            <div className="bg-slate-100 p-1 rounded-2xl flex items-center text-xs font-semibold text-slate-600">
+                                <button 
+                                    onClick={() => setSelectedCity("Semua")}
+                                    className={`flex-1 py-2 rounded-xl transition text-center ${selectedCity === "Semua" ? "bg-white text-blue-600 shadow-sm" : "hover:text-slate-900"}`}
+                                >
+                                    Semua Area
+                                </button>
+                                <button 
+                                    onClick={() => setSelectedCity("Surabaya")}
+                                    className={`flex-1 py-2 rounded-xl transition text-center flex items-center justify-center gap-1 ${selectedCity === "Surabaya" ? "bg-white text-blue-600 shadow-sm" : "hover:text-slate-900"}`}
+                                >
+                                    <i className="fa-solid fa-location-dot text-red-500"></i> Surabaya
+                                </button>
+                                <button 
+                                    onClick={() => setSelectedCity("Jember")}
+                                    className={`flex-1 py-2 rounded-xl transition text-center flex items-center justify-center gap-1 ${selectedCity === "Jember" ? "bg-white text-blue-600 shadow-sm" : "hover:text-slate-900"}`}
+                                >
+                                    <i className="fa-solid fa-location-dot text-emerald-500"></i> Jember
+                                </button>
+                            </div>
+
+                            {/* Hero Card */}
+                            <div className="bg-gradient-to-br from-blue-600 via-indigo-600 to-slate-900 text-white rounded-3xl p-5 shadow-lg shadow-blue-100 relative overflow-hidden">
+                                <div className="absolute -right-4 -bottom-4 opacity-10 text-8xl">
+                                    <i className="fa-solid fa-handshake"></i>
+                                </div>
+                                <span className="inline-block bg-white/20 backdrop-blur-md text-white text-[10px] font-bold px-3 py-1 rounded-full mb-2">
+                                    ⚡ Solusi Serba Cepat Maba & Mahasiswa
+                                </span>
+                                <h2 className="text-lg font-bold leading-snug">
+                                    Pesan Jasa/Barang Anti-Zonk di {selectedCity === "Semua" ? "Surabaya & Jember" : selectedCity}!
+                                </h2>
+                                <p className="text-slate-200 text-xs mt-1.5 leading-relaxed">
+                                    Nggak perlu pusing cari nomor Maps yang mati atau ganti-ganti tempat. Semua urusanmu kami bantu handle sampai tuntas.
+                                </p>
+                            </div>
+
+                            {/* Search & Categories */}
+                            <div className="space-y-2.5">
+                                <div className="relative">
+                                    <i className="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
+                                    <input 
+                                        type="text" 
+                                        placeholder="Cari jasa (bordir, jersey, cukur, travel)..."
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        className="w-full pl-9 pr-4 py-2.5 bg-slate-100 border border-transparent rounded-2xl text-xs focus:bg-white focus:border-blue-500 focus:outline-none transition"
+                                    />
+                                </div>
+
+                                {/* Category Pills */}
+                                <div className="flex items-center gap-1.5 overflow-x-auto hide-scrollbar py-1">
+                                    {categories.map((cat, idx) => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => setSelectedCategory(cat)}
+                                            className={`px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition ${selectedCategory === cat ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                                        >
+                                            {cat}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Admin Action: Add New Service Button */}
+                            {isAdmin && (
+                                <button 
+                                    onClick={handleOpenAddForm}
+                                    className="w-full py-3 bg-dashed border-2 border-dashed border-blue-500 bg-blue-50/50 text-blue-700 font-bold rounded-2xl text-xs flex items-center justify-center gap-2 hover:bg-blue-100/50 transition"
+                                >
+                                    <i className="fa-solid fa-plus-circle text-sm"></i> Tambah Layanan / Jasa Baru
+                                </button>
+                            )}
+
+                            {/* Service Items List */}
+                            <div className="space-y-3 pt-1">
+                                <div className="flex items-center justify-between">
+                                    <h3 className="font-bold text-xs uppercase tracking-wider text-slate-400">Katalog Layanan Tersedia</h3>
+                                    <span className="text-[11px] text-slate-400">{filteredServices.length} ditemukan</span>
+                                </div>
+
+                                {filteredServices.length === 0 ? (
+                                    <div className="text-center py-10 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                                        <i className="fa-solid fa-box-open text-3xl text-slate-300 mb-2"></i>
+                                        <p className="text-xs text-slate-500">Layanan tidak ditemukan atau belum ditambahkan.</p>
+                                    </div>
+                                ) : (
+                                    filteredServices.map(service => (
+                                        <div key={service.id} className="bg-white border border-slate-100 shadow-sm rounded-2xl p-4 hover:border-blue-200 transition relative group">
+                                            
+                                            {/* Admin Controls on Cards */}
+                                            {isAdmin && (
+                                                <div className="absolute top-3 right-3 flex items-center gap-1 bg-slate-100 p-1 rounded-lg">
+                                                    <button 
+                                                        onClick={() => handleOpenEditForm(service)}
+                                                        className="w-7 h-7 bg-amber-500 text-white rounded-md flex items-center justify-center text-xs hover:bg-amber-600 transition"
+                                                        title="Edit Jasa"
+                                                    >
+                                                        <i className="fa-solid fa-pen"></i>
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => handleDeleteService(service.id)}
+                                                        className="w-7 h-7 bg-red-500 text-white rounded-md flex items-center justify-center text-xs hover:bg-red-600 transition"
+                                                        title="Hapus Jasa"
+                                                    >
+                                                        <i className="fa-solid fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            )}
+
+                                            <div className="flex items-start gap-3.5">
+                                                <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-lg shrink-0 mt-0.5">
+                                                    <i className={`fa-solid ${service.icon || 'fa-tag'}`}></i>
+                                                </div>
+                                                <div className="pr-12">
+                                                    <div className="flex items-center gap-1.5 flex-wrap">
+                                                        <h4 className="font-bold text-slate-900 text-sm">{service.title}</h4>
+                                                        {service.popular && (
+                                                            <span className="bg-amber-100 text-amber-800 text-[9px] font-extrabold px-2 py-0.5 rounded-md">
+                                                                RAMAI
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <p className="text-xs text-slate-500 mt-1 leading-relaxed">{service.desc}</p>
+                                                    
+                                                    {/* City Badges */}
+                                                    <div className="flex items-center gap-1 mt-2.5">
+                                                        {service.cities && service.cities.map((c, i) => (
+                                                            <span key={i} className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md font-medium">
+                                                                <i className="fa-solid fa-location-dot text-[9px] mr-1 text-slate-400"></i>{c}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <button 
+                                                onClick={() => handleOrderWA(service.title)}
+                                                className="mt-3.5 w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold py-2.5 rounded-xl flex items-center justify-center gap-2 transition shadow-sm shadow-emerald-100"
+                                            >
+                                                <i className="fa-brands fa-whatsapp text-sm"></i> Pesan via WhatsApp
+                                            </button>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+
+                            {/* Custom Order Box */}
+                            <div className="bg-slate-900 text-white rounded-3xl p-5 shadow-md space-y-3 mt-6">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-7 h-7 bg-blue-500/20 text-blue-400 rounded-lg flex items-center justify-center text-xs">
+                                        <i className="fa-solid fa-headset"></i>
+                                    </div>
+                                    <h3 className="font-bold text-xs">Butuh Jasa/Barang Lainnya?</h3>
+                                </div>
+                                <p className="text-slate-300 text-xs leading-relaxed">
+                                    Ketik apa pun kebutuhanmu (misal: sewa kamera, cetak maket, perbaikan laptop, carter pickup). Kami cari mitranya untukmu!
+                                </p>
+                                <form onSubmit={handleCustomRequestWA} className="space-y-2">
+                                    <textarea 
+                                        rows="2"
+                                        value={customRequest}
+                                        onChange={(e) => setCustomRequest(e.target.value)}
+                                        placeholder="Contoh: Butuh jasa pembuatan plakat akrilik untuk besok lusa di Jember..."
+                                        className="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-400 focus:outline-none focus:border-blue-400"
+                                    ></textarea>
+                                    <button 
+                                        type="submit"
+                                        className="w-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold py-2.5 rounded-xl flex items-center justify-center gap-2 transition"
+                                    >
+                                        <i className="fa-solid fa-paper-plane"></i> Minta Bantuan WA
+                                    </button>
+                                </form>
+                            </div>
+
+                            {/* Trust Badges */}
+                            <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 text-xs space-y-2">
+                                <h4 className="font-bold text-slate-800">Kenapa Lewat SolusiKampus?</h4>
+                                <div className="space-y-1.5 text-slate-600 text-[11px]">
+                                    <div className="flex items-center gap-2">
+                                        <i className="fa-solid fa-circle-check text-emerald-500"></i>
+                                        <span>Nomor mitra selalu aktif & terverifikasi.</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <i className="fa-solid fa-circle-check text-emerald-500"></i>
+                                        <span>Harga ramah kantong mahasiswa.</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <i className="fa-solid fa-circle-check text-emerald-500"></i>
+                                        <span>Praktis cukup WhatsApp tanpa perlu putar kota.</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        {/* Footer */}
+                        <footer className="mt-auto border-t border-slate-100 p-4 text-center text-slate-400 text-[11px]">
+                            <p>© 2026 SolusiKampus — Surabaya & Jember</p>
+                            <button 
+                                onClick={() => setShowLoginModal(true)} 
+                                className="mt-1 text-slate-300 hover:text-slate-500 underline text-[10px]"
+                            >
+                                Akses Kelola Data
+                            </button>
+                        </footer>
+                    </div>
+
+                    {/* MODAL: Login Admin */}
+                    {showLoginModal && (
+                        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                            <div className="bg-white w-full max-w-xs rounded-3xl p-6 shadow-2xl relative">
+                                <button 
+                                    onClick={() => setShowLoginModal(false)}
+                                    className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-sm"
+                                >
+                                    <i className="fa-solid fa-xmark"></i>
+                                </button>
+                                <div className="text-center space-y-2 mb-4">
+                                    <div className="w-12 h-12 bg-amber-100 text-amber-600 rounded-2xl mx-auto flex items-center justify-center text-xl">
+                                        <i className="fa-solid fa-shield-halved"></i>
+                                    </div>
+                                    <h3 className="font-bold text-slate-900 text-base">Akses Pengelola</h3>
+                                    <p className="text-xs text-slate-500">Masukkan kata sandi rahasia untuk mengelola data jasa.</p>
+                                </div>
+                                <form onSubmit={handleAdminLogin} className="space-y-3">
+                                    <input 
+                                        type="password"
+                                        placeholder="Masukkan Kata Sandi..."
+                                        value={passInput}
+                                        onChange={(e) => setPassInput(e.target.value)}
+                                        className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-xs text-center font-bold tracking-widest focus:outline-none focus:border-amber-500"
+                                        autoFocus
+                                    />
+                                    {loginError && <p className="text-red-500 text-[11px] text-center">{loginError}</p>}
+                                    <button 
+                                        type="submit"
+                                        className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-2.5 rounded-xl text-xs transition"
+                                    >
+                                        Buka Panel Admin
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* MODAL: Form Tambah/Edit Jasa */}
+                    {showFormModal && (
+                        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+                            <div className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl my-8 relative">
+                                <button 
+                                    onClick={() => setShowFormModal(false)}
+                                    className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-sm"
+                                >
+                                    <i className="fa-solid fa-xmark"></i>
+                                </button>
+                                <h3 className="font-bold text-slate-900 text-base mb-4">
+                                    {editingService ? "Edit Layanan Jasa" : "Tambah Layanan Jasa Baru"}
+                                </h3>
+
+                                <form onSubmit={handleSaveService} className="space-y-3 text-xs">
+                                    <div>
+                                        <label className="font-semibold text-slate-700 block mb-1">Judul Layanan</label>
+                                        <input 
+                                            type="text" 
+                                            required
+                                            placeholder="Contoh: Cetak Stiker Vinyl"
+                                            value={formData.title}
+                                            onChange={(e) => setFormData({...formData, title: e.target.value})}
+                                            className="w-full p-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500"
+                                        />
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <label className="font-semibold text-slate-700 block mb-1">Kategori</label>
+                                            <input 
+                                                type="text" 
+                                                required
+                                                placeholder="Konveksi / Grooming"
+                                                value={formData.category}
+                                                onChange={(e) => setFormData({...formData, category: e.target.value})}
+                                                className="w-full p-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="font-semibold text-slate-700 block mb-1">Ikon FontAwesome</label>
+                                            <select 
+                                                value={formData.icon}
+                                                onChange={(e) => setFormData({...formData, icon: e.target.value})}
+                                                className="w-full p-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 bg-white"
+                                            >
+                                                <option value="fa-shirt">Baju / Kaos (fa-shirt)</option>
+                                                <option value="fa-vest">Jersey (fa-vest)</option>
+                                                <option value="fa-scissors">Cukur (fa-scissors)</option>
+                                                <option value="fa-note-sticky">Stiker / Cetak (fa-note-sticky)</option>
+                                                <option value="fa-truck-ramps">Travel / Angkut (fa-truck-ramps)</option>
+                                                <option value="fa-camera">Kamera (fa-camera)</option>
+                                                <option value="fa-laptop">Laptop/Service (fa-laptop)</option>
+                                                <option value="fa-tag">Lainnya (fa-tag)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label className="font-semibold text-slate-700 block mb-1">Deskripsi Singkat</label>
+                                        <textarea 
+                                            rows="3"
+                                            required
+                                            placeholder="Jelaskan detail apa saja yang ditawarkan..."
+                                            value={formData.desc}
+                                            onChange={(e) => setFormData({...formData, desc: e.target.value})}
+                                            className="w-full p-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500"
+                                        ></textarea>
+                                    </div>
+
+                                    <div>
+                                        <label className="font-semibold text-slate-700 block mb-1">Tersedia di Area:</label>
+                                        <div className="flex items-center gap-4 py-1">
+                                            <label className="flex items-center gap-1.5 cursor-pointer">
+                                                <input 
+                                                    type="checkbox"
+                                                    checked={formData.cities.includes("Surabaya")}
+                                                    onChange={(e) => {
+                                                        const cities = e.target.checked 
+                                                            ? [...formData.cities, "Surabaya"]
+                                                            : formData.cities.filter(c => c !== "Surabaya");
+                                                        setFormData({...formData, cities});
+                                                    }}
+                                                    className="rounded border-slate-300 text-blue-600"
+                                                />
+                                                Surabaya
+                                            </label>
+                                            <label className="flex items-center gap-1.5 cursor-pointer">
+                                                <input 
+                                                    type="checkbox"
+                                                    checked={formData.cities.includes("Jember")}
+                                                    onChange={(e) => {
+                                                        const cities = e.target.checked 
+                                                            ? [...formData.cities, "Jember"]
+                                                            : formData.cities.filter(c => c !== "Jember");
+                                                        setFormData({...formData, cities});
+                                                    }}
+                                                    className="rounded border-slate-300 text-blue-600"
+                                                />
+                                                Jember
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div className="pt-1">
+                                        <label className="flex items-center gap-2 cursor-pointer bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                                            <input 
+                                                type="checkbox"
+                                                checked={formData.popular}
+                                                onChange={(e) => setFormData({...formData, popular: e.target.checked})}
+                                                className="rounded border-slate-300 text-amber-500"
+                                            />
+                                            <span className="font-semibold text-slate-700">Tandai Label 'RAMAI / TERPOPULER'</span>
+                                        </label>
+                                    </div>
+
+                                    <div className="pt-2 flex items-center gap-2">
+                                        <button 
+                                            type="button"
+                                            onClick={() => setShowFormModal(false)}
+                                            className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition"
+                                        >
+                                            Batal
+                                        </button>
+                                        <button 
+                                            type="submit"
+                                            className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition shadow-sm"
+                                        >
+                                            Simpan Data
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* MODAL: Edit Nomor WA Admin */}
+                    {showPhoneModal && (
+                        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                            <div className="bg-white w-full max-w-xs rounded-3xl p-6 shadow-2xl relative">
+                                <button 
+                                    onClick={() => setShowPhoneModal(false)}
+                                    className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-sm"
+                                >
+                                    <i className="fa-solid fa-xmark"></i>
+                                </button>
+                                <h3 className="font-bold text-slate-900 text-base mb-1">Atur Nomor WA Admin</h3>
+                                <p className="text-xs text-slate-500 mb-4">Semua orderan pengunjung akan terhubung ke nomor WhatsApp ini.</p>
+                                <form onSubmit={handleSavePhone} className="space-y-3">
+                                    <input 
+                                        type="text"
+                                        placeholder="Contoh: 081234567890"
+                                        value={newPhoneInput}
+                                        onChange={(e) => setNewPhoneInput(e.target.value)}
+                                        className="w-full p-2.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-blue-500"
+                                    />
+                                    <button 
+                                        type="submit"
+                                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-xl text-xs transition"
+                                    >
+                                        Simpan Nomor
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    )}
+
+                </div>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>
