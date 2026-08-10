@@ -2,7 +2,7 @@
 <html lang="id" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MAUREN SPORT - Elite Gym & Cloud POS System</title>
     <!-- Google Fonts: Outfit -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -51,11 +51,11 @@
         }
 
         .glass-panel-luxury {
-            background: linear-gradient(135deg, rgba(18, 22, 33, 0.82) 0%, rgba(10, 13, 20, 0.90) 100%);
+            background: linear-gradient(135deg, rgba(18, 22, 33, 0.88) 0%, rgba(10, 13, 20, 0.94) 100%);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 215, 0, 0.18);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.05);
         }
 
         .table-container-luxury {
@@ -63,6 +63,7 @@
             backdrop-filter: blur(8px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 1rem;
+            -webkit-overflow-scrolling: touch;
         }
 
         .gold-glow-hover:hover {
@@ -76,20 +77,25 @@
             border: 1px dashed rgba(255, 215, 0, 0.4);
             font-family: 'Courier New', Courier, monospace;
         }
+
+        /* Hide Scrollbar for Horizontal Filter on Mobile */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="text-gray-100 font-sans antialiased min-h-screen flex flex-col justify-between selection:bg-brand-neonGold selection:text-black pb-20 md:pb-0">
+<body class="text-gray-100 font-sans antialiased min-h-screen flex flex-col justify-between selection:bg-brand-neonGold selection:text-black pb-28 md:pb-0">
 
     <!-- HEADER / NAVIGATION BAR -->
-    <header class="sticky top-0 z-40 glass-panel-luxury border-b border-amber-500/20 px-4 py-3 shadow-2xl">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('tab1')">
-                <div class="h-12 px-4 bg-gradient-to-r from-gray-950 via-gray-900 to-amber-950/40 rounded-xl border border-amber-500/40 flex items-center justify-center font-black text-brand-neonGold tracking-wider shadow-lg">
-                    <i class="fa-solid fa-dumbbell mr-2 text-xl text-amber-400 animate-pulse"></i> MAUREN SPORT <span class="ml-2 text-[10px] text-amber-300/80 font-semibold uppercase tracking-widest bg-amber-500/20 px-2 py-0.5 rounded border border-amber-500/30">ELITE GYM POS</span>
+    <header class="sticky top-0 z-40 glass-panel-luxury border-b border-amber-500/20 px-3 py-2.5 md:px-4 md:py-3 shadow-2xl">
+        <div class="max-w-7xl mx-auto flex justify-between items-center gap-2">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="switchTab('tab1')">
+                <div class="h-10 md:h-12 px-2.5 md:px-4 bg-gradient-to-r from-gray-950 via-gray-900 to-amber-950/40 rounded-xl border border-amber-500/40 flex items-center justify-center font-black text-brand-neonGold tracking-wider shadow-lg text-xs md:text-sm">
+                    <i class="fa-solid fa-dumbbell mr-1.5 md:mr-2 text-base md:text-xl text-amber-400 animate-pulse"></i> MAUREN SPORT <span class="ml-1.5 md:ml-2 text-[9px] md:text-[10px] text-amber-300/80 font-semibold uppercase tracking-widest bg-amber-500/20 px-1.5 py-0.5 rounded border border-amber-500/30">ELITE POS</span>
                 </div>
             </div>
             
-            <nav class="flex flex-wrap gap-2 justify-center items-center">
+            <!-- Desktop Top Navigation (Hidden on Mobile) -->
+            <nav class="hidden md:flex flex-wrap gap-2 justify-center items-center">
                 <button onclick="switchTab('tab1')" id="nav-tab1" class="tab-btn px-4 py-2.5 rounded-xl font-extrabold text-xs uppercase tracking-wider transition-all duration-300 bg-gradient-to-r from-amber-400 to-amber-500 text-black shadow-lg shadow-amber-500/20">
                     <i class="fa-solid fa-store mr-1.5"></i> Katalog & POS
                 </button>
@@ -102,68 +108,89 @@
                 <button onclick="openStaffModal()" id="nav-tab4" class="tab-btn px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all duration-300 text-amber-400 hover:bg-amber-500/20 border border-amber-500/30">
                     <i class="fa-solid fa-lock mr-1.5"></i> Staff Only <span id="staff-status-badge" class="ml-1.5 text-[10px] bg-red-900/80 text-red-200 px-2 py-0.5 rounded-md font-bold uppercase">Terkunci</span>
                 </button>
-                
-                <!-- Floating Cart Button (Header) -->
-                <button onclick="toggleCartDrawer()" class="relative px-3.5 py-2.5 bg-amber-500/20 border border-amber-500/40 text-amber-300 rounded-xl font-black text-xs uppercase hover:bg-amber-500/30 transition flex items-center gap-2">
-                    <i class="fa-solid fa-cart-shopping text-base text-amber-400"></i>
-                    <span id="cart-badge-count" class="bg-amber-400 text-black rounded-full px-2 py-0.5 font-black text-[10px]">0</span>
-                </button>
             </nav>
+
+            <!-- Floating Cart Trigger Button (Header) -->
+            <button onclick="toggleCartDrawer()" class="px-3 py-2 md:px-3.5 md:py-2.5 bg-amber-500/20 border border-amber-500/40 text-amber-300 rounded-xl font-black text-xs uppercase hover:bg-amber-500/30 transition flex items-center gap-1.5">
+                <i class="fa-solid fa-cart-shopping text-sm md:text-base text-amber-400"></i>
+                <span id="cart-badge-count" class="bg-amber-400 text-black rounded-full px-1.5 py-0.2 font-black text-[10px]">0</span>
+            </button>
         </div>
     </header>
 
+    <!-- MOBILE BOTTOM NAVIGATION BAR (APP NATIVE STYLE - HP ONLY) -->
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-gray-950/95 backdrop-blur-xl border-t border-amber-500/20 px-2 py-1.5 flex justify-around items-center shadow-2xl">
+        <button onclick="switchTab('tab1')" id="bottom-nav-tab1" class="bottom-nav-btn flex flex-col items-center gap-0.5 text-amber-400 p-1">
+            <i class="fa-solid fa-store text-base"></i>
+            <span class="text-[9px] font-extrabold uppercase tracking-wider">Katalog</span>
+        </button>
+        <button onclick="switchTab('tab2')" id="bottom-nav-tab2" class="bottom-nav-btn flex flex-col items-center gap-0.5 text-gray-400 p-1">
+            <i class="fa-solid fa-users text-base"></i>
+            <span class="text-[9px] font-bold uppercase tracking-wider">Member</span>
+        </button>
+        <button onclick="switchTab('tab3')" id="bottom-nav-tab3" class="bottom-nav-btn flex flex-col items-center gap-0.5 text-gray-400 p-1">
+            <i class="fa-solid fa-calendar-check text-base"></i>
+            <span class="text-[9px] font-bold uppercase tracking-wider">Event</span>
+        </button>
+        <button onclick="openStaffModal()" id="bottom-nav-tab4" class="bottom-nav-btn flex flex-col items-center gap-0.5 text-gray-400 p-1">
+            <i class="fa-solid fa-lock text-base"></i>
+            <span class="text-[9px] font-bold uppercase tracking-wider">Staff</span>
+        </button>
+    </nav>
+
     <!-- MAIN CONTENT AREA -->
-    <main class="max-w-7xl mx-auto w-full p-4 flex-grow space-y-6">
+    <main class="max-w-7xl mx-auto w-full p-3 md:p-4 flex-grow space-y-4 md:space-y-6">
 
         <!-- TAB 1: KATALOG PRODUK & KERANJANG POS -->
-        <section id="tab1" class="tab-content space-y-6">
-            <div id="qris-banner" class="glass-panel-luxury p-6 rounded-3xl border border-amber-500/30 text-center relative overflow-hidden shadow-2xl">
-                <div class="absolute -right-12 -bottom-12 text-[14rem] text-amber-500/5 pointer-events-none">
+        <section id="tab1" class="tab-content space-y-4 md:space-y-6">
+            <div id="qris-banner" class="glass-panel-luxury p-4 md:p-6 rounded-2xl md:rounded-3xl border border-amber-500/30 text-center relative overflow-hidden shadow-2xl">
+                <div class="absolute -right-8 -bottom-8 md:-right-12 md:-bottom-12 text-[8rem] md:text-[14rem] text-amber-500/5 pointer-events-none">
                     <i class="fa-solid fa-qrcode"></i>
                 </div>
-                <h2 class="text-xl md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-500 uppercase tracking-widest mb-1">Pembayaran Digital QRIS All-Payment</h2>
-                <p class="text-xs text-gray-400 mb-4 max-w-lg mx-auto">Mendukung BCA, Mandiri, GoPay, OVO, ShopeePay, DANA, & Transfer Bank Direct Auto-Sync.</p>
-                <div class="inline-block bg-white p-3 rounded-2xl shadow-2xl border-4 border-amber-400">
-                    <img id="main-qris-display" src="https://i.imgur.com/Rycx2er.jpeg" alt="QRIS Utama" class="w-[150px] h-[150px] object-contain rounded-lg">
+                <h2 class="text-lg md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-500 uppercase tracking-wider md:tracking-widest mb-1">QRIS Digital Payment</h2>
+                <p class="text-[11px] md:text-xs text-gray-400 mb-3 md:mb-4 max-w-lg mx-auto leading-relaxed">BCA, Mandiri, GoPay, OVO, ShopeePay, DANA & Transfer Direct Auto-Sync.</p>
+                <div class="inline-block bg-white p-2.5 md:p-3 rounded-2xl shadow-2xl border-2 md:border-4 border-amber-400">
+                    <img id="main-qris-display" src="https://i.imgur.com/Rycx2er.jpeg" alt="QRIS Utama" class="w-[130px] h-[130px] md:w-[150px] md:h-[150px] object-contain rounded-lg">
                 </div>
             </div>
 
-            <!-- BAR PENCARIAN & FILTER PRODUK -->
-            <div class="flex flex-col md:flex-row justify-between items-center gap-4 bg-gray-950/80 p-4 rounded-2xl border border-gray-800">
+            <!-- BAR PENCARIAN & FILTER PRODUK (SCROLL HORISONTAL DI HP) -->
+            <div class="flex flex-col md:flex-row justify-between items-center gap-3 bg-gray-950/80 p-3 md:p-4 rounded-2xl border border-gray-800">
                 <div class="relative w-full md:w-80">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-gray-500 text-xs"></i>
-                    <input type="text" id="product-search" oninput="renderProducts()" placeholder="Cari suplemen, minuman, daily pass..." class="w-full pl-9 pr-4 py-2 bg-gray-900 border border-gray-800 rounded-xl text-xs text-white focus:outline-none focus:border-amber-400">
+                    <input type="text" id="product-search" oninput="renderProducts()" placeholder="Cari produk, suplemen..." class="w-full pl-9 pr-4 py-2 bg-gray-900 border border-gray-800 rounded-xl text-xs text-white focus:outline-none focus:border-amber-400">
                 </div>
-                <div class="flex gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
-                    <button onclick="filterCategory('All')" class="cat-filter-btn active px-3.5 py-1.5 bg-amber-400 text-black font-extrabold text-[11px] rounded-xl uppercase flex items-center gap-1.5"><i class="fa-solid fa-border-all"></i> Semua</button>
-                    <button onclick="filterCategory('Minuman')" class="cat-filter-btn px-3.5 py-1.5 bg-gray-900 text-gray-300 font-bold text-[11px] rounded-xl uppercase hover:text-amber-400 flex items-center gap-1.5"><i class="fa-solid fa-bottle-water text-cyan-400"></i> Minuman</button>
-                    <button onclick="filterCategory('Sewa Alat')" class="cat-filter-btn px-3.5 py-1.5 bg-gray-900 text-gray-300 font-bold text-[11px] rounded-xl uppercase hover:text-amber-400 flex items-center gap-1.5"><i class="fa-solid fa-dumbbell text-amber-400"></i> Sewa Alat</button>
-                    <button onclick="filterCategory('Suplemen')" class="cat-filter-btn px-3.5 py-1.5 bg-gray-900 text-gray-300 font-bold text-[11px] rounded-xl uppercase hover:text-amber-400 flex items-center gap-1.5"><i class="fa-solid fa-capsules text-purple-400"></i> Suplemen</button>
+                <div class="flex gap-2 w-full md:w-auto overflow-x-auto no-scrollbar pb-1 md:pb-0">
+                    <button onclick="filterCategory('All')" class="cat-filter-btn active px-3 py-1.5 bg-amber-400 text-black font-extrabold text-[10px] md:text-[11px] rounded-xl uppercase flex items-center gap-1 shrink-0"><i class="fa-solid fa-border-all"></i> Semua</button>
+                    <button onclick="filterCategory('Minuman')" class="cat-filter-btn px-3 py-1.5 bg-gray-900 text-gray-300 font-bold text-[10px] md:text-[11px] rounded-xl uppercase hover:text-amber-400 flex items-center gap-1 shrink-0"><i class="fa-solid fa-bottle-water text-cyan-400"></i> Minuman</button>
+                    <button onclick="filterCategory('Sewa Alat')" class="cat-filter-btn px-3 py-1.5 bg-gray-900 text-gray-300 font-bold text-[10px] md:text-[11px] rounded-xl uppercase hover:text-amber-400 flex items-center gap-1 shrink-0"><i class="fa-solid fa-dumbbell text-amber-400"></i> Sewa Alat</button>
+                    <button onclick="filterCategory('Suplemen')" class="cat-filter-btn px-3 py-1.5 bg-gray-900 text-gray-300 font-bold text-[10px] md:text-[11px] rounded-xl uppercase hover:text-amber-400 flex items-center gap-1 shrink-0"><i class="fa-solid fa-capsules text-purple-400"></i> Suplemen</button>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="product-grid"></div>
+            <!-- GRID PRODUK: 2 KOLOM PADA HP, 4 KOLOM PADA LAPTOP -->
+            <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6" id="product-grid"></div>
         </section>
 
         <!-- TAB 2: DAFTAR MEMBER (PUBLIK) -->
-        <section id="tab2" class="tab-content hidden space-y-6">
-            <div class="glass-panel-luxury p-8 rounded-3xl">
-                <div class="border-b border-gray-800 pb-4 mb-6">
-                    <h2 class="text-2xl font-black text-white uppercase tracking-wide flex items-center gap-2">
+        <section id="tab2" class="tab-content hidden space-y-4 md:space-y-6">
+            <div class="glass-panel-luxury p-4 md:p-8 rounded-2xl md:rounded-3xl">
+                <div class="border-b border-gray-800 pb-3 md:pb-4 mb-4 md:mb-6">
+                    <h2 class="text-lg md:text-2xl font-black text-white uppercase tracking-wide flex items-center gap-2">
                         <i class="fa-solid fa-address-card text-amber-400"></i> Direktori Member Gym
                     </h2>
-                    <p class="text-xs text-gray-400">Daftar anggota aktif terdaftar di MAUREN SPORT Elite Gym.</p>
+                    <p class="text-[11px] md:text-xs text-gray-400">Daftar anggota aktif terdaftar di MAUREN SPORT Elite Gym.</p>
                 </div>
 
                 <div class="table-container-luxury overflow-x-auto">
-                    <table class="w-full text-left text-sm text-gray-200">
-                        <thead class="bg-gradient-to-r from-gray-950 via-gray-900 to-gray-950 text-amber-400 uppercase text-xs font-extrabold tracking-wider border-b border-amber-500/20">
+                    <table class="w-full text-left text-xs md:text-sm text-gray-200 min-w-[500px]">
+                        <thead class="bg-gradient-to-r from-gray-950 via-gray-900 to-gray-950 text-amber-400 uppercase text-[10px] md:text-xs font-extrabold tracking-wider border-b border-amber-500/20">
                             <tr>
-                                <th class="p-4">ID Member</th>
-                                <th class="p-4">Nama Member</th>
-                                <th class="p-4">Gender</th>
-                                <th class="p-4">Masa Aktif Berakhir</th>
-                                <th class="p-4 text-center">Aksi QR</th>
+                                <th class="p-2.5 md:p-4">ID Member</th>
+                                <th class="p-2.5 md:p-4">Nama Member</th>
+                                <th class="p-2.5 md:p-4">Gender</th>
+                                <th class="p-2.5 md:p-4">Berakhir</th>
+                                <th class="p-2.5 md:p-4 text-center">Aksi QR</th>
                             </tr>
                         </thead>
                         <tbody id="public-member-tbody" class="divide-y divide-gray-800/60"></tbody>
@@ -173,143 +200,142 @@
         </section>
 
         <!-- TAB 3: EVENT BULANAN (PUBLIK) -->
-        <section id="tab3" class="tab-content hidden space-y-6">
+        <section id="tab3" class="tab-content hidden space-y-4 md:space-y-6">
             <div class="border-b border-gray-800 pb-3">
-                <h2 class="text-2xl font-black text-white uppercase tracking-wide flex items-center gap-2">
-                    <i class="fa-solid fa-bullhorn text-amber-400"></i> Program & Event Bulanan Gym
+                <h2 class="text-lg md:text-2xl font-black text-white uppercase tracking-wide flex items-center gap-2">
+                    <i class="fa-solid fa-bullhorn text-amber-400"></i> Program & Event Bulanan
                 </h2>
-                <p class="text-xs text-gray-400">Promosi eksklusif, tantangan fisik, dan benefit keanggotaan</p>
+                <p class="text-[11px] md:text-xs text-gray-400">Promosi eksklusif, tantangan fisik, dan benefit keanggotaan</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="event-grid"></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6" id="event-grid"></div>
         </section>
 
         <!-- TAB 4: STAFF ONLY & ADMIN PANEL -->
-        <section id="tab4" class="tab-content hidden space-y-6">
-            <div class="glass-panel-luxury p-8 rounded-3xl border-amber-500/20">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b border-gray-800 pb-5">
+        <section id="tab4" class="tab-content hidden space-y-4 md:space-y-6">
+            <div class="glass-panel-luxury p-4 md:p-8 rounded-2xl md:rounded-3xl border-amber-500/20">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 md:gap-4 mb-4 md:mb-6 border-b border-gray-800 pb-4 md:pb-5">
                     <div>
                         <div class="flex items-center space-x-2">
-                            <span class="px-3 py-1 bg-amber-500/20 text-amber-400 font-extrabold text-[10px] rounded-md border border-amber-500/40 uppercase tracking-widest">STAFF & ADMIN</span>
-                            <h2 class="text-2xl font-black text-white uppercase tracking-wide">Pengaturan Kasir Cloud Panel</h2>
+                            <span class="px-2.5 py-0.5 md:px-3 md:py-1 bg-amber-500/20 text-amber-400 font-extrabold text-[9px] md:text-[10px] rounded-md border border-amber-500/40 uppercase tracking-widest">STAFF & ADMIN</span>
+                            <h2 class="text-lg md:text-2xl font-black text-white uppercase tracking-wide">Pengaturan POS Cloud</h2>
                         </div>
-                        <p class="text-xs text-gray-400 mt-1">Kelola QRIS, Produk Firestore, Member, dan Laporan Omset Real-time.</p>
+                        <p class="text-[11px] md:text-xs text-gray-400 mt-1">Kelola QRIS, Produk Firestore, Member, & Laporan Omset.</p>
                     </div>
-                    <div class="flex flex-wrap gap-2">
-                        <button onclick="openCloseShiftModal()" class="px-4 py-2.5 bg-purple-600 hover:bg-purple-500 text-white rounded-xl font-extrabold text-xs uppercase tracking-wider transition flex items-center shadow-lg shadow-purple-900/30">
-                            <i class="fa-solid fa-cash-register mr-2"></i> Tutup Shift Kasir
+                    <div class="flex flex-wrap gap-2 w-full md:w-auto">
+                        <button onclick="openCloseShiftModal()" class="flex-1 md:flex-none px-3 py-2 md:px-4 md:py-2.5 bg-purple-600 hover:bg-purple-500 text-white rounded-xl font-extrabold text-[11px] md:text-xs uppercase tracking-wider transition flex items-center justify-center gap-1.5 shadow-lg">
+                            <i class="fa-solid fa-cash-register"></i> Tutup Shift Kasir
                         </button>
-                        <button onclick="lockStaffTab()" class="px-4 py-2.5 bg-red-600/80 hover:bg-red-600 text-white rounded-xl font-extrabold text-xs uppercase tracking-wider transition">
-                            <i class="fa-solid fa-right-from-bracket mr-1.5"></i> Kunci Sesi
+                        <button onclick="lockStaffTab()" class="px-3 py-2 md:px-4 md:py-2.5 bg-red-600/80 hover:bg-red-600 text-white rounded-xl font-extrabold text-[11px] md:text-xs uppercase tracking-wider transition flex items-center justify-center">
+                            <i class="fa-solid fa-right-from-bracket mr-1"></i> Kunci
                         </button>
                     </div>
                 </div>
 
-                <!-- SEKSI DASHBOARD EXECUTIVE SUMMARY (KPI CARDS RINGKAS) -->
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-                    <div class="bg-gray-950/80 p-5 rounded-2xl border border-amber-500/30 flex items-center justify-between shadow-lg">
+                <!-- DASHBOARD EXECUTIVE SUMMARY -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mb-4 md:mb-6">
+                    <div class="bg-gray-950/80 p-4 md:p-5 rounded-2xl border border-amber-500/30 flex items-center justify-between shadow-lg">
                         <div>
-                            <span class="text-[10px] text-gray-400 font-extrabold uppercase tracking-widest block mb-1">Omset Hari Ini</span>
-                            <span id="dash-today-income" class="text-xl font-black text-emerald-400 font-mono">Rp 0</span>
+                            <span class="text-[9px] md:text-[10px] text-gray-400 font-extrabold uppercase tracking-widest block mb-0.5">Omset Hari Ini</span>
+                            <span id="dash-today-income" class="text-lg md:text-xl font-black text-emerald-400 font-mono">Rp 0</span>
                         </div>
-                        <div class="w-12 h-12 bg-emerald-500/10 text-emerald-400 rounded-2xl flex items-center justify-center text-xl border border-emerald-500/20">
+                        <div class="w-10 h-10 md:w-12 md:h-12 bg-emerald-500/10 text-emerald-400 rounded-xl md:rounded-2xl flex items-center justify-center text-lg md:text-xl border border-emerald-500/20">
                             <i class="fa-solid fa-wallet"></i>
                         </div>
                     </div>
-                    <div class="bg-gray-950/80 p-5 rounded-2xl border border-amber-500/30 flex items-center justify-between shadow-lg">
+                    <div class="bg-gray-950/80 p-4 md:p-5 rounded-2xl border border-amber-500/30 flex items-center justify-between shadow-lg">
                         <div>
-                            <span class="text-[10px] text-gray-400 font-extrabold uppercase tracking-widest block mb-1">Transaksi Hari Ini</span>
-                            <span id="dash-today-count" class="text-xl font-black text-amber-400 font-mono">0 TX</span>
+                            <span class="text-[9px] md:text-[10px] text-gray-400 font-extrabold uppercase tracking-widest block mb-0.5">Transaksi Hari Ini</span>
+                            <span id="dash-today-count" class="text-lg md:text-xl font-black text-amber-400 font-mono">0 TX</span>
                         </div>
-                        <div class="w-12 h-12 bg-amber-500/10 text-amber-400 rounded-2xl flex items-center justify-center text-xl border border-amber-500/20">
+                        <div class="w-10 h-10 md:w-12 md:h-12 bg-amber-500/10 text-amber-400 rounded-xl md:rounded-2xl flex items-center justify-center text-lg md:text-xl border border-amber-500/20">
                             <i class="fa-solid fa-receipt"></i>
                         </div>
                     </div>
-                    <div class="bg-gray-950/80 p-5 rounded-2xl border border-amber-500/30 flex items-center justify-between shadow-lg">
+                    <div class="bg-gray-950/80 p-4 md:p-5 rounded-2xl border border-amber-500/30 flex items-center justify-between shadow-lg">
                         <div>
-                            <span class="text-[10px] text-gray-400 font-extrabold uppercase tracking-widest block mb-1">Member Aktif</span>
-                            <span id="dash-active-members" class="text-xl font-black text-cyan-400 font-mono">0 Member</span>
+                            <span class="text-[9px] md:text-[10px] text-gray-400 font-extrabold uppercase tracking-widest block mb-0.5">Member Aktif</span>
+                            <span id="dash-active-members" class="text-lg md:text-xl font-black text-cyan-400 font-mono">0 Member</span>
                         </div>
-                        <div class="w-12 h-12 bg-cyan-500/10 text-cyan-400 rounded-2xl flex items-center justify-center text-xl border border-cyan-500/20">
+                        <div class="w-10 h-10 md:w-12 md:h-12 bg-cyan-500/10 text-cyan-400 rounded-xl md:rounded-2xl flex items-center justify-center text-lg md:text-xl border border-cyan-500/20">
                             <i class="fa-solid fa-users"></i>
                         </div>
                     </div>
                 </div>
 
-                <!-- SEKSI REKAP LAPORAN PDF DENGAN RENTANG TANGGAL -->
-                <div class="bg-gradient-to-r from-emerald-950/40 via-gray-950 to-gray-950 p-6 rounded-2xl border border-emerald-500/30 mb-6 space-y-4 shadow-xl">
-                    <div class="border-b border-gray-800 pb-3 flex flex-col md:flex-row justify-between md:items-center gap-2">
+                <!-- SEKSI LAPORAN PDF -->
+                <div class="bg-gradient-to-r from-emerald-950/40 via-gray-950 to-gray-950 p-4 md:p-6 rounded-2xl border border-emerald-500/30 mb-4 md:mb-6 space-y-3 md:space-y-4 shadow-xl">
+                    <div class="border-b border-gray-800 pb-2 md:pb-3 flex flex-col md:flex-row justify-between md:items-center gap-2">
                         <div>
-                            <h3 class="text-lg font-black text-emerald-400 uppercase tracking-wide flex items-center gap-2">
-                                <i class="fa-solid fa-file-pdf"></i> Ekspor Laporan PDF Rekap Bisnis
+                            <h3 class="text-base md:text-lg font-black text-emerald-400 uppercase tracking-wide flex items-center gap-2">
+                                <i class="fa-solid fa-file-pdf"></i> Ekspor PDF Laporan Bisnis
                             </h3>
-                            <p class="text-xs text-gray-400">Pilih rentang tanggal aktual untuk mencetak atau mengunduh laporan PDF resmi.</p>
                         </div>
-                        <div class="flex gap-1.5">
-                            <button onclick="setReportDatePreset('today')" class="px-2.5 py-1 bg-gray-800 hover:bg-gray-700 text-emerald-300 font-bold text-[10px] rounded-lg border border-emerald-500/30">Hari Ini</button>
-                            <button onclick="setReportDatePreset('week')" class="px-2.5 py-1 bg-gray-800 hover:bg-gray-700 text-emerald-300 font-bold text-[10px] rounded-lg border border-emerald-500/30">7 Hari Terakhir</button>
-                            <button onclick="setReportDatePreset('month')" class="px-2.5 py-1 bg-gray-800 hover:bg-gray-700 text-emerald-300 font-bold text-[10px] rounded-lg border border-emerald-500/30">Bulan Ini</button>
+                        <div class="flex gap-1 overflow-x-auto no-scrollbar">
+                            <button onclick="setReportDatePreset('today')" class="px-2 py-1 bg-gray-800 text-emerald-300 font-bold text-[9px] md:text-[10px] rounded border border-emerald-500/30 shrink-0">Hari Ini</button>
+                            <button onclick="setReportDatePreset('week')" class="px-2 py-1 bg-gray-800 text-emerald-300 font-bold text-[9px] md:text-[10px] rounded border border-emerald-500/30 shrink-0">7 Hari</button>
+                            <button onclick="setReportDatePreset('month')" class="px-2 py-1 bg-gray-800 text-emerald-300 font-bold text-[9px] md:text-[10px] rounded border border-emerald-500/30 shrink-0">Bulan Ini</button>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
                         <div>
-                            <label class="text-[10px] font-extrabold text-gray-300 uppercase block mb-1">Tanggal Mulai</label>
-                            <input type="date" id="report-start-date" class="w-full px-3 py-2 bg-gray-900 border border-gray-800 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-400">
+                            <label class="text-[9px] md:text-[10px] font-extrabold text-gray-300 uppercase block mb-1">Mulai</label>
+                            <input type="date" id="report-start-date" class="w-full px-3 py-2 bg-gray-900 border border-gray-800 rounded-xl text-xs text-white focus:outline-none">
                         </div>
                         <div>
-                            <label class="text-[10px] font-extrabold text-gray-300 uppercase block mb-1">Tanggal Selesai</label>
-                            <input type="date" id="report-end-date" class="w-full px-3 py-2 bg-gray-900 border border-gray-800 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-400">
+                            <label class="text-[9px] md:text-[10px] font-extrabold text-gray-300 uppercase block mb-1">Selesai</label>
+                            <input type="date" id="report-end-date" class="w-full px-3 py-2 bg-gray-900 border border-gray-800 rounded-xl text-xs text-white focus:outline-none">
                         </div>
                         <div>
-                            <button onclick="generateAndExportPDFReport()" class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold rounded-xl text-xs uppercase tracking-wider transition shadow-lg flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-file-export"></i> Ekspor PDF Laporan Periode
+                            <button onclick="generateAndExportPDFReport()" class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold rounded-xl text-xs uppercase tracking-wider transition flex items-center justify-center gap-1.5">
+                                <i class="fa-solid fa-file-export"></i> Cetak / Unduh PDF
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- SEKSI 1: PENGATURAN QRIS PEMBAYARAN UTAMA -->
-                <div class="bg-gray-950/80 p-6 rounded-2xl border border-gray-800/80 mb-6 space-y-4">
-                    <h3 class="text-lg font-black text-white uppercase tracking-wide flex items-center gap-2 border-b border-gray-800 pb-2">
+                <!-- SEKSI QRIS UTAMA -->
+                <div class="bg-gray-950/80 p-4 md:p-6 rounded-2xl border border-gray-800/80 mb-4 md:mb-6 space-y-3">
+                    <h3 class="text-base md:text-lg font-black text-white uppercase tracking-wide flex items-center gap-2 border-b border-gray-800 pb-2">
                         <i class="fa-solid fa-qrcode text-amber-400"></i> Pengaturan QRIS Utama Toko
                     </h3>
-                    <div class="flex flex-col sm:flex-row items-center gap-6 bg-gray-900/50 p-4 rounded-xl border border-gray-800">
-                        <div class="bg-white p-2 rounded-xl shadow-lg border-2 border-amber-400 flex-shrink-0">
-                            <img id="staff-qris-preview" src="" alt="Preview QRIS" class="w-28 h-28 object-contain rounded">
+                    <div class="flex flex-col sm:flex-row items-center gap-4 bg-gray-900/50 p-3 md:p-4 rounded-xl border border-gray-800">
+                        <div class="bg-white p-2 rounded-xl border-2 border-amber-400 shrink-0">
+                            <img id="staff-qris-preview" src="" alt="Preview QRIS" class="w-24 h-24 md:w-28 md:h-28 object-contain rounded">
                         </div>
-                        <div class="space-y-3 flex-grow w-full">
+                        <div class="space-y-2 flex-grow w-full">
                             <label class="text-xs font-bold text-gray-300 block uppercase">Input URL Gambar QRIS Baru:</label>
-                            <input type="text" id="main-qris-url-input" placeholder="https://..." class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-xs text-white focus:outline-none focus:border-amber-400">
-                            <button onclick="updateMainQRIS()" class="px-4 py-2 bg-amber-400 hover:bg-amber-300 text-black font-extrabold text-xs uppercase rounded-xl shadow-md">
+                            <input type="text" id="main-qris-url-input" placeholder="https://..." class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-xs text-white focus:outline-none">
+                            <button onclick="updateMainQRIS()" class="w-full sm:w-auto px-4 py-2 bg-amber-400 hover:bg-amber-300 text-black font-extrabold text-xs uppercase rounded-xl">
                                 <i class="fa-solid fa-cloud-arrow-up mr-1"></i> Terapkan URL QRIS
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- SEKSI 2: KELOLA PRODUK -->
-                <div class="bg-gray-950/80 p-6 rounded-2xl border border-gray-800/80 mb-6 space-y-4">
-                    <h3 class="text-lg font-black text-white uppercase tracking-wide flex items-center gap-2 border-b border-gray-800 pb-2">
-                        <i class="fa-solid fa-boxes-packing text-amber-400"></i> Tambah Produk Baru ke Cloud Database
+                <!-- SEKSI KELOLA PRODUK -->
+                <div class="bg-gray-950/80 p-4 md:p-6 rounded-2xl border border-gray-800/80 mb-4 md:mb-6 space-y-3 md:space-y-4">
+                    <h3 class="text-base md:text-lg font-black text-white uppercase tracking-wide flex items-center gap-2 border-b border-gray-800 pb-2">
+                        <i class="fa-solid fa-boxes-packing text-amber-400"></i> Tambah Produk Firestore Baru
                     </h3>
                     
-                    <form onsubmit="addNewProduct(event)" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 bg-gray-900/60 p-4 rounded-xl border border-gray-800">
+                    <form onsubmit="addNewProduct(event)" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 bg-gray-900/60 p-3 md:p-4 rounded-xl border border-gray-800">
                         <div>
-                            <label class="text-[10px] font-extrabold text-gray-300 uppercase block mb-1">Nama Produk</label>
-                            <input type="text" id="np-name" required placeholder="Contoh: Whey Protein" class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-lg text-xs text-white focus:outline-none focus:border-amber-400">
+                            <label class="text-[9px] md:text-[10px] font-extrabold text-gray-300 uppercase block mb-1">Nama Produk</label>
+                            <input type="text" id="np-name" required placeholder="Nama Produk" class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-lg text-xs text-white focus:outline-none">
                         </div>
                         <div>
-                            <label class="text-[10px] font-extrabold text-gray-300 uppercase block mb-1">Harga (Rp)</label>
-                            <input type="number" id="np-price" required placeholder="15000" class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-lg text-xs text-white focus:outline-none focus:border-amber-400">
+                            <label class="text-[9px] md:text-[10px] font-extrabold text-gray-300 uppercase block mb-1">Harga (Rp)</label>
+                            <input type="number" id="np-price" required placeholder="15000" class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-lg text-xs text-white focus:outline-none">
                         </div>
                         <div>
-                            <label class="text-[10px] font-extrabold text-gray-300 uppercase block mb-1">Stok Awal</label>
-                            <input type="number" id="np-stock" required placeholder="20" class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-lg text-xs text-white focus:outline-none focus:border-amber-400">
+                            <label class="text-[9px] md:text-[10px] font-extrabold text-gray-300 uppercase block mb-1">Stok Awal</label>
+                            <input type="number" id="np-stock" required placeholder="20" class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-lg text-xs text-white focus:outline-none">
                         </div>
                         <div>
-                            <label class="text-[10px] font-extrabold text-gray-300 uppercase block mb-1">Tipe Produk</label>
-                            <select id="np-type" class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-lg text-xs text-white focus:outline-none focus:border-amber-400">
+                            <label class="text-[9px] md:text-[10px] font-extrabold text-gray-300 uppercase block mb-1">Kategori</label>
+                            <select id="np-type" class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-lg text-xs text-white focus:outline-none">
                                 <option value="Minuman">Minuman</option>
                                 <option value="Camilan">Camilan</option>
                                 <option value="Sewa Alat">Sewa Alat</option>
@@ -317,26 +343,26 @@
                             </select>
                         </div>
                         <div>
-                            <label class="text-[10px] font-extrabold text-amber-400 uppercase block mb-1">URL Foto Produk</label>
-                            <input type="text" id="np-image" placeholder="https://..." class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-lg text-xs text-white focus:outline-none focus:border-amber-400">
+                            <label class="text-[9px] md:text-[10px] font-extrabold text-amber-400 uppercase block mb-1">URL Foto Produk</label>
+                            <input type="text" id="np-image" placeholder="https://..." class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-lg text-xs text-white focus:outline-none">
                         </div>
                         <div class="md:col-span-5 text-right pt-1">
-                            <button type="submit" class="px-5 py-2 bg-amber-400 hover:bg-amber-300 text-black font-extrabold text-xs uppercase rounded-lg shadow-md">
-                                <i class="fa-solid fa-plus mr-1"></i> Simpan ke Cloud Firestore
+                            <button type="submit" class="w-full md:w-auto px-5 py-2.5 bg-amber-400 hover:bg-amber-300 text-black font-extrabold text-xs uppercase rounded-lg">
+                                <i class="fa-solid fa-plus mr-1"></i> Simpan Ke Cloud
                             </button>
                         </div>
                     </form>
 
                     <div class="table-container-luxury overflow-x-auto">
-                        <table class="w-full text-left text-sm text-gray-200">
-                            <thead class="bg-gradient-to-r from-gray-950 via-gray-900 to-gray-950 text-amber-400 uppercase text-xs font-extrabold border-b border-amber-500/20">
+                        <table class="w-full text-left text-xs md:text-sm text-gray-200 min-w-[550px]">
+                            <thead class="bg-gradient-to-r from-gray-950 via-gray-900 to-gray-950 text-amber-400 uppercase text-[10px] md:text-xs font-extrabold border-b border-amber-500/20">
                                 <tr>
-                                    <th class="p-3.5">Gambar</th>
-                                    <th class="p-3.5">Nama Produk</th>
-                                    <th class="p-3.5">Kategori</th>
-                                    <th class="p-3.5">Harga (Rp)</th>
-                                    <th class="p-3.5">Stok Unit</th>
-                                    <th class="p-3.5 text-center">Aksi Kelola</th>
+                                    <th class="p-2.5 md:p-3.5">Gambar</th>
+                                    <th class="p-2.5 md:p-3.5">Nama Produk</th>
+                                    <th class="p-2.5 md:p-3.5">Kategori</th>
+                                    <th class="p-2.5 md:p-3.5">Harga</th>
+                                    <th class="p-2.5 md:p-3.5">Stok</th>
+                                    <th class="p-2.5 md:p-3.5 text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="staff-product-tbody" class="divide-y divide-gray-800/60"></tbody>
@@ -344,28 +370,28 @@
                     </div>
                 </div>
 
-                <!-- SEKSI MEMBER & TRANSAKSI -->
-                <div class="bg-gray-950/80 p-6 rounded-2xl border border-gray-800/80 mb-6 space-y-4">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                        <h3 class="text-lg font-black text-white uppercase tracking-wide flex items-center gap-2">
-                            <i class="fa-solid fa-users-gear text-amber-400"></i> Kelola Langganan Member
+                <!-- SEKSI MEMBER -->
+                <div class="bg-gray-950/80 p-4 md:p-6 rounded-2xl border border-gray-800/80 mb-4 md:mb-6 space-y-3">
+                    <div class="flex justify-between items-center gap-2">
+                        <h3 class="text-base md:text-lg font-black text-white uppercase tracking-wide flex items-center gap-2">
+                            <i class="fa-solid fa-users-gear text-amber-400"></i> Kelola Member
                         </h3>
-                        <button onclick="openAddMemberModal()" class="px-3.5 py-2.5 bg-amber-400 hover:bg-amber-300 text-black font-extrabold rounded-xl text-xs uppercase tracking-wider transition shadow-md flex items-center">
-                            <i class="fa-solid fa-plus mr-1.5"></i> Tambah Member
+                        <button onclick="openAddMemberModal()" class="px-3 py-2 bg-amber-400 text-black font-extrabold rounded-xl text-xs uppercase">
+                            <i class="fa-solid fa-plus mr-1"></i> Member
                         </button>
                     </div>
 
                     <div class="table-container-luxury overflow-x-auto">
-                        <table class="w-full text-left text-sm text-gray-200">
-                            <thead class="bg-gradient-to-r from-gray-950 via-gray-900 to-gray-950 text-amber-400 uppercase text-xs font-extrabold border-b border-amber-500/20">
+                        <table class="w-full text-left text-xs md:text-sm text-gray-200 min-w-[600px]">
+                            <thead class="bg-gradient-to-r from-gray-950 via-gray-900 to-gray-950 text-amber-400 uppercase text-[10px] md:text-xs font-extrabold border-b border-amber-500/20">
                                 <tr>
-                                    <th class="p-3.5">Nama Member</th>
-                                    <th class="p-3.5">Gender</th>
-                                    <th class="p-3.5">Tgl Mulai</th>
-                                    <th class="p-3.5">Tgl Akhir</th>
-                                    <th class="p-3.5">Biaya (Rp)</th>
-                                    <th class="p-3.5">Status</th>
-                                    <th class="p-3.5 text-center">Aksi Kelola</th>
+                                    <th class="p-2.5 md:p-3.5">Nama Member</th>
+                                    <th class="p-2.5 md:p-3.5">Gender</th>
+                                    <th class="p-2.5 md:p-3.5">Mulai</th>
+                                    <th class="p-2.5 md:p-3.5">Akhir</th>
+                                    <th class="p-2.5 md:p-3.5">Biaya</th>
+                                    <th class="p-2.5 md:p-3.5">Status</th>
+                                    <th class="p-2.5 md:p-3.5 text-center">Aksi Kelola</th>
                                 </tr>
                             </thead>
                             <tbody id="staff-member-tbody" class="divide-y divide-gray-800/60"></tbody>
@@ -374,37 +400,37 @@
                 </div>
 
                 <!-- GRAFIK OMSET REAL-TIME -->
-                <div class="bg-gray-950/80 p-6 rounded-2xl border border-gray-800/80 mb-6">
-                    <h3 class="text-lg font-black text-white uppercase tracking-wide mb-4 flex items-center gap-2">
+                <div class="bg-gray-950/80 p-4 md:p-6 rounded-2xl border border-gray-800/80 mb-4 md:mb-6">
+                    <h3 class="text-base md:text-lg font-black text-white uppercase tracking-wide mb-3 flex items-center gap-2">
                         <i class="fa-solid fa-chart-line text-amber-400"></i> Real-Time Sales Chart
                     </h3>
-                    <div class="h-64">
+                    <div class="h-48 md:h-64">
                         <canvas id="salesChart"></canvas>
                     </div>
                 </div>
 
-                <!-- RIWAYAT TRANSAKSI GABUNGAN & PENGELOLAAN LOG -->
+                <!-- LOG TRANSAKSI -->
                 <div class="space-y-3">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                        <h3 class="text-lg font-black text-white uppercase tracking-wide flex items-center gap-2">
-                            <i class="fa-solid fa-table text-amber-400"></i> Log Riwayat Transaksi Firestore
+                    <div class="flex flex-col md:flex-row justify-between md:items-center gap-2">
+                        <h3 class="text-base md:text-lg font-black text-white uppercase tracking-wide flex items-center gap-2">
+                            <i class="fa-solid fa-table text-amber-400"></i> Log Transaksi Firestore
                         </h3>
-                        <button onclick="purgeFilteredTransactions()" class="px-3.5 py-2 bg-red-900/60 hover:bg-red-800 border border-red-500/40 text-red-200 font-extrabold rounded-xl text-xs uppercase tracking-wider transition flex items-center gap-1.5 shadow-md">
-                            <i class="fa-solid fa-trash-can"></i> Hapus Riwayat Sesuai Filter Tanggal
+                        <button onclick="purgeFilteredTransactions()" class="px-3 py-2 bg-red-900/60 hover:bg-red-800 border border-red-500/40 text-red-200 font-extrabold rounded-xl text-xs uppercase flex items-center gap-1">
+                            <i class="fa-solid fa-trash-can"></i> Hapus Berdasarkan Filter Date
                         </button>
                     </div>
 
                     <div class="table-container-luxury overflow-x-auto">
-                        <table class="w-full text-left text-sm text-gray-200">
-                            <thead class="bg-gradient-to-r from-gray-950 via-gray-900 to-gray-950 text-gray-400 uppercase text-xs font-extrabold border-b border-gray-800">
+                        <table class="w-full text-left text-xs md:text-sm text-gray-200 min-w-[600px]">
+                            <thead class="bg-gradient-to-r from-gray-950 via-gray-900 to-gray-950 text-gray-400 uppercase text-[10px] md:text-xs font-extrabold border-b border-gray-800">
                                 <tr>
-                                    <th class="p-3.5">ID Invoice</th>
-                                    <th class="p-3.5">Tipe</th>
-                                    <th class="p-3.5">Metode</th>
-                                    <th class="p-3.5">Detail Item</th>
-                                    <th class="p-3.5">Tanggal/Waktu</th>
-                                    <th class="p-3.5">Total</th>
-                                    <th class="p-3.5 text-center">Aksi Hapus</th>
+                                    <th class="p-2.5 md:p-3.5">Invoice</th>
+                                    <th class="p-2.5 md:p-3.5">Tipe</th>
+                                    <th class="p-2.5 md:p-3.5">Metode</th>
+                                    <th class="p-2.5 md:p-3.5">Item</th>
+                                    <th class="p-2.5 md:p-3.5">Waktu</th>
+                                    <th class="p-2.5 md:p-3.5">Total</th>
+                                    <th class="p-2.5 md:p-3.5 text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="combined-transaction-tbody" class="divide-y divide-gray-800/60"></tbody>
@@ -417,81 +443,81 @@
 
     </main>
 
-    <!-- BOTTOM FLOATING CART BAR -->
-    <div id="floating-cart-bar" class="fixed bottom-4 left-4 right-4 z-40 bg-gradient-to-r from-amber-500 to-yellow-400 text-black p-3.5 rounded-2xl shadow-2xl flex justify-between items-center hidden border border-amber-300">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-black text-amber-400 rounded-xl flex items-center justify-center font-black">
-                <i class="fa-solid fa-cart-shopping text-base"></i>
+    <!-- BOTTOM FLOATING CART BAR (POS MELAYANG PADA HP & DESKTOP) -->
+    <div id="floating-cart-bar" class="fixed bottom-16 md:bottom-4 left-3 right-3 md:left-4 md:right-4 z-40 bg-gradient-to-r from-amber-500 to-yellow-400 text-black p-3 md:p-3.5 rounded-2xl shadow-2xl flex justify-between items-center hidden border border-amber-300">
+        <div class="flex items-center gap-2.5 md:gap-3">
+            <div class="w-9 h-9 md:w-10 md:h-10 bg-black text-amber-400 rounded-xl flex items-center justify-center font-black">
+                <i class="fa-solid fa-cart-shopping text-sm md:text-base"></i>
             </div>
             <div>
-                <span id="floating-cart-count" class="text-xs font-black block uppercase tracking-wider">0 Item di Keranjang</span>
-                <span id="floating-cart-subtotal" class="text-sm font-black font-mono">Rp 0</span>
+                <span id="floating-cart-count" class="text-[10px] md:text-xs font-black block uppercase tracking-wider">0 Item di Keranjang</span>
+                <span id="floating-cart-subtotal" class="text-xs md:text-sm font-black font-mono">Rp 0</span>
             </div>
         </div>
-        <button onclick="toggleCartDrawer()" class="px-4 py-2 bg-black hover:bg-gray-900 text-amber-400 font-extrabold text-xs uppercase rounded-xl transition shadow-md flex items-center gap-1.5">
+        <button onclick="toggleCartDrawer()" class="px-3.5 py-2 bg-black hover:bg-gray-900 text-amber-400 font-extrabold text-xs uppercase rounded-xl transition shadow-md flex items-center gap-1.5">
             Buka POS <i class="fa-solid fa-arrow-right"></i>
         </button>
     </div>
 
-    <!-- DRAWER / MODAL KERANJANG POS -->
+    <!-- DRAWER KERANJANG KASIR POS (100% WIDE PADA HP) -->
     <div id="cart-drawer" class="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-gray-950 border-l border-amber-500/30 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col justify-between">
-        <div class="p-5 border-b border-gray-800 flex justify-between items-center bg-gray-900/50">
-            <h3 class="text-lg font-black text-amber-400 uppercase flex items-center gap-2">
+        <div class="p-4 md:p-5 border-b border-gray-800 flex justify-between items-center bg-gray-900/50">
+            <h3 class="text-base md:text-lg font-black text-amber-400 uppercase flex items-center gap-2">
                 <i class="fa-solid fa-cart-shopping"></i> Keranjang Kasir POS
             </h3>
             <button onclick="toggleCartDrawer()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
         </div>
 
-        <div id="cart-items-container" class="p-5 flex-grow overflow-y-auto space-y-3 divide-y divide-gray-800/50"></div>
+        <div id="cart-items-container" class="p-4 md:p-5 flex-grow overflow-y-auto space-y-3 divide-y divide-gray-800/50"></div>
 
-        <div class="p-5 bg-gray-900/80 border-t border-gray-800 space-y-3">
+        <div class="p-4 md:p-5 bg-gray-900/80 border-t border-gray-800 space-y-3">
             <div class="flex justify-between items-center gap-2">
-                <label class="text-[10px] font-extrabold text-gray-400 uppercase">Potongan Diskon (Rp):</label>
-                <input type="number" id="cart-discount-input" oninput="updateCartUI()" placeholder="0" class="w-32 px-3 py-1 bg-gray-950 border border-gray-800 rounded-lg text-xs font-mono font-bold text-amber-400 focus:outline-none focus:border-amber-400 text-right">
+                <label class="text-[10px] font-extrabold text-gray-400 uppercase">Diskon (Rp):</label>
+                <input type="number" id="cart-discount-input" oninput="updateCartUI()" placeholder="0" class="w-28 md:w-32 px-3 py-1 bg-gray-950 border border-gray-800 rounded-lg text-xs font-mono font-bold text-amber-400 focus:outline-none text-right">
             </div>
 
-            <div class="flex justify-between items-center text-sm font-black pt-1 border-t border-gray-800">
+            <div class="flex justify-between items-center text-xs md:text-sm font-black pt-1 border-t border-gray-800">
                 <span class="text-gray-300 uppercase">Total Akhir:</span>
-                <span id="cart-total-amount" class="text-xl text-emerald-400 font-mono">Rp 0</span>
+                <span id="cart-total-amount" class="text-lg md:text-xl text-emerald-400 font-mono">Rp 0</span>
             </div>
             
             <div class="grid grid-cols-2 gap-2 pt-1">
-                <button onclick="openCheckoutModal('QRIS')" class="py-3 bg-amber-400 hover:bg-amber-300 text-black font-extrabold rounded-xl text-xs uppercase flex items-center justify-center gap-1">
-                    <i class="fa-solid fa-qrcode"></i> Bayar QRIS
+                <button onclick="openCheckoutModal('QRIS')" class="py-2.5 md:py-3 bg-amber-400 hover:bg-amber-300 text-black font-extrabold rounded-xl text-xs uppercase flex items-center justify-center gap-1">
+                    <i class="fa-solid fa-qrcode"></i> QRIS
                 </button>
-                <button onclick="openCheckoutModal('Cash')" class="py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold rounded-xl text-xs uppercase flex items-center justify-center gap-1">
-                    <i class="fa-solid fa-money-bill-wave"></i> Bayar Cash
+                <button onclick="openCheckoutModal('Cash')" class="py-2.5 md:py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold rounded-xl text-xs uppercase flex items-center justify-center gap-1">
+                    <i class="fa-solid fa-money-bill-wave"></i> Cash
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL EDIT PRODUK (BARU) -->
-    <div id="edit-product-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center hidden">
-        <div class="glass-panel-luxury p-7 rounded-3xl max-w-md w-full mx-4 border border-amber-500/50 shadow-2xl space-y-4">
-            <div class="text-center border-b border-gray-800 pb-3">
-                <h3 class="text-xl font-black text-white uppercase"><i class="fa-solid fa-pen-to-square text-amber-400 mr-2"></i> Edit Data Produk</h3>
+    <!-- MODAL EDIT PRODUK -->
+    <div id="edit-product-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center hidden p-3">
+        <div class="glass-panel-luxury p-5 md:p-7 rounded-3xl max-w-md w-full border border-amber-500/50 shadow-2xl space-y-3 md:space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="text-center border-b border-gray-800 pb-2 md:pb-3">
+                <h3 class="text-lg md:text-xl font-black text-white uppercase"><i class="fa-solid fa-pen-to-square text-amber-400 mr-2"></i> Edit Data Produk</h3>
             </div>
 
             <form id="edit-product-form" onsubmit="saveProductEdit(event)" class="space-y-3">
                 <input type="hidden" id="ep-id">
                 <div>
-                    <label class="text-xs font-bold text-gray-300 block mb-1 uppercase">Nama Produk</label>
-                    <input type="text" id="ep-name" required class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-sm text-white focus:outline-none focus:border-amber-400">
+                    <label class="text-[10px] font-bold text-gray-300 block mb-1 uppercase">Nama Produk</label>
+                    <input type="text" id="ep-name" required class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-xs md:text-sm text-white focus:outline-none">
                 </div>
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="text-xs font-bold text-gray-300 block mb-1 uppercase">Harga (Rp)</label>
-                        <input type="number" id="ep-price" required class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-sm text-white focus:outline-none focus:border-amber-400">
+                        <label class="text-[10px] font-bold text-gray-300 block mb-1 uppercase">Harga (Rp)</label>
+                        <input type="number" id="ep-price" required class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-xs md:text-sm text-white focus:outline-none">
                     </div>
                     <div>
-                        <label class="text-xs font-bold text-gray-300 block mb-1 uppercase">Stok Unit</label>
-                        <input type="number" id="ep-stock" required class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-sm text-white focus:outline-none focus:border-amber-400">
+                        <label class="text-[10px] font-bold text-gray-300 block mb-1 uppercase">Stok Unit</label>
+                        <input type="number" id="ep-stock" required class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-xs md:text-sm text-white focus:outline-none">
                     </div>
                 </div>
                 <div>
-                    <label class="text-xs font-bold text-gray-300 block mb-1 uppercase">Kategori / Tipe</label>
-                    <select id="ep-type" class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-sm text-white focus:outline-none">
+                    <label class="text-[10px] font-bold text-gray-300 block mb-1 uppercase">Kategori</label>
+                    <select id="ep-type" class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-xs md:text-sm text-white focus:outline-none">
                         <option value="Minuman">Minuman</option>
                         <option value="Camilan">Camilan</option>
                         <option value="Sewa Alat">Sewa Alat</option>
@@ -499,169 +525,168 @@
                     </select>
                 </div>
                 <div>
-                    <label class="text-xs font-bold text-amber-400 block mb-1 uppercase">URL Foto Produk</label>
-                    <input type="text" id="ep-image" class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-sm text-white focus:outline-none focus:border-amber-400">
+                    <label class="text-[10px] font-bold text-amber-400 block mb-1 uppercase">URL Foto Produk</label>
+                    <input type="text" id="ep-image" class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-xs md:text-sm text-white focus:outline-none">
                 </div>
 
-                <div class="flex gap-3 pt-3">
-                    <button type="button" onclick="closeEditProductModal()" class="w-1/2 py-3 bg-gray-800 text-gray-300 font-bold rounded-xl text-xs uppercase">Batal</button>
-                    <button type="submit" class="w-1/2 py-3 bg-amber-400 text-black font-extrabold rounded-xl text-xs uppercase">Simpan Perubahan</button>
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeEditProductModal()" class="w-1/2 py-2.5 bg-gray-800 text-gray-300 font-bold rounded-xl text-xs uppercase">Batal</button>
+                    <button type="submit" class="w-1/2 py-2.5 bg-amber-400 text-black font-extrabold rounded-xl text-xs uppercase">Simpan</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL EDIT MEMBER & BIAYA (BARU) -->
-    <div id="edit-member-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center hidden">
-        <div class="glass-panel-luxury p-7 rounded-3xl max-w-md w-full mx-4 border border-amber-500/50 shadow-2xl space-y-4">
-            <div class="text-center border-b border-gray-800 pb-3">
-                <h3 class="text-xl font-black text-white uppercase"><i class="fa-solid fa-user-pen text-amber-400 mr-2"></i> Edit Data & Biaya Member</h3>
+    <!-- MODAL EDIT MEMBER -->
+    <div id="edit-member-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center hidden p-3">
+        <div class="glass-panel-luxury p-5 md:p-7 rounded-3xl max-w-md w-full border border-amber-500/50 shadow-2xl space-y-3 md:space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="text-center border-b border-gray-800 pb-2 md:pb-3">
+                <h3 class="text-lg md:text-xl font-black text-white uppercase"><i class="fa-solid fa-user-pen text-amber-400 mr-2"></i> Edit Member & Biaya</h3>
             </div>
 
             <form id="edit-member-form" onsubmit="saveMemberEdit(event)" class="space-y-3">
                 <input type="hidden" id="em-id">
                 <div>
-                    <label class="text-xs font-bold text-gray-300 block mb-1 uppercase">Nama Lengkap</label>
-                    <input type="text" id="em-name" required class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-sm text-white focus:outline-none focus:border-amber-400">
+                    <label class="text-[10px] font-bold text-gray-300 block mb-1 uppercase">Nama Lengkap</label>
+                    <input type="text" id="em-name" required class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-xs md:text-sm text-white focus:outline-none">
                 </div>
                 <div>
-                    <label class="text-xs font-bold text-gray-300 block mb-1 uppercase">Gender</label>
-                    <select id="em-gender" class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-sm text-white focus:outline-none">
+                    <label class="text-[10px] font-bold text-gray-300 block mb-1 uppercase">Gender</label>
+                    <select id="em-gender" class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-xs md:text-sm text-white focus:outline-none">
                         <option value="Pria">Pria</option>
                         <option value="Wanita">Wanita</option>
                     </select>
                 </div>
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="text-xs font-bold text-gray-300 block mb-1 uppercase">Tgl Mulai</label>
-                        <input type="date" id="em-start" required class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-sm text-white focus:outline-none">
+                        <label class="text-[10px] font-bold text-gray-300 block mb-1 uppercase">Tgl Mulai</label>
+                        <input type="date" id="em-start" required class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-xs text-white focus:outline-none">
                     </div>
                     <div>
-                        <label class="text-xs font-bold text-gray-300 block mb-1 uppercase">Tgl Akhir</label>
-                        <input type="date" id="em-end" required class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-sm text-white focus:outline-none">
+                        <label class="text-[10px] font-bold text-gray-300 block mb-1 uppercase">Tgl Akhir</label>
+                        <input type="date" id="em-end" required class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-xs text-white focus:outline-none">
                     </div>
                 </div>
                 <div>
-                    <label class="text-xs font-bold text-emerald-400 block mb-1 uppercase">Biaya Langganan (Rp)</label>
-                    <input type="number" id="em-fee" required class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-sm text-white focus:outline-none focus:border-amber-400">
+                    <label class="text-[10px] font-bold text-emerald-400 block mb-1 uppercase">Biaya Langganan (Rp)</label>
+                    <input type="number" id="em-fee" required class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-xs md:text-sm text-white focus:outline-none">
                 </div>
 
-                <div class="flex gap-3 pt-3">
-                    <button type="button" onclick="closeEditMemberModal()" class="w-1/2 py-3 bg-gray-800 text-gray-300 font-bold rounded-xl text-xs uppercase">Batal</button>
-                    <button type="submit" class="w-1/2 py-3 bg-amber-400 text-black font-extrabold rounded-xl text-xs uppercase">Simpan Perubahan</button>
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeEditMemberModal()" class="w-1/2 py-2.5 bg-gray-800 text-gray-300 font-bold rounded-xl text-xs uppercase">Batal</button>
+                    <button type="submit" class="w-1/2 py-2.5 bg-amber-400 text-black font-extrabold rounded-xl text-xs uppercase">Simpan</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL FINAL CHECKOUT & STRUK BUKTI DIGITAL CYBER GOLD -->
-    <div id="checkout-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center hidden p-4 overflow-y-auto">
-        <div class="glass-panel-luxury p-7 rounded-3xl max-w-md w-full border border-amber-500/50 shadow-2xl space-y-4 my-auto">
-            <div class="flex justify-between items-center border-b border-gray-800 pb-3">
-                <h3 class="text-lg font-black text-white uppercase flex items-center gap-2">
+    <!-- MODAL CHECKOUT & STRUK BUKTI DIGITAL -->
+    <div id="checkout-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center hidden p-3 overflow-y-auto">
+        <div class="glass-panel-luxury p-5 md:p-7 rounded-3xl max-w-md w-full border border-amber-500/50 shadow-2xl space-y-3 my-auto max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-gray-800 pb-2 md:pb-3">
+                <h3 class="text-base md:text-lg font-black text-white uppercase flex items-center gap-2">
                     <i class="fa-solid fa-cash-register text-amber-400"></i> Informasi Transaksi
                 </h3>
                 <button onclick="closeCheckoutModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
 
-            <div id="checkout-payment-body" class="space-y-4"></div>
+            <div id="checkout-payment-body" class="space-y-3"></div>
         </div>
     </div>
 
-    <!-- MODAL REKAP CLOSE SHIFT KASIR -->
-    <div id="close-shift-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center hidden p-4">
-        <div class="glass-panel-luxury p-6 rounded-3xl max-w-md w-full border border-purple-500/40 shadow-2xl space-y-4">
-            <div class="border-b border-gray-800 pb-3 text-center">
-                <h3 class="text-lg font-black text-purple-300 uppercase tracking-wide"><i class="fa-solid fa-cash-register mr-2"></i> Rekap Shift / Close Cashier</h3>
-                <p class="text-xs text-gray-400 mt-1">Ganti shift dan verifikasi fisik saldo laci kasir.</p>
+    <!-- MODAL CLOSE SHIFT KASIR -->
+    <div id="close-shift-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center hidden p-3">
+        <div class="glass-panel-luxury p-5 md:p-6 rounded-3xl max-w-md w-full border border-purple-500/40 shadow-2xl space-y-3">
+            <div class="border-b border-gray-800 pb-2 text-center">
+                <h3 class="text-base md:text-lg font-black text-purple-300 uppercase"><i class="fa-solid fa-cash-register mr-1.5"></i> Close Shift Kasir</h3>
             </div>
 
-            <div class="space-y-2 text-xs bg-gray-950 p-4 rounded-2xl border border-gray-800">
-                <div class="flex justify-between text-gray-300"><span>Omset Tunai (Cash):</span><span id="shift-cash-total" class="font-bold text-emerald-400">Rp 0</span></div>
-                <div class="flex justify-between text-gray-300"><span>Omset Non-Tunai (QRIS):</span><span id="shift-qris-total" class="font-bold text-amber-400">Rp 0</span></div>
-                <div class="flex justify-between text-gray-300 border-t border-gray-800 pt-2 font-bold text-sm"><span>TOTAL OMSET SHIFT:</span><span id="shift-grand-total" class="text-purple-300">Rp 0</span></div>
+            <div class="space-y-1.5 text-xs bg-gray-950 p-3 rounded-2xl border border-gray-800">
+                <div class="flex justify-between text-gray-300"><span>Cash:</span><span id="shift-cash-total" class="font-bold text-emerald-400">Rp 0</span></div>
+                <div class="flex justify-between text-gray-300"><span>QRIS:</span><span id="shift-qris-total" class="font-bold text-amber-400">Rp 0</span></div>
+                <div class="flex justify-between text-gray-300 border-t border-gray-800 pt-1.5 font-bold"><span>TOTAL SHIFT:</span><span id="shift-grand-total" class="text-purple-300">Rp 0</span></div>
             </div>
 
             <div>
-                <label class="text-xs font-bold text-gray-300 block mb-1 uppercase">Hitung Fisik Uang di Laci Kasir (Rp):</label>
-                <input type="number" id="physical-cash-input" oninput="calcShiftDiff()" placeholder="Contoh: 250000" class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-sm text-white focus:outline-none focus:border-purple-400">
-                <p class="text-xs mt-2 font-bold">Selisih Fisik Kasir: <span id="shift-diff-display" class="text-gray-400">Rp 0</span></p>
+                <label class="text-[10px] font-bold text-gray-300 block mb-1 uppercase">Fisik Uang Laci Kasir (Rp):</label>
+                <input type="number" id="physical-cash-input" oninput="calcShiftDiff()" placeholder="250000" class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-xs text-white focus:outline-none">
+                <p class="text-xs mt-1.5 font-bold">Selisih Fisik: <span id="shift-diff-display" class="text-gray-400">Rp 0</span></p>
             </div>
 
-            <div class="flex gap-2 pt-2">
+            <div class="flex gap-2 pt-1">
                 <button onclick="closeShiftModal()" class="w-1/2 py-2.5 bg-gray-800 text-gray-300 font-bold rounded-xl text-xs uppercase">Batal</button>
-                <button onclick="confirmCloseShift()" class="w-1/2 py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-extrabold rounded-xl text-xs uppercase shadow-lg">Selesai & Simpan Shift</button>
+                <button onclick="confirmCloseShift()" class="w-1/2 py-2.5 bg-purple-600 text-white font-extrabold rounded-xl text-xs uppercase">Simpan Shift</button>
             </div>
         </div>
     </div>
 
     <!-- MODAL TAMBAH MEMBER -->
-    <div id="add-member-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center hidden">
-        <div class="glass-panel-luxury p-7 rounded-3xl max-w-md w-full mx-4 border border-amber-500/50 shadow-2xl space-y-4">
-            <div class="text-center border-b border-gray-800 pb-3">
-                <h3 class="text-xl font-black text-white uppercase"><i class="fa-solid fa-user-plus text-amber-400 mr-2"></i> Member Baru</h3>
+    <div id="add-member-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center hidden p-3">
+        <div class="glass-panel-luxury p-5 md:p-7 rounded-3xl max-w-md w-full border border-amber-500/50 shadow-2xl space-y-3">
+            <div class="text-center border-b border-gray-800 pb-2">
+                <h3 class="text-lg md:text-xl font-black text-white uppercase"><i class="fa-solid fa-user-plus text-amber-400 mr-2"></i> Member Baru</h3>
             </div>
 
-            <form id="add-member-form" onsubmit="saveMember(event)" class="space-y-3">
+            <form id="add-member-form" onsubmit="saveMember(event)" class="space-y-2.5">
                 <div>
-                    <label class="text-xs font-bold text-gray-300 block mb-1 uppercase">Nama Lengkap</label>
-                    <input type="text" id="m-name" required placeholder="Budi Santoso" class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-sm text-white focus:outline-none focus:border-amber-400">
+                    <label class="text-[10px] font-bold text-gray-300 block mb-1 uppercase">Nama Lengkap</label>
+                    <input type="text" id="m-name" required placeholder="Budi Santoso" class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-xs text-white focus:outline-none">
                 </div>
                 <div>
-                    <label class="text-xs font-bold text-gray-300 block mb-1 uppercase">Gender</label>
-                    <select id="m-gender" class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-sm text-white focus:outline-none">
+                    <label class="text-[10px] font-bold text-gray-300 block mb-1 uppercase">Gender</label>
+                    <select id="m-gender" class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-xs text-white focus:outline-none">
                         <option value="Pria">Pria</option>
                         <option value="Wanita">Wanita</option>
                     </select>
                 </div>
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="text-xs font-bold text-gray-300 block mb-1 uppercase">Tgl Mulai</label>
-                        <input type="date" id="m-start" required class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-sm text-white focus:outline-none">
+                        <label class="text-[10px] font-bold text-gray-300 block mb-1 uppercase">Tgl Mulai</label>
+                        <input type="date" id="m-start" required class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-xs text-white focus:outline-none">
                     </div>
                     <div>
-                        <label class="text-xs font-bold text-gray-300 block mb-1 uppercase">Tgl Akhir</label>
-                        <input type="date" id="m-end" required class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-sm text-white focus:outline-none">
+                        <label class="text-[10px] font-bold text-gray-300 block mb-1 uppercase">Tgl Akhir</label>
+                        <input type="date" id="m-end" required class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-xs text-white focus:outline-none">
                     </div>
                 </div>
                 <div>
-                    <label class="text-xs font-bold text-gray-300 block mb-1 uppercase">Biaya Pendaftaran (Rp)</label>
-                    <input type="number" id="m-fee" required value="350000" class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-sm text-white focus:outline-none">
+                    <label class="text-[10px] font-bold text-gray-300 block mb-1 uppercase">Biaya Pendaftaran (Rp)</label>
+                    <input type="number" id="m-fee" required value="350000" class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-xs text-white focus:outline-none">
                 </div>
 
-                <div class="flex gap-3 pt-3">
-                    <button type="button" onclick="closeAddMemberModal()" class="w-1/2 py-3 bg-gray-800 text-gray-300 font-bold rounded-xl text-xs uppercase">Batal</button>
-                    <button type="submit" class="w-1/2 py-3 bg-amber-400 text-black font-extrabold rounded-xl text-xs uppercase">Simpan Member</button>
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeAddMemberModal()" class="w-1/2 py-2.5 bg-gray-800 text-gray-300 font-bold rounded-xl text-xs uppercase">Batal</button>
+                    <button type="submit" class="w-1/2 py-2.5 bg-amber-400 text-black font-extrabold rounded-xl text-xs uppercase">Simpan Member</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- MODAL AUTH STAF -->
-    <div id="staff-auth-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center hidden">
-        <div class="glass-panel-luxury p-8 rounded-3xl max-w-sm w-full mx-4 border border-amber-500/40 shadow-2xl space-y-6">
+    <div id="staff-auth-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center hidden p-3">
+        <div class="glass-panel-luxury p-6 md:p-8 rounded-3xl max-w-sm w-full border border-amber-500/40 shadow-2xl space-y-4 md:space-y-6">
             <div class="text-center">
-                <div class="w-16 h-16 bg-amber-500/20 text-amber-400 rounded-full flex items-center justify-center mx-auto mb-3 border border-amber-500/50">
-                    <i class="fa-solid fa-user-shield text-2xl"></i>
+                <div class="w-12 h-12 md:w-16 md:h-16 bg-amber-500/20 text-amber-400 rounded-full flex items-center justify-center mx-auto mb-2 border border-amber-500/50">
+                    <i class="fa-solid fa-user-shield text-xl md:text-2xl"></i>
                 </div>
-                <h3 class="text-xl font-black text-white uppercase tracking-wide">Otentikasi Staf</h3>
-                <p class="text-xs text-gray-400 mt-1">Masukkan PIN Otorisasi Khusus Staf</p>
+                <h3 class="text-lg md:text-xl font-black text-white uppercase">Otentikasi Staf</h3>
+                <p class="text-[11px] md:text-xs text-gray-400 mt-0.5">Masukkan PIN Otorisasi Khusus Staf</p>
             </div>
 
             <div>
-                <input type="password" id="staff-pin-input" placeholder="PIN (Default: 1234)" class="w-full px-4 py-3 bg-gray-950 border border-gray-800 rounded-xl text-center text-xl font-bold tracking-widest text-amber-400 focus:outline-none focus:border-amber-400">
+                <input type="password" id="staff-pin-input" placeholder="PIN (Default: 1234)" class="w-full px-4 py-2.5 md:py-3 bg-gray-950 border border-gray-800 rounded-xl text-center text-lg md:text-xl font-bold tracking-widest text-amber-400 focus:outline-none">
                 <p id="pin-error-msg" class="text-xs text-red-500 text-center mt-2 hidden font-bold">PIN Salah!</p>
             </div>
 
-            <div class="flex gap-3">
-                <button onclick="closeStaffModal()" class="w-1/2 py-3 bg-gray-800 text-gray-300 font-bold rounded-xl text-sm">Batal</button>
-                <button onclick="verifyStaffPIN()" class="w-1/2 py-3 bg-amber-400 text-black font-extrabold rounded-xl text-sm">Masuk</button>
+            <div class="flex gap-2">
+                <button onclick="closeStaffModal()" class="w-1/2 py-2.5 bg-gray-800 text-gray-300 font-bold rounded-xl text-xs md:text-sm">Batal</button>
+                <button onclick="verifyStaffPIN()" class="w-1/2 py-2.5 bg-amber-400 text-black font-extrabold rounded-xl text-xs md:text-sm">Masuk</button>
             </div>
         </div>
     </div>
 
-    <footer class="glass-panel-luxury border-t border-amber-500/20 py-5 px-6 text-center text-xs text-gray-500 mt-10">
-        <p class="font-semibold tracking-wider">© 2026 MAUREN SPORT ELITE GYM POS System — Synchronized Cloud Database Engine</p>
+    <footer class="glass-panel-luxury border-t border-amber-500/20 py-4 px-4 text-center text-[10px] md:text-xs text-gray-500 mt-6 md:mt-10">
+        <p class="font-semibold tracking-wider">© 2026 MAUREN SPORT ELITE GYM POS System — Cloud Synchronized Engine</p>
     </footer>
 
     <!-- FIREBASE MODULE SDK & APPLICATION ENGINE -->
@@ -749,16 +774,31 @@
             }
         });
 
-        // Tab System
+        // Tab System with Mobile Bottom Navigation Sync
         window.switchTab = (tabId) => {
             if (tabId === 'tab4' && !isStaffLoggedIn) { openStaffModal(); return; }
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            
+            // Desktop top nav buttons reset
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('bg-gradient-to-r', 'from-amber-400', 'to-amber-500', 'text-black', 'shadow-lg'));
             
+            // Mobile bottom nav buttons reset
+            document.querySelectorAll('.bottom-nav-btn').forEach(btn => {
+                btn.classList.remove('text-amber-400');
+                btn.classList.add('text-gray-400');
+            });
+
             document.getElementById(tabId).classList.remove('hidden');
+            
             const activeNav = document.getElementById(`nav-${tabId}`);
             if (tabId !== 'tab4' && activeNav) {
                 activeNav.classList.add('bg-gradient-to-r', 'from-amber-400', 'to-amber-500', 'text-black', 'shadow-lg');
+            }
+
+            const activeBottomNav = document.getElementById(`bottom-nav-${tabId}`);
+            if (activeBottomNav) {
+                activeBottomNav.classList.remove('text-gray-400');
+                activeBottomNav.classList.add('text-amber-400');
             }
         };
 
@@ -795,23 +835,23 @@
             grid.innerHTML = filtered.map(p => {
                 const isOutOfStock = Number(p.stock) <= 0;
                 return `
-                    <div class="glass-panel-luxury rounded-2xl overflow-hidden gold-glow-hover transition flex flex-col justify-between ${isOutOfStock ? 'opacity-60' : ''}">
+                    <div class="glass-panel-luxury rounded-xl md:rounded-2xl overflow-hidden gold-glow-hover transition flex flex-col justify-between ${isOutOfStock ? 'opacity-60' : ''}">
                         <div class="relative">
-                            <img src="${p.img || 'https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=400&auto=format&fit=crop'}" class="w-full h-40 object-cover">
-                            ${isOutOfStock ? '<span class="absolute top-2 right-2 bg-red-600 text-white font-black text-[9px] uppercase px-2 py-0.5 rounded shadow">STOK HABIS</span>' : ''}
+                            <img src="${p.img || 'https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=400&auto=format&fit=crop'}" class="w-full h-28 sm:h-36 md:h-40 object-cover">
+                            ${isOutOfStock ? '<span class="absolute top-1.5 right-1.5 bg-red-600 text-white font-black text-[8px] md:text-[9px] uppercase px-1.5 py-0.5 rounded shadow">HABIS</span>' : ''}
                         </div>
-                        <div class="p-4 flex-grow flex flex-col justify-between space-y-3">
+                        <div class="p-2.5 md:p-4 flex-grow flex flex-col justify-between space-y-2 md:space-y-3">
                             <div>
-                                <span class="text-[9px] font-extrabold uppercase text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">${p.type}</span>
-                                <h4 class="font-extrabold text-white mt-1 text-sm">${p.name}</h4>
-                                <p class="text-xs ${isOutOfStock ? 'text-red-400 font-bold' : 'text-gray-400'}">
-                                    ${isOutOfStock ? 'Stok Tidak Tersedia' : 'Stok: ' + p.stock + ' unit'}
+                                <span class="text-[8px] md:text-[9px] font-extrabold uppercase text-amber-400 bg-amber-500/10 px-1.5 md:px-2 py-0.5 rounded">${p.type}</span>
+                                <h4 class="font-extrabold text-white mt-1 text-xs md:text-sm line-clamp-2 leading-snug">${p.name}</h4>
+                                <p class="text-[10px] md:text-xs ${isOutOfStock ? 'text-red-400 font-bold' : 'text-gray-400'} mt-0.5">
+                                    ${isOutOfStock ? 'Stok Habis' : 'Stok: ' + p.stock}
                                 </p>
                             </div>
                             <div>
-                                <div class="text-base font-black text-emerald-400 mb-2">Rp ${Number(p.price).toLocaleString('id-ID')}</div>
-                                <button onclick="addToCart('${p.id}')" ${isOutOfStock ? 'disabled' : ''} class="w-full py-2 ${isOutOfStock ? 'bg-gray-800 text-gray-500 cursor-not-allowed border border-gray-700' : 'bg-amber-400 hover:bg-amber-300 text-black'} font-extrabold rounded-xl text-xs uppercase flex items-center justify-center gap-1">
-                                    <i class="fa-solid ${isOutOfStock ? 'fa-ban' : 'fa-cart-plus'}"></i> ${isOutOfStock ? 'Stok Habis' : 'Tambah Ke Keranjang'}
+                                <div class="text-xs md:text-base font-black text-emerald-400 mb-1.5">Rp ${Number(p.price).toLocaleString('id-ID')}</div>
+                                <button onclick="addToCart('${p.id}')" ${isOutOfStock ? 'disabled' : ''} class="w-full py-1.5 md:py-2 ${isOutOfStock ? 'bg-gray-800 text-gray-500 cursor-not-allowed border border-gray-700' : 'bg-amber-400 hover:bg-amber-300 text-black'} font-extrabold rounded-lg md:rounded-xl text-[10px] md:text-xs uppercase flex items-center justify-center gap-1">
+                                    <i class="fa-solid ${isOutOfStock ? 'fa-ban' : 'fa-cart-plus'}"></i> ${isOutOfStock ? 'Habis' : '+ Keranjang'}
                                 </button>
                             </div>
                         </div>
@@ -823,9 +863,9 @@
         window.filterCategory = (cat) => {
             activeCategory = cat;
             document.querySelectorAll('.cat-filter-btn').forEach(b => {
-                b.className = 'cat-filter-btn px-3.5 py-1.5 bg-gray-900 text-gray-300 font-bold text-[11px] rounded-xl uppercase hover:text-amber-400 flex items-center gap-1.5';
+                b.className = 'cat-filter-btn px-3 py-1.5 bg-gray-900 text-gray-300 font-bold text-[10px] md:text-[11px] rounded-xl uppercase hover:text-amber-400 flex items-center gap-1 shrink-0';
             });
-            event.currentTarget.className = 'cat-filter-btn active px-3.5 py-1.5 bg-amber-400 text-black font-extrabold text-[11px] rounded-xl uppercase flex items-center gap-1.5';
+            event.currentTarget.className = 'cat-filter-btn active px-3 py-1.5 bg-amber-400 text-black font-extrabold text-[10px] md:text-[11px] rounded-xl uppercase flex items-center gap-1 shrink-0';
             renderProducts();
         };
 
@@ -912,8 +952,8 @@
             if (type === 'QRIS') {
                 modalBody.innerHTML = `
                     <div class="text-center space-y-3">
-                        <div class="bg-white p-3 rounded-2xl inline-block border-2 border-amber-400 shadow-xl">
-                            <img src="${mainQRIS}" class="w-48 h-48 object-contain">
+                        <div class="bg-white p-2.5 rounded-2xl inline-block border-2 border-amber-400 shadow-xl">
+                            <img src="${mainQRIS}" class="w-40 h-40 md:w-48 md:h-48 object-contain">
                         </div>
                         <p class="text-xs text-amber-400 font-bold uppercase">Total Tagihan: Rp ${total.toLocaleString('id-ID')}</p>
                         <button onclick="generateDigitalReceipt('QRIS', ${total})" class="w-full py-3 bg-amber-400 hover:bg-amber-300 text-black font-extrabold rounded-xl text-xs uppercase shadow-lg">
@@ -963,19 +1003,19 @@
             const modalBody = document.getElementById('checkout-payment-body');
             modalBody.innerHTML = `
                 <div class="space-y-3">
-                    <div class="receipt-paper-luxury p-5 rounded-2xl shadow-2xl space-y-2 text-xs">
-                        <div class="text-center font-bold border-b border-dashed border-amber-500/40 pb-3">
-                            <p class="text-sm uppercase tracking-wider font-extrabold text-amber-400">MAUREN SPORT ELITE GYM</p>
-                            <p class="text-[10px] text-gray-400 font-sans">BUKTI STRUK TRANSAKSI DIGITAL</p>
+                    <div class="receipt-paper-luxury p-4 md:p-5 rounded-2xl shadow-2xl space-y-2 text-xs">
+                        <div class="text-center font-bold border-b border-dashed border-amber-500/40 pb-2.5">
+                            <p class="text-xs md:text-sm uppercase tracking-wider font-extrabold text-amber-400">MAUREN SPORT ELITE GYM</p>
+                            <p class="text-[9px] md:text-[10px] text-gray-400 font-sans">BUKTI STRUK TRANSAKSI DIGITAL</p>
                         </div>
                         
-                        <div class="space-y-1 text-[11px] py-1 text-gray-300">
+                        <div class="space-y-1 text-[10px] md:text-[11px] py-1 text-gray-300">
                             <div class="flex justify-between"><span>No. Invoice:</span><span class="font-bold font-mono text-amber-400">${invoiceId}</span></div>
                             <div class="flex justify-between"><span>Waktu:</span><span>${dateStr} ${timeStr}</span></div>
                             <div class="flex justify-between"><span>Metode:</span><span class="font-bold text-white">${method}</span></div>
                         </div>
 
-                        <div class="border-t border-b border-dashed border-amber-500/40 py-2 my-1 space-y-1.5">
+                        <div class="border-t border-b border-dashed border-amber-500/40 py-2 my-1 space-y-1">
                             ${cart.map(item => `
                                 <div class="flex justify-between text-gray-200">
                                     <span>${item.name} x${item.qty}</span>
@@ -984,20 +1024,20 @@
                             `).join('')}
                         </div>
 
-                        <div class="flex justify-between items-center font-black text-sm pt-1">
+                        <div class="flex justify-between items-center font-black text-xs md:text-sm pt-1">
                             <span>TOTAL BAYAR:</span>
-                            <span class="text-emerald-400 font-mono text-base">Rp ${total.toLocaleString('id-ID')}</span>
+                            <span class="text-emerald-400 font-mono text-sm md:text-base">Rp ${total.toLocaleString('id-ID')}</span>
                         </div>
 
-                        <div class="bg-amber-500/10 border border-amber-500/30 p-2 rounded-xl text-center text-[10px] text-amber-300 font-bold mt-3">
+                        <div class="bg-amber-500/10 border border-amber-500/30 p-2 rounded-xl text-center text-[9px] md:text-[10px] text-amber-300 font-bold mt-2">
                             <i class="fa-solid fa-triangle-exclamation mr-1"></i> PERLIHATKAN STRUK INI KEPADA STAFF KASIR UNTUK PENGAMBILAN BARANG
                         </div>
                     </div>
 
                     <div class="bg-gray-950 p-3 rounded-xl border border-gray-800 space-y-2">
-                        <p class="text-[11px] text-gray-400 text-center">Aksi Kasir Staff: Cocokkan mutasi masuk lalu konfirmasi.</p>
-                        <button onclick="confirmAndFinalizeTransaction()" class="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold rounded-xl text-xs uppercase shadow-lg flex items-center justify-center gap-1.5">
-                            <i class="fa-solid fa-circle-check text-sm"></i> Verifikasi Pembayaran & Selesai
+                        <p class="text-[10px] md:text-[11px] text-gray-400 text-center">Aksi Kasir Staff: Verifikasi mutasi pembayaran.</p>
+                        <button onclick="confirmAndFinalizeTransaction()" class="w-full py-2.5 md:py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold rounded-xl text-xs uppercase shadow-lg flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-circle-check"></i> Verifikasi & Selesai
                         </button>
                     </div>
                 </div>
@@ -1093,7 +1133,7 @@
 
         window.closeShiftModal = () => document.getElementById('close-shift-modal').classList.add('hidden');
 
-        // FITUR EKSPOR LAPORAN PDF BERDASARKAN PERIODE
+        // FITUR EKSPOR LAPORAN PDF
         window.setReportDatePreset = (preset) => {
             const today = new Date();
             const todayStr = today.toISOString().split('T')[0];
@@ -1117,7 +1157,7 @@
             const startDate = document.getElementById('report-start-date').value;
             const endDate = document.getElementById('report-end-date').value;
 
-            if (!startDate || !endDate) return alert("Pilih tanggal mulai dan tanggal selesai terlebih dahulu!");
+            if (!startDate || !endDate) return alert("Pilih tanggal mulai dan selesai terlebih dahulu!");
 
             const filteredTx = transactions.filter(t => t.date >= startDate && t.date <= endDate);
             const totalOmset = filteredTx.reduce((a, b) => a + Number(b.total), 0);
@@ -1142,17 +1182,17 @@
                 <head>
                     <title>Laporan_Rekap_Bisnis_${startDate}_s/d_${endDate}</title>
                     <style>
-                        body { font-family: Arial, sans-serif; color: #111; padding: 25px; line-height: 1.4; }
-                        .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 12px; margin-bottom: 20px; }
-                        .header h2 { margin: 0; font-size: 20px; text-transform: uppercase; letter-spacing: 1px; }
-                        .header p { margin: 4px 0; font-size: 12px; color: #444; }
-                        .summary-box { background: #f8f9fa; border: 1px solid #ddd; padding: 12px; border-radius: 6px; margin-bottom: 20px; }
-                        .summary-box table { width: 100%; border: none; font-size: 12px; }
-                        .section-title { font-size: 14px; font-weight: bold; border-left: 4px solid #10b981; padding-left: 8px; margin: 18px 0 8px 0; text-transform: uppercase; }
-                        table.data-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 20px; }
-                        table.data-table th, table.data-table td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+                        body { font-family: Arial, sans-serif; color: #111; padding: 20px; line-height: 1.4; }
+                        .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
+                        .header h2 { margin: 0; font-size: 18px; text-transform: uppercase; }
+                        .header p { margin: 3px 0; font-size: 11px; color: #444; }
+                        .summary-box { background: #f8f9fa; border: 1px solid #ddd; padding: 10px; border-radius: 6px; margin-bottom: 15px; }
+                        .summary-box table { width: 100%; border: none; font-size: 11px; }
+                        .section-title { font-size: 12px; font-weight: bold; border-left: 3px solid #10b981; padding-left: 6px; margin: 15px 0 6px 0; text-transform: uppercase; }
+                        table.data-table { width: 100%; border-collapse: collapse; font-size: 10px; margin-bottom: 15px; }
+                        table.data-table th, table.data-table td { border: 1px solid #ccc; padding: 6px; text-align: left; }
                         table.data-table th { background-color: #f1f5f9; font-weight: bold; }
-                        .footer-note { text-align: right; font-size: 10px; color: #666; margin-top: 30px; border-top: 1px solid #eee; padding-top: 8px; }
+                        .footer-note { text-align: right; font-size: 9px; color: #666; margin-top: 20px; border-top: 1px solid #eee; padding-top: 6px; }
                         @media print { body { padding: 0; } }
                     </style>
                 </head>
@@ -1166,23 +1206,23 @@
                     <div class="summary-box">
                         <table>
                             <tr>
-                                <td><b>Total Omset Pendapatan:</b> <span style="font-size:16px; color:#047857; font-weight:bold;">Rp ${totalOmset.toLocaleString('id-ID')}</span></td>
-                                <td><b>Total Transaksi Berhasil:</b> <span style="font-size:14px; font-weight:bold;">${filteredTx.length} Transaksi</span></td>
+                                <td><b>Total Omset Pendapatan:</b> <span style="font-size:14px; color:#047857; font-weight:bold;">Rp ${totalOmset.toLocaleString('id-ID')}</span></td>
+                                <td><b>Total Transaksi:</b> <span style="font-size:12px; font-weight:bold;">${filteredTx.length} TX</span></td>
                             </tr>
                         </table>
                     </div>
 
-                    <div class="section-title">1. Rekapitasi Produk Terjual & Pengurangan Stok</div>
+                    <div class="section-title">1. Rekapitulasi Produk Terjual</div>
                     <table class="data-table">
                         <thead>
                             <tr>
                                 <th>Nama Produk</th>
-                                <th>Jumlah Terjual (Qty / Stok Berkurang)</th>
-                                <th>Total Nilai Penjualan (Rp)</th>
+                                <th>Jumlah Terjual (Qty)</th>
+                                <th>Total Sales (Rp)</th>
                             </tr>
                         </thead>
                         <tbody>
-                            ${Object.keys(soldProductsMap).length === 0 ? '<tr><td colspan="3" style="text-align:center; color:#888;">Tidak ada data produk terjual pada periode ini.</td></tr>' :
+                            ${Object.keys(soldProductsMap).length === 0 ? '<tr><td colspan="3" style="text-align:center;">Tidak ada data.</td></tr>' :
                             Object.keys(soldProductsMap).map(pName => `
                                 <tr>
                                     <td><b>${pName}</b></td>
@@ -1193,20 +1233,20 @@
                         </tbody>
                     </table>
 
-                    <div class="section-title">2. Log Riwayat Detail Transaksi Aktual</div>
+                    <div class="section-title">2. Detail Transaksi</div>
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>ID Invoice</th>
-                                <th>Tanggal / Waktu</th>
+                                <th>Invoice</th>
+                                <th>Waktu</th>
                                 <th>Tipe</th>
                                 <th>Metode</th>
-                                <th>Rincian Item</th>
-                                <th>Total Nominal</th>
+                                <th>Item</th>
+                                <th>Total</th>
                             </tr>
                         </thead>
                         <tbody>
-                            ${filteredTx.length === 0 ? '<tr><td colspan="6" style="text-align:center; color:#888;">Tidak ada transaksi pada periode ini.</td></tr>' :
+                            ${filteredTx.length === 0 ? '<tr><td colspan="6" style="text-align:center;">Tidak ada data.</td></tr>' :
                             filteredTx.map(t => `
                                 <tr>
                                     <td style="font-family:monospace; font-weight:bold;">${t.invoiceId || t.id.slice(0,8)}</td>
@@ -1221,7 +1261,7 @@
                     </table>
 
                     <div class="footer-note">
-                        Dicetak Otomatis dari Cloud Database Engine MAUREN SPORT POS pada: ${new Date().toLocaleString('id-ID')}
+                        Dicetak pada: ${new Date().toLocaleString('id-ID')}
                     </div>
 
                     <script>
@@ -1238,7 +1278,7 @@
             window.pendingTx = null;
         };
 
-        // KETENTUAN 1: TAMBAH PRODUK & FITUR EDIT PRODUK LENGKAP (STAFF ONLY)
+        // PRODUK & MEMBER MANAGEMENT
         window.addNewProduct = async (e) => {
             e.preventDefault();
             const name = document.getElementById('np-name').value;
@@ -1249,7 +1289,7 @@
 
             await addDoc(collection(db, "products"), { name, price, stock, type, img });
             e.target.reset();
-            alert("Produk baru berhasil ditambahkan ke Cloud Firestore!");
+            alert("Produk baru berhasil ditambahkan!");
         };
 
         function renderStaffProducts() {
@@ -1257,16 +1297,16 @@
             if (!tbody) return;
             tbody.innerHTML = products.map(p => `
                 <tr>
-                    <td class="p-3"><img src="${p.img}" class="w-10 h-10 rounded object-cover border border-gray-800"></td>
-                    <td class="p-3 font-bold">${p.name}</td>
-                    <td class="p-3 text-xs">${p.type}</td>
-                    <td class="p-3 font-bold text-emerald-400">Rp ${Number(p.price).toLocaleString('id-ID')}</td>
-                    <td class="p-3 font-bold ${p.stock <= 0 ? 'text-red-400' : 'text-amber-300'}">${p.stock}</td>
-                    <td class="p-3 text-center flex justify-center gap-1.5">
-                        <button onclick="openEditProductModal('${p.id}')" title="Edit Produk" class="px-2 py-1 bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 rounded border border-amber-500/30 text-xs font-bold transition">
-                            <i class="fa-solid fa-pen-to-square mr-1"></i> Edit
+                    <td class="p-2.5"><img src="${p.img}" class="w-8 h-8 rounded object-cover border border-gray-800"></td>
+                    <td class="p-2.5 font-bold">${p.name}</td>
+                    <td class="p-2.5 text-xs">${p.type}</td>
+                    <td class="p-2.5 font-bold text-emerald-400">Rp ${Number(p.price).toLocaleString('id-ID')}</td>
+                    <td class="p-2.5 font-bold ${p.stock <= 0 ? 'text-red-400' : 'text-amber-300'}">${p.stock}</td>
+                    <td class="p-2.5 text-center flex justify-center gap-1">
+                        <button onclick="openEditProductModal('${p.id}')" title="Edit Produk" class="px-2 py-1 bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 rounded border border-amber-500/30 text-[10px] font-bold transition">
+                            <i class="fa-solid fa-pen-to-square"></i>
                         </button>
-                        <button onclick="deleteProduct('${p.id}')" title="Hapus Produk" class="p-1.5 text-red-400 hover:text-red-200 transition">
+                        <button onclick="deleteProduct('${p.id}')" title="Hapus Produk" class="p-1 text-red-400 hover:text-red-200 transition">
                             <i class="fa-solid fa-trash"></i>
                         </button>
                     </td>
@@ -1303,7 +1343,6 @@
 
             try {
                 if (id === 'preset-daily-pass') {
-                    // Update state lokal untuk preset
                     const pIndex = products.findIndex(x => x.id === id);
                     if (pIndex !== -1) {
                         products[pIndex] = { id, name, price, stock, type, img };
@@ -1313,7 +1352,7 @@
                 } else {
                     await updateDoc(doc(db, "products", id), { name, price, stock, type, img });
                 }
-                alert("Data produk berhasil diperbarui!");
+                alert("Data produk diperbarui!");
                 closeEditProductModal();
             } catch (err) {
                 alert("Gagal memperbarui produk: " + err.message);
@@ -1332,7 +1371,6 @@
             alert("QRIS Utama Berhasil Diperbarui!");
         };
 
-        // KETENTUAN 2: RENDER MEMBER & FITUR EDIT DATA + EDIT BIAYA MEMBER (STAFF ONLY)
         function renderMembers() {
             const publicTb = document.getElementById('public-member-tbody');
             const staffTb = document.getElementById('staff-member-tbody');
@@ -1341,13 +1379,13 @@
             if (publicTb) {
                 publicTb.innerHTML = members.map((m) => `
                     <tr>
-                        <td class="p-4 font-mono text-amber-400 text-xs font-bold">${m.id.slice(0,6)}</td>
-                        <td class="p-4 font-bold text-white">${m.name}</td>
-                        <td class="p-4 text-xs">${m.gender}</td>
-                        <td class="p-4 text-xs ${m.end < todayStr ? 'text-red-400 font-bold' : 'text-emerald-400 font-bold'}">${m.end}</td>
-                        <td class="p-4 text-center">
-                            <button onclick="showMemberQR('${m.id}', '${m.name}')" class="px-2 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 rounded border border-amber-500/30 font-mono text-[10px] font-bold transition">
-                                <i class="fa-solid fa-qrcode mr-1"></i> Lihat QR
+                        <td class="p-2.5 md:p-4 font-mono text-amber-400 text-xs font-bold">${m.id.slice(0,6)}</td>
+                        <td class="p-2.5 md:p-4 font-bold text-white">${m.name}</td>
+                        <td class="p-2.5 md:p-4 text-xs">${m.gender}</td>
+                        <td class="p-2.5 md:p-4 text-xs ${m.end < todayStr ? 'text-red-400 font-bold' : 'text-emerald-400 font-bold'}">${m.end}</td>
+                        <td class="p-2.5 md:p-4 text-center">
+                            <button onclick="showMemberQR('${m.id}', '${m.name}')" class="px-2 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 rounded border border-amber-500/30 font-mono text-[10px] font-bold">
+                                <i class="fa-solid fa-qrcode mr-1"></i> QR
                             </button>
                         </td>
                     </tr>
@@ -1359,27 +1397,27 @@
                     const isExpired = m.end < todayStr;
                     return `
                         <tr class="${isExpired ? 'bg-red-950/20' : ''}">
-                            <td class="p-3.5 font-bold">${m.name}</td>
-                            <td class="p-3.5 text-xs">${m.gender}</td>
-                            <td class="p-3.5 text-xs text-gray-400">${m.start}</td>
-                            <td class="p-3.5 text-xs font-bold ${isExpired ? 'text-red-400' : 'text-emerald-400'}">${m.end}</td>
-                            <td class="p-3.5 text-xs font-bold text-emerald-400">Rp ${Number(m.fee || 350000).toLocaleString('id-ID')}</td>
-                            <td class="p-3.5">
-                                <span class="px-2 py-0.5 text-[10px] font-bold rounded ${isExpired ? 'bg-red-900/80 text-red-200' : 'bg-emerald-900/80 text-emerald-200'}">
+                            <td class="p-2.5 md:p-3.5 font-bold">${m.name}</td>
+                            <td class="p-2.5 md:p-3.5 text-xs">${m.gender}</td>
+                            <td class="p-2.5 md:p-3.5 text-xs text-gray-400">${m.start}</td>
+                            <td class="p-2.5 md:p-3.5 text-xs font-bold ${isExpired ? 'text-red-400' : 'text-emerald-400'}">${m.end}</td>
+                            <td class="p-2.5 md:p-3.5 text-xs font-bold text-emerald-400">Rp ${Number(m.fee || 350000).toLocaleString('id-ID')}</td>
+                            <td class="p-2.5 md:p-3.5">
+                                <span class="px-2 py-0.5 text-[9px] md:text-[10px] font-bold rounded ${isExpired ? 'bg-red-900/80 text-red-200' : 'bg-emerald-900/80 text-emerald-200'}">
                                     ${isExpired ? 'Kadaluarsa' : 'Aktif'}
                                 </span>
                             </td>
-                            <td class="p-3.5 text-center flex justify-center gap-1.5">
-                                <button onclick="openEditMemberModal('${m.id}')" title="Edit Data & Biaya" class="px-2 py-1 bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 rounded border border-amber-500/30 text-[10px] font-bold transition">
-                                    <i class="fa-solid fa-user-pen mr-1"></i> Edit / Biaya
+                            <td class="p-2.5 md:p-3.5 text-center flex justify-center gap-1">
+                                <button onclick="openEditMemberModal('${m.id}')" title="Edit Data & Biaya" class="px-2 py-1 bg-amber-500/20 text-amber-300 rounded text-[10px] font-bold">
+                                    <i class="fa-solid fa-user-pen"></i>
                                 </button>
-                                <button onclick="renewMember('${m.id}', '${m.end}')" title="Perpanjang 1 Bulan" class="px-2 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-[10px] font-extrabold transition">
-                                    <i class="fa-solid fa-rotate-right mr-1"></i> +1 Bln
+                                <button onclick="renewMember('${m.id}', '${m.end}')" title="Perpanjang 1 Bulan" class="px-2 py-1 bg-emerald-600 text-white rounded text-[10px] font-extrabold">
+                                    +1B
                                 </button>
-                                <button onclick="showMemberQR('${m.id}', '${m.name}')" title="Lihat QR Code" class="px-2 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 rounded border border-amber-500/30 text-[10px] font-bold transition">
+                                <button onclick="showMemberQR('${m.id}', '${m.name}')" title="Lihat QR" class="px-2 py-1 bg-amber-500/20 text-amber-300 rounded text-[10px] font-bold">
                                     <i class="fa-solid fa-qrcode"></i>
                                 </button>
-                                <button onclick="deleteMember('${m.id}')" title="Hapus Member" class="p-1 text-red-400 hover:text-red-200 transition">
+                                <button onclick="deleteMember('${m.id}')" title="Hapus Member" class="p-1 text-red-400 hover:text-red-200">
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
                             </td>
@@ -1418,7 +1456,7 @@
 
             try {
                 await updateDoc(doc(db, "members", id), { name, gender, start, end, fee });
-                alert("Data & Biaya member berhasil diperbarui!");
+                alert("Data member diperbarui!");
                 closeEditMemberModal();
             } catch (err) {
                 alert("Gagal memperbarui data member: " + err.message);
@@ -1427,14 +1465,14 @@
 
         window.renewMember = async (memberId, currentEndDate) => {
             const mObj = members.find(m => m.id === memberId);
-            const renewalFee = Number(mObj?.fee) || 350000; // Menggunakan biaya aktual terbaru yang tersimpan
+            const renewalFee = Number(mObj?.fee) || 350000;
 
             const todayStr = new Date().toISOString().split('T')[0];
             const baseDate = new Date(currentEndDate < todayStr ? todayStr : currentEndDate);
             baseDate.setMonth(baseDate.getMonth() + 1);
             const newEndStr = baseDate.toISOString().split('T')[0];
 
-            if (confirm(`Perpanjang membership selama 1 bulan hingga ${newEndStr} dengan tarif Rp ${renewalFee.toLocaleString('id-ID')}?`)) {
+            if (confirm(`Perpanjang membership hingga ${newEndStr} (Rp ${renewalFee.toLocaleString('id-ID')})?`)) {
                 try {
                     await updateDoc(doc(db, "members", memberId), { end: newEndStr });
                     await addDoc(collection(db, "transactions"), {
@@ -1446,7 +1484,7 @@
                         timestamp: `${todayStr} ${new Date().toLocaleTimeString('id-ID')}`,
                         total: renewalFee
                     });
-                    alert(`Membership berhasil diperpanjang hingga ${newEndStr}!`);
+                    alert(`Membership diperpanjang hingga ${newEndStr}!`);
                 } catch (err) {
                     alert("Gagal memperpanjang member: " + err.message);
                 }
@@ -1458,12 +1496,11 @@
             const modalBody = document.getElementById('checkout-payment-body');
             modalBody.innerHTML = `
                 <div class="text-center space-y-3">
-                    <h4 class="text-base font-black text-white uppercase">${memberName}</h4>
-                    <p class="text-xs text-amber-400 font-mono">ID: ${memberId.slice(0, 8)}</p>
-                    <div class="bg-white p-3 rounded-2xl inline-block border-2 border-amber-400 shadow-xl">
-                        <img src="${qrUrl}" class="w-48 h-48 object-contain">
+                    <h4 class="text-sm md:text-base font-black text-white uppercase">${memberName}</h4>
+                    <p class="text-[11px] text-amber-400 font-mono">ID: ${memberId.slice(0, 8)}</p>
+                    <div class="bg-white p-2.5 rounded-2xl inline-block border-2 border-amber-400 shadow-xl">
+                        <img src="${qrUrl}" class="w-40 h-40 md:w-48 md:h-48 object-contain">
                     </div>
-                    <p class="text-[10px] text-gray-400 block">Screenshot QR ini untuk disimpan oleh member.</p>
                 </div>
             `;
             document.getElementById('checkout-modal').classList.remove('hidden');
@@ -1500,11 +1537,11 @@
             const grid = document.getElementById('event-grid');
             grid.innerHTML = events.map(e => `
                 <div class="glass-panel-luxury rounded-2xl overflow-hidden flex flex-col justify-between">
-                    <img src="${e.img}" class="w-full h-44 object-cover">
-                    <div class="p-4">
-                        <span class="text-[9px] font-extrabold uppercase text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">${e.tag}</span>
-                        <h4 class="text-base font-black text-white mt-1">${e.title}</h4>
-                        <p class="text-xs text-gray-400 mt-1">${e.desc}</p>
+                    <img src="${e.img}" class="w-full h-36 md:h-44 object-cover">
+                    <div class="p-3 md:p-4">
+                        <span class="text-[8px] md:text-[9px] font-extrabold uppercase text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">${e.tag}</span>
+                        <h4 class="text-sm md:text-base font-black text-white mt-1">${e.title}</h4>
+                        <p class="text-[11px] md:text-xs text-gray-400 mt-1">${e.desc}</p>
                     </div>
                 </div>
             `).join('');
@@ -1516,13 +1553,13 @@
             if (!tbody) return;
             tbody.innerHTML = transactions.map(t => `
                 <tr>
-                    <td class="p-3 font-mono text-xs text-amber-400 font-bold">${t.invoiceId || t.id.slice(0,6)}</td>
-                    <td class="p-3 text-xs"><span class="px-2 py-0.5 bg-cyan-900/60 text-cyan-300 rounded">${t.type}</span></td>
-                    <td class="p-3 text-xs font-bold text-gray-300">${t.method || 'QRIS'}</td>
-                    <td class="p-3 text-xs font-semibold text-white">${t.items}</td>
-                    <td class="p-3 text-xs text-gray-400">${t.timestamp || t.date}</td>
-                    <td class="p-3 text-xs font-black text-emerald-400">Rp ${Number(t.total).toLocaleString('id-ID')}</td>
-                    <td class="p-3 text-center">
+                    <td class="p-2.5 md:p-3 font-mono text-xs text-amber-400 font-bold">${t.invoiceId || t.id.slice(0,6)}</td>
+                    <td class="p-2.5 md:p-3 text-xs"><span class="px-2 py-0.5 bg-cyan-900/60 text-cyan-300 rounded">${t.type}</span></td>
+                    <td class="p-2.5 md:p-3 text-xs font-bold text-gray-300">${t.method || 'QRIS'}</td>
+                    <td class="p-2.5 md:p-3 text-xs font-semibold text-white">${t.items}</td>
+                    <td class="p-2.5 md:p-3 text-xs text-gray-400">${t.timestamp || t.date}</td>
+                    <td class="p-2.5 md:p-3 text-xs font-black text-emerald-400">Rp ${Number(t.total).toLocaleString('id-ID')}</td>
+                    <td class="p-2.5 md:p-3 text-center">
                         <button onclick="deleteSingleTransaction('${t.id}')" title="Hapus Transaksi" class="p-1.5 bg-red-900/40 hover:bg-red-600 text-red-300 hover:text-white rounded-lg transition text-xs">
                             <i class="fa-solid fa-trash-can"></i>
                         </button>
@@ -1535,12 +1572,10 @@
             const targetTx = transactions.find(t => t.id === txId);
             if (!targetTx) return;
 
-            const confirmMsg = `PERINGATAN: Menghapus transaksi [${targetTx.invoiceId || txId}] senilai Rp ${Number(targetTx.total).toLocaleString('id-ID')} akan mempengaruhi omset laporan!\n\nApakah Anda yakin ingin menghapus data ini?`;
-            
-            if (confirm(confirmMsg)) {
+            if (confirm(`Hapus transaksi [${targetTx.invoiceId || txId}] senilai Rp ${Number(targetTx.total).toLocaleString('id-ID')}?`)) {
                 try {
                     await deleteDoc(doc(db, "transactions", txId));
-                    alert("Transaksi berhasil dihapus. Omset dan riwayat telah diperbarui.");
+                    alert("Transaksi berhasil dihapus.");
                 } catch (err) {
                     alert("Gagal menghapus transaksi: " + err.message);
                 }
@@ -1551,22 +1586,20 @@
             const startDate = document.getElementById('report-start-date').value;
             const endDate = document.getElementById('report-end-date').value;
 
-            if (!startDate || !endDate) return alert("Pilih tanggal mulai dan selesai pada filter di atas terlebih dahulu!");
+            if (!startDate || !endDate) return alert("Pilih tanggal filter di atas terlebih dahulu!");
 
             const filteredToPurge = transactions.filter(t => t.date >= startDate && t.date <= endDate);
 
-            if (filteredToPurge.length === 0) return alert("Tidak ada data transaksi yang ditemukan pada rentang tanggal tersebut.");
+            if (filteredToPurge.length === 0) return alert("Tidak ada data transaksi.");
 
-            const confirmMsg = `KONFIRMASI PENGHAPUSAN MASSAL:\n\nAnda akan menghapus ${filteredToPurge.length} transaksi dari tanggal ${startDate} s/d ${endDate}.\n\nTindakan ini TIDAK DAPAT DIBATALKAN. Lanjutkan?`;
-
-            if (confirm(confirmMsg)) {
+            if (confirm(`Hapus ${filteredToPurge.length} transaksi dari tanggal ${startDate} s/d ${endDate}?`)) {
                 try {
                     for (let t of filteredToPurge) {
                         await deleteDoc(doc(db, "transactions", t.id));
                     }
-                    alert(`${filteredToPurge.length} riwayat transaksi berhasil dihapus.`);
+                    alert(`${filteredToPurge.length} riwayat transaksi dihapus.`);
                 } catch (err) {
-                    alert("Gagal menghapus transaksi massal: " + err.message);
+                    alert("Gagal menghapus: " + err.message);
                 }
             }
         };
